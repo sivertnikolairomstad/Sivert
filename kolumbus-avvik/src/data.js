@@ -1,5 +1,4 @@
-// Scenario og innhold for prototypen. Avganger regnes relativt til «nå», så tidene
-// alltid ser ekte ut uansett når presentasjonen holdes.
+// Scenario og tekster for prototypen. Avganger regnes relativt til «nå».
 
 export const ROUTE = { from: 'UiS Tjodhallen', to: 'Stavanger sentrum' }
 
@@ -17,7 +16,6 @@ export const extraBus = {
   id: 'extra',
   line: '6E',
   dest: 'Stavanger sentrum (ekstrabuss)',
-  inMin: 6,
   travel: 16,
   platform: 'A',
   crowd: 0.05,
@@ -26,31 +24,31 @@ export const extraBus = {
 
 export const REPORT_TYPES = [
   { id: 'full', label: 'Full buss', icon: 'Users' },
-  { id: 'late', label: 'Utsatt avgang', icon: 'Clock' },
-  { id: 'noshow', label: 'Bussen kom ikke', icon: 'CircleOff' },
-  { id: 'safety', label: 'Glatt / utrygt', icon: 'TriangleAlert' },
+  { id: 'late', label: 'Forsinket', icon: 'Clock' },
+  { id: 'noshow', label: 'Kom ikke', icon: 'CircleOff' },
+  { id: 'safety', label: 'Glatt/utrygt', icon: 'TriangleAlert' },
 ]
 
-// Svar fra trafikksentralen på en rapport – lukker sløyfen tilbake til brukeren
+// Svar fra trafikksentralen på en rapport
 export const OPERATOR_ANSWERS = {
-  full: 'Takk! Vi ser det samme på passasjertellerne. Neste X60 får en ekstra vogn, og 6E settes inn fra plattform A.',
-  late: 'Takk for beskjeden – sjåføren står i kø ved Ullandhaug. Vi har oppdatert tiden for alle på holdeplassen.',
-  noshow: 'Beklager! Vi har kontaktet sjåføren og varslet alle som venter. Du får en forsinkelsesattest automatisk.',
-  safety: 'Takk for at du sier ifra. Brøytemannskapet er varslet og kommer innen 20 min.',
+  full: 'Takk. Vi ser det samme på passasjertellingen og setter inn ekstrabuss 6E fra plattform A.',
+  late: 'Takk. Bussen står i kø ved Ullandhaug. Vi har oppdatert tiden for alle på holdeplassen.',
+  noshow: 'Beklager. Vi har kontaktet sjåføren og varslet alle som venter. Du får forsinkelsesattest automatisk.',
+  safety: 'Takk for at du sier fra. Brøytemannskapet er varslet og kommer innen 20 minutter.',
 }
 
 export const crowdSeed = [
-  { who: 'Reisende ved Tjodhallen', text: 'Ganske fullt på 6-eren nå, men greit å komme seg på.', ago: 4, type: 'full' },
-  { who: 'Trafikksentralen', text: 'X60 går som normalt. Takk til dere som melder fra 💚', ago: 7, operator: true },
+  { who: 'Reisende', text: 'Ganske fullt på 6-eren, men det går fint å komme seg på.', ago: 4 },
+  { who: 'Trafikksentralen', text: 'X60 går som normalt.', ago: 7, operator: true },
 ]
 
 // ---------- Chat ----------
 
 export const QUICK_REPLIES = [
-  'Hva gjør æ med billetten min?',
-  'Rekker æ forelesningen kl. 16?',
+  'Hva gjør jeg med billetten min?',
+  'Rekker jeg forelesningen kl. 16?',
   'Kan dere ordne taxi?',
-  'Æ vil snakke med et menneske',
+  'Jeg vil snakke med et menneske',
 ]
 
 const RULES = [
@@ -58,53 +56,50 @@ const RULES = [
     test: /billett|kort|betal|refus|penger|reisegaranti/i,
     reply: (d) =>
       d
-        ? 'Billetten din gjelder automatisk på ekstrabussen og X60 – du trenger ikke gjøre noe 🙌 Blir du mer enn 20 min forsinket, refunderer vi taxi. Skal æ starte en refusjon for deg nå?'
-        : 'Billetten din gjelder på alle våre busser i samme sone. Blir du forsinket mer enn 20 min, dekker reisegarantien taxi – æ kan ordne det for deg her i chatten.',
-    actions: ['Ja, start refusjon', 'Nei takk, det går fint'],
+        ? 'Billetten din gjelder på ekstrabussen og på X60, så du trenger ikke gjøre noe. Blir du forsinket mer enn 20 minutter, dekker reisegarantien taxi. Vil du at jeg starter en refusjon nå?'
+        : 'Billetten din gjelder på alle busser i samme sone. Blir du forsinket mer enn 20 minutter, dekker reisegarantien taxi. Jeg kan ordne det her i chatten.',
+    actions: ['Ja, start refusjon', 'Nei takk'],
   },
   {
     test: /forelesning|rekk|møte|jobb|skole|kl\.? ?\d/i,
     reply: () =>
-      'Ja! Tar du ekstrabussen 6E fra plattform A er du i sentrum om ca. 20 min. Vil du at æ sender deg en forsinkelsesattest du kan vise foreleseren, sånn i tilfelle?',
-    actions: ['Send attest', 'Varsle meg når bussen er 2 min unna'],
+      'Ja. Ekstrabussen 6E fra plattform A er i sentrum om ca. 20 minutter. Vil du ha en forsinkelsesattest du kan vise foreleseren?',
+    actions: ['Send attest', 'Varsle meg når bussen er nær'],
   },
   {
     test: /taxi|drosje/i,
     reply: () =>
-      'Det kan vi! Ventetiden for neste buss er under 20 min nå, men står du med barn, bagasje eller har dårlig tid, sender vi en taxi på vår regning. Skal æ bestille til UiS Tjodhallen?',
-    actions: ['Bestill taxi', 'Æ venter på bussen'],
+      'Det kan vi. Neste buss går om under 20 minutter, men har du dårlig tid, sender vi taxi på vår regning. Skal jeg bestille til UiS Tjodhallen?',
+    actions: ['Bestill taxi', 'Jeg venter på bussen'],
   },
   {
-    test: /menneske|person|ekte|ringe|klage|sint|elendig|dårlig/i,
+    test: /menneske|person|ringe|klage|sint|elendig|dårlig/i,
     handoff: true,
     reply: () =>
-      'Hei, Ingrid her fra trafikksentralen 👋 Æ har lest samtalen, så du slipper å gjenta deg. Det er helt forståelig at du er lei – fortell meg hva som ville hjulpet deg mest akkurat nå.',
+      'Hei, dette er Ingrid fra trafikksentralen. Jeg har lest samtalen, så du slipper å gjenta deg. Jeg forstår godt at du er lei. Hva ville hjulpet deg mest akkurat nå?',
   },
   {
     test: /^(ja|start|send|bestill|varsle)/i,
     reply: (_, t) =>
       /taxi/i.test(t)
-        ? 'Taxi er bestilt 🚕 Den står ved hovedinngangen på Tjodhallen om ca. 6 min. Du får sjåførens navn på SMS.'
+        ? 'Taxi er bestilt. Den står ved hovedinngangen til Tjodhallen om ca. 6 minutter, og du får sjåførens navn på SMS.'
         : /attest/i.test(t)
-          ? 'Ferdig! Attesten ligger under «Mine reiser» og er sendt til e-posten din. Lykke til på forelesningen 📚'
+          ? 'Attesten er sendt til e-posten din og ligger under Mine reiser.'
           : /varsle/i.test(t)
-            ? 'Avtale! Du får et varsel når 6E er 2 min unna holdeplassen.'
-            : 'Refusjonen er startet – saksnummer MR-20481. Du får svar innen 24 timer, som regel mye fortere.',
+            ? 'Greit. Du får et varsel når 6E er 2 minutter unna.'
+            : 'Refusjonen er startet med saksnummer MR-20481. Du får svar innen 24 timer.',
   },
   {
-    test: /nei|går fint|venter/i,
-    reply: () => 'Helt i orden! Æ er her hvis du trenger noe mer. God tur 💚',
+    test: /nei|venter/i,
+    reply: () => 'Helt i orden. Skriv her hvis du trenger noe mer. God tur!',
   },
   {
     test: /takk|flott|supert|bra/i,
-    reply: () => 'Så godt å høre! Takk for at du sa ifra – det hjelper oss å bli bedre for alle som reiser 💚',
+    reply: () => 'Så bra. Takk for at du sa fra, det hjelper oss med å gjøre det bedre for alle som reiser.',
   },
   {
-    test: /hei|hallo|heisann/i,
-    reply: (d) =>
-      d
-        ? 'Hei! Æ ser at linje 6 er innstilt fra UiS akkurat nå. Hvordan kan æ hjelpe deg videre?'
-        : 'Hei! Hyggelig å høre fra deg. Hva kan æ hjelpe deg med i dag?',
+    test: /hei|hallo/i,
+    reply: (d) => (d ? 'Hei! Linje 6 fra UiS er innstilt akkurat nå. Hva kan jeg hjelpe deg med?' : 'Hei! Hva kan jeg hjelpe deg med?'),
   },
 ]
 
@@ -113,46 +108,46 @@ export function answer(text, disrupted) {
   if (!rule)
     return {
       from: 'ai',
-      text: 'Takk, det noterer æ meg. Æ har sendt det videre til trafikksentralen, og du får svar her i chatten – vanligvis innen et par minutter. Er det noe æ kan hjelpe deg med i mellomtiden?',
+      text: 'Takk, det har jeg notert. Jeg har sendt det videre til trafikksentralen, og du får svar her, vanligvis innen et par minutter.',
     }
-  return {
-    from: rule.handoff ? 'human' : 'ai',
-    text: rule.reply(disrupted, text),
-    actions: rule.actions,
-  }
+  return { from: rule.handoff ? 'human' : 'ai', text: rule.reply(disrupted, text), actions: rule.actions }
 }
 
 // ---------- Sosiale medier ----------
 
+export const somePost = 'Linje 6 fra UiS er innstilt på grunn av teknisk feil.'
+
 export const someOriginal = {
   author: 'Marius H.',
-  text: 'Tredje gang denne uka at 6-eren fra UiS bare forsvinner. Står her i regnet med 40 andre. Hva skal vi gjøre??',
+  text: 'Tredje gang denne uka at 6-eren fra UiS bare forsvinner. Står her i regnet med 40 andre. Hva skal vi gjøre?',
 }
 
 export const someOld = {
+  brand: 'Kollektivselskapet',
   reply: 'Hei. Vi viser til informasjon om reisegarantien på våre nettsider. Mvh. Kundesenteret',
   followUps: [
-    { author: 'Sara L.', text: 'Typisk. Copy-paste og ferdig 🙄' },
-    { author: 'Marius H.', text: 'Svarte dere egentlig på spørsmålet mitt?' },
-    { author: 'Jonas K.', text: 'Samme her. Har sluttet å spørre dem om noe.' },
-    { author: 'Eline B.', text: 'Del gjerne dette videre, folk må se hvordan de svarer.' },
+    { author: 'Sara L.', text: 'Typisk. Kopier og lim inn.' },
+    { author: 'Marius H.', text: 'Svarte dere egentlig på spørsmålet?' },
+    { author: 'Jonas K.', text: 'Har sluttet å spørre dem om noe.' },
   ],
+  footnote: 'Ingen videre svar. Innlegget er delt 48 ganger.',
   sentiment: 12,
   reactions: { angry: 214, like: 3 },
 }
 
 export const someNew = {
+  brand: 'Move Rogaland',
   reply:
-    'Hei Marius – det skjønner vi godt, og det er ikke greit at dere står i regnet 😔 Linje 6 er innstilt pga. teknisk feil. Ekstrabuss 6E går fra plattform A om 6 min, og billetten gjelder. Vi sender deg en DM nå så vi får ordnet resten personlig 💚',
+    'Hei Marius, det forstår vi godt. Det er ikke greit å bli stående i regnet. Ekstrabuss 6E går fra plattform A om 6 minutter, og billetten din gjelder. Vi sender deg en melding nå, så ordner vi resten.',
   followUps: [
-    { author: 'Marius H.', text: 'Ok, takk for raskt svar. Ser bussen kommer nå 👍' },
-    { author: 'Sara L.', text: 'Bra at dere faktisk svarer ordentlig!' },
-    { author: 'Move Rogaland', text: 'Takk for tålmodigheten, alle sammen. Vi følger med på linjen resten av kvelden.', brand: true },
+    { author: 'Marius H.', text: 'Ok, takk for raskt svar. Ser bussen komme nå.' },
+    { author: 'Sara L.', text: 'Bra at dere svarer ordentlig.' },
+    { author: 'Move Rogaland', text: 'Takk for tålmodigheten. Vi følger med på linjen resten av kvelden.', brand: true },
   ],
   dm: [
-    { from: 'brand', text: 'Hei igjen, Marius! Vi beklager virkelig. Vil du at vi refunderer dagens billett?' },
-    { from: 'user', text: 'Ja, det hadde vært fint.' },
-    { from: 'brand', text: 'Ordnet ✅ Og takk for at du sa fra offentlig – det gjorde at vi kunne varsle alle.' },
+    { from: 'brand', text: 'Hei igjen, Marius. Vil du at vi refunderer dagens billett?' },
+    { from: 'user', text: 'Ja, gjerne.' },
+    { from: 'brand', text: 'Det er ordnet. Takk for at du sa fra, det gjorde at vi kunne varsle alle.' },
   ],
   sentiment: 78,
   reactions: { angry: 9, like: 186 },
@@ -161,23 +156,23 @@ export const someNew = {
 // ---------- Teori ----------
 
 export const grunigModels = [
-  { name: 'Pressetjeneste', flow: 'Enveis', goal: 'Oppmerksomhet' },
-  { name: 'Offentlig informasjon', flow: 'Enveis', goal: 'Spre sann informasjon', today: true },
-  { name: 'Toveis asymmetrisk', flow: 'Toveis, ubalansert', goal: 'Overtale' },
-  { name: 'Toveis symmetrisk', flow: 'Toveis, balansert', goal: 'Gjensidig forståelse', target: true },
+  { name: 'Pressetjeneste', flow: 'Enveis' },
+  { name: 'Offentlig informasjon', flow: 'Enveis', today: true },
+  { name: 'Toveis asymmetrisk', flow: 'Toveis, ubalansert' },
+  { name: 'Toveis symmetrisk', flow: 'Toveis, balansert', target: true },
 ]
 
 export const theories = [
   {
     id: 'grunig',
     title: 'Toveis symmetrisk kommunikasjon',
-    authors: 'Grunig & Hunt (1984) · Cornelissen',
+    authors: 'Grunig & Hunt (1984), Cornelissen',
     icon: 'ArrowLeftRight',
-    core: 'Kommunikasjon som dialog der organisasjonen lytter og lar seg påvirke, ikke bare sender. Målet er gjensidig forståelse og varige relasjoner med interessentene.',
+    core: 'Organisasjonen lytter og lar seg påvirke, i stedet for bare å sende ut informasjon. Målet er gjensidig forståelse og gode relasjoner med interessentene.',
     inApp: [
-      'Rapporter situasjon gir trafikksentralen data fra de reisende, og de svarer tilbake',
-      'Chatten svarer med en gang og overlater til et menneske ved behov',
-      'Avviksvarselet ber om respons, det informerer ikke bare',
+      'Reisende rapporterer fra holdeplassen, og trafikksentralen svarer',
+      'Chatten svarer med en gang og setter deg over til et menneske ved behov',
+      'Avviksvarselet ber om svar i stedet for bare å informere',
     ],
     tab: 'plan',
   },
@@ -186,11 +181,11 @@ export const theories = [
     title: 'Situational Crisis Communication Theory',
     authors: 'Coombs (2007)',
     icon: 'ShieldAlert',
-    core: 'Kriseresponsen tilpasses hvor mye ansvar publikum tillegger organisasjonen. Teknisk feil ligger i «ulykke»-klyngen (lav til moderat ansvarstilskrivelse).',
+    core: 'Kriseresponsen tilpasses hvor mye ansvar publikum gir organisasjonen. Teknisk feil hører til ulykkesklyngen, med lav til moderat ansvarstilskrivelse.',
     inApp: [
-      'Instruerende info: hva gjør jeg nå? (ekstrabuss, plattform, tid)',
-      'Tilpassende info: empati og bekymring («det er ikke greit at dere står i regnet»)',
-      'Gjenoppbygging ved gjentatte avvik: unnskyldning og kompensasjon (refusjon, taxi)',
+      'Instruerende informasjon: hva gjør jeg nå (ekstrabuss, plattform, tid)',
+      'Tilpassende informasjon: forståelse for situasjonen',
+      'Ved gjentatte avvik: unnskyldning og kompensasjon (refusjon, taxi)',
     ],
     tab: 'plan',
   },
@@ -199,11 +194,11 @@ export const theories = [
     title: 'Stakeholder Salience',
     authors: 'Mitchell, Agle & Wood (1997)',
     icon: 'Target',
-    core: 'Interessenter prioriteres etter makt, legitimitet og hast. De som har alle tre er definitive interessenter og krever umiddelbar respons.',
+    core: 'Interessenter prioriteres etter makt, legitimitet og hast. De som har alle tre, er definitive interessenter og må få svar umiddelbart.',
     inApp: [
-      'Reisende som står på holdeplassen under et avvik er definitive interessenter',
-      'Makt: offentlig stemme i SoMe og valget om å ta bilen. Legitimitet: betalende kunde',
-      'Hast: de trenger svar nå, ikke på e-post i morgen',
+      'Reisende som venter på holdeplassen under et avvik, er definitive interessenter',
+      'Makt: en offentlig stemme i sosiale medier og valget om å ta bilen',
+      'Legitimitet: betalende kunder. Hast: de trenger svar nå',
     ],
     tab: 'some',
   },
@@ -212,26 +207,25 @@ export const theories = [
     title: 'Uses and Gratifications Theory',
     authors: 'Katz, Blumler & Gurevitch (1974)',
     icon: 'Smartphone',
-    core: 'Brukerne er aktive og velger medier som dekker egne behov. Appen må dekke flere behov for å bli brukt, ikke bare informasjonsbehovet.',
+    core: 'Brukerne velger selv medier som dekker behovene deres. Appen må dekke flere behov enn informasjon for å bli brukt.',
     inApp: [
-      'Informasjon: sanntid, alternativ rute og årsak',
-      'Sosial interaksjon: fellesskapsmeldinger fra andre reisende',
-      'Identitet og innflytelse: «din rapport hjalp 214 reisende»',
+      'Informasjon: sanntid, alternativer og årsak',
+      'Sosial interaksjon: meldinger fra andre reisende',
+      'Identitet og innflytelse: rapporten din hjelper andre',
     ],
     tab: 'chat',
   },
   {
     id: 'poem',
     title: 'POEM og crowdcasting',
-    authors: 'Paid · Owned · Earned media',
+    authors: 'Paid, owned og earned media',
     icon: 'Megaphone',
-    core: 'Kanalene ses som en helhet: egne kanaler (appen), betalte flater og fortjent omtale. Crowdcasting gjør de reisende til medskapere av sanntidsinformasjonen.',
+    core: 'Kanalene ses i sammenheng: egne kanaler, betalte flater og omtale man gjør seg fortjent til. Med crowdcasting bidrar de reisende selv til sanntidsinformasjonen.',
     inApp: [
-      'Owned: appen og chatten som primærkanal ved avvik',
-      'Earned: empatiske SoMe-svar som får positiv omtale og deling',
-      'Crowdcasting: brukerrapporter oppdaterer linjen for alle',
+      'Owned: appen og chatten er hovedkanalen ved avvik',
+      'Earned: gode svar i sosiale medier gir positiv omtale',
+      'Crowdcasting: rapporter fra reisende oppdaterer linjen for alle',
     ],
     tab: 'plan',
   },
 ]
-

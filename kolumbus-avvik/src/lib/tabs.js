@@ -1,8 +1,8 @@
-import { BookOpen, MessagesSquare, Route, Share2 } from 'lucide-react'
+import { BookOpen, MessageCircle, Route, Share2 } from 'lucide-react'
 
 export const TABS = [
-  { id: 'plan', label: 'Reise', long: 'Reise & avvik', icon: Route },
-  { id: 'chat', label: 'Dialog', long: 'Support & dialog', icon: MessagesSquare },
-  { id: 'some', label: 'SoMe', long: 'SoMe-dialog', icon: Share2 },
-  { id: 'teori', label: 'Teori', long: 'Teoridashbord', icon: BookOpen },
+  { id: 'plan', label: 'Reise', icon: Route },
+  { id: 'chat', label: 'Hjelp', icon: MessageCircle },
+  { id: 'some', label: 'SoMe', icon: Share2 },
+  { id: 'teori', label: 'Teori', icon: BookOpen },
 ]

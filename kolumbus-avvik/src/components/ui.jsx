@@ -1,63 +1,81 @@
 import { motion } from 'framer-motion'
-
-export function Glass({ as: Tag = 'div', className = '', children, ...rest }) {
-  return (
-    <Tag
-      className={`rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_1px_0_0_rgba(255,255,255,0.06)_inset,0_20px_50px_-24px_rgba(0,0,0,0.8)] backdrop-blur-xl ${className}`}
-      {...rest}
-    >
-      {children}
-    </Tag>
-  )
-}
+import { ChevronRight } from 'lucide-react'
 
 export function LineBadge({ line, state = 'ok' }) {
   const tones = {
-    ok: 'bg-emerald-400 text-slate-950',
-    extra: 'bg-teal-300 text-slate-950',
-    cancelled: 'bg-rose-500/10 text-rose-300 ring-1 ring-inset ring-rose-400/40',
+    ok: 'bg-accent text-accent-ink',
+    extra: 'bg-sky-300 text-sky-950',
+    cancelled: 'bg-surface-2 text-faint line-through',
   }
   return (
-    <span
-      className={`inline-flex h-9 min-w-12 items-center justify-center rounded-xl px-2 text-sm font-black tabular-nums ${tones[state]}`}
-    >
+    <span className={`inline-flex h-7 min-w-10 items-center justify-center rounded-md px-1.5 text-[13px] font-bold tabular-nums ${tones[state]}`}>
       <span className="sr-only">Linje </span>
       {line}
     </span>
   )
 }
 
-export function Pill({ tone = 'ok', children, className = '' }) {
+export function Tag({ tone = 'muted', children }) {
   const tones = {
-    ok: 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/30',
-    warn: 'bg-amber-400/10 text-amber-300 ring-amber-400/30',
-    alert: 'bg-rose-500/15 text-rose-300 ring-rose-400/40',
-    info: 'bg-sky-400/10 text-sky-300 ring-sky-400/30',
-    muted: 'bg-white/5 text-slate-300 ring-white/10',
+    danger: 'bg-danger/15 text-danger',
+    warn: 'bg-warn/15 text-warn',
+    info: 'bg-sky-300/15 text-sky-300',
+    accent: 'bg-accent/15 text-accent',
+    muted: 'bg-surface-2 text-muted',
   }
+  return <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] font-semibold ${tones[tone]}`}>{children}</span>
+}
+
+export function SectionHeader({ title, right }) {
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${tones[tone]} ${className}`}
-    >
-      {children}
-    </span>
+    <div className="flex items-baseline justify-between px-4 pt-6 pb-2">
+      <h2 className="text-[13px] font-semibold text-muted uppercase">{title}</h2>
+      {right && <span className="text-[13px] text-faint">{right}</span>}
+    </div>
   )
 }
 
-// Belegg som 5 segmenter – leses raskere enn en prosent
-export function CrowdMeter({ value }) {
-  const filled = Math.max(1, Math.round(value * 5))
-  const tone = value > 0.8 ? 'bg-rose-400' : value > 0.5 ? 'bg-amber-300' : 'bg-emerald-400'
-  const label = value > 0.8 ? 'Full' : value > 0.5 ? 'Travelt' : 'God plass'
+export function Group({ children, className = '' }) {
+  return <div className={`mx-4 overflow-hidden rounded-xl bg-surface ${className}`}>{children}</div>
+}
+
+// Listerad med hårstrek mellom radene, som i iOS-innstillinger
+export function Row({ icon: Icon, iconTone = 'text-accent', title, sub, right, onClick, chevron = !!onClick }) {
+  const Tag = onClick ? 'button' : 'div'
   return (
-    <span className="inline-flex items-center gap-2 text-xs text-slate-400">
-      <span className="flex gap-0.5" aria-hidden>
-        {Array.from({ length: 5 }, (_, i) => (
-          <motion.span
-            key={i}
-            layout
-            className={`h-3 w-1.5 rounded-full ${i < filled ? tone : 'bg-white/10'}`}
-          />
+    <Tag
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
+      className="flex w-full items-center gap-3 px-4 text-left transition-colors active:bg-surface-2 [&+&]:border-t [&+&]:border-line"
+    >
+      {Icon && <Icon className={`size-5 shrink-0 ${iconTone}`} />}
+      <span className="min-w-0 flex-1 py-3">
+        <span className="block text-[15px] text-fg">{title}</span>
+        {sub && <span className="mt-0.5 block text-[13px] text-muted">{sub}</span>}
+      </span>
+      {right}
+      {chevron && <ChevronRight className="size-4 shrink-0 text-faint" />}
+    </Tag>
+  )
+}
+
+export function Switch({ on, onToggle, label }) {
+  return (
+    <button type="button" role="switch" aria-checked={on} aria-label={label} onClick={onToggle} className={`relative h-[30px] w-[50px] shrink-0 rounded-full transition-colors ${on ? 'bg-danger' : 'bg-surface-2'}`}>
+      <motion.span className="absolute top-[2px] left-[2px] size-[26px] rounded-full bg-white shadow" animate={{ x: on ? 20 : 0 }} transition={{ type: 'spring', damping: 26, stiffness: 600 }} />
+    </button>
+  )
+}
+
+export function CrowdMeter({ value }) {
+  const filled = Math.max(1, Math.round(value * 4))
+  const tone = value > 0.8 ? 'bg-danger' : value > 0.5 ? 'bg-warn' : 'bg-accent'
+  const label = value > 0.8 ? 'Full' : value > 0.5 ? 'Travelt' : 'Ledig'
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[12px] text-muted">
+      <span className="flex gap-[2px]" aria-hidden>
+        {Array.from({ length: 4 }, (_, i) => (
+          <span key={i} className={`h-2.5 w-1 rounded-sm ${i < filled ? tone : 'bg-line'}`} />
         ))}
       </span>
       {label}
@@ -65,14 +83,15 @@ export function CrowdMeter({ value }) {
   )
 }
 
-export function SectionTitle({ eyebrow, title, children }) {
+export function Button({ variant = 'primary', className = '', children, ...rest }) {
+  const v = {
+    primary: 'bg-accent text-accent-ink active:bg-accent/85 disabled:bg-surface-2 disabled:text-faint',
+    secondary: 'bg-surface-2 text-fg active:bg-line',
+    plain: 'text-accent active:opacity-60',
+  }
   return (
-    <div className="mb-5">
-      {eyebrow && (
-        <p className="mb-1.5 text-xs font-semibold tracking-[0.18em] text-emerald-300/80 uppercase">{eyebrow}</p>
-      )}
-      <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">{title}</h2>
-      {children && <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-slate-400">{children}</p>}
-    </div>
+    <button type="button" className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl text-[15px] font-semibold transition ${v[variant]} ${className}`} {...rest}>
+      {children}
+    </button>
   )
 }
