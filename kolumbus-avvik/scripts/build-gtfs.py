@@ -4,7 +4,7 @@ Bruk:
     curl -o kol.zip https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_kol-aggregated-gtfs.zip
     python3 scripts/build-gtfs.py kol.zip
 
-Resultatet er kompakt: holdeplasser, plattformer, linjer og kjøremønstre med avgangstider
+Resultatet er kompakt: holdeplasser, plattformer (med egne koordinater for veibeskrivelse), linjer og kjøremønstre med avgangstider
 for én hverdag, én lørdag og én søndag. Appen bruker dette til avgangstavle, linjeliste og chat.
 """
 import csv
@@ -90,7 +90,7 @@ def quay(stop_id):
         station_idx[parent] = len(stations)
         stations.append([p['stop_name'], round(float(p['stop_lat']), 4), round(float(p['stop_lon']), 4)])
     quay_idx[stop_id] = len(quays)
-    quays.append([station_idx[parent], q['platform_code'] or ''])
+    quays.append([station_idx[parent], q['platform_code'] or '', round(float(q['stop_lat']), 5), round(float(q['stop_lon']), 5)])
     return quay_idx[stop_id]
 
 

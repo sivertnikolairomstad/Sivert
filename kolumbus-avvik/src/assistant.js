@@ -90,6 +90,18 @@ function between(from, to, now) {
 
 const WEEKDAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag']
 
+const isDirectionsQuestion = (t) =>
+  /hvor er|hvor ligger|hvor står|veibeskrivelse|vei(en)? til (holdeplassen|stoppet|busstoppet|plattform|bussen)|hvordan (går|finner|kommer) jeg (meg )?(til|fram til|frem til) (holdeplassen|stoppet|busstoppet|bussen)|finne (holdeplassen|stoppet|busstoppet)|nærmeste (holdeplass|busstopp|stopp)/.test(t)
+
+function directionsAnswer(text) {
+  const t = text.toLowerCase()
+  const stop = findStops(text)[0]
+  const line = findRoutes(text)[0]?.id
+  if (stop) return { text: `Her er veien til ${stop}${line ? `, der linje ${line} går fra` : ''}.`, directions: { stop, line } }
+  if (/nærmeste/.test(t)) return { text: 'Her er nærmeste holdeplass.', directions: { nearest: true } }
+  return { text: 'Hvilken holdeplass vil du finne? Skriv for eksempel «Hvor er UiS øst?».' }
+}
+
 const isTimeQuestion = (t) => /\bnår\b|neste|avgang|første|siste|\bkl\.?\s*\d|klokk[ae]|i ?morgen|rutetid|tidene|går (bussen|båten|ferja|ferjen|den)\b/.test(t)
 
 // Tolker «i morgen», ukedager, «kl. 18:30», «første» og «siste»
@@ -297,6 +309,9 @@ export function answer(text, { disrupted, now = new Date() }) {
   const reply = () => ({ from: service.handoff ? 'human' : 'ai', text: service.reply(disrupted, text), actions: service.actions })
   // Service-svar først når meldingen ikke handler om en bestemt linje eller et sted
   if (service && (service.handoff || /^(ja|nei|start|send|bestill|varsle|jeg venter)/i.test(text.trim()) || (!findRoutes(text).length && !findStops(text).length))) return reply()
+
+  // «Hvor er holdeplassen?» svares med veibeskrivelse
+  if (isDirectionsQuestion(text.toLowerCase())) return { from: 'ai', ...directionsAnswer(text) }
 
   // «Når går …»-spørsmål svares med avgangstider
   if (isTimeQuestion(text.toLowerCase())) {

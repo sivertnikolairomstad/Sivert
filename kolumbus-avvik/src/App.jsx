@@ -7,6 +7,8 @@ import { Switch } from './components/ui.jsx'
 import Planner, { initialFeed } from './screens/Planner.jsx'
 import LiveMap from './screens/LiveMap.jsx'
 import TrackSheet from './components/TrackSheet.jsx'
+import DirectionsSheet from './components/DirectionsSheet.jsx'
+import { DEMO_LOCATION, nearestStops } from './directions.js'
 import { cancelledDeparture } from './board.js'
 import Support from './screens/Support.jsx'
 import News from './screens/News.jsx'
@@ -34,6 +36,29 @@ export default function App() {
   const [typing, setTyping] = useState(false)
   const [lines, setLines] = useState(null) // null = lukket, '' = liste, id = valgt linje
   const [track, setTrack] = useState(null) // { dep, from } når du følger en buss
+  const [directions, setDirections] = useState(null) // { stop, line?, toward? } for veibeskrivelse
+  const [location, setLocation] = useState(DEMO_LOCATION)
+  const asked = useRef(false)
+
+  // Posisjonen spørres om først når noen ber om veibeskrivelse
+  const locate = useCallback(() => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      (p) => setLocation({ lat: p.coords.latitude, lon: p.coords.longitude, demo: false }),
+      () => {},
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+    )
+  }, [])
+  const showDirections = useCallback(
+    (req) => {
+      if (!asked.current) {
+        asked.current = true
+        locate()
+      }
+      setDirections(req.nearest ? { stop: nearestStops(location, 1)[0].name } : req)
+    },
+    [locate, location],
+  )
   const timers = useRef([])
   const extraTimer = useRef(null)
   const toastTimer = useRef(null)
@@ -133,19 +158,32 @@ export default function App() {
                 onChat={goChat}
                 onLines={() => setLines('')}
                 onTrack={(dep, from) => setTrack({ dep, from })}
+                onDirections={showDirections}
                 store={{ reports, setReports, feed, setFeed }}
               />
             )}
             {tab === 'kart' && <LiveMap now={now} live={live} onLine={setLines} />}
             {tab === 'news' && <News disrupted={disrupted} onAsk={goChat} onShowCrisis={() => setCrisisOpen(true)} />}
-            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} disrupted={disrupted} />}
+            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} onDirections={showDirections} location={location} disrupted={disrupted} />}
             {tab === 'teori' && <Theory onTab={setTab} />}
           </main>
 
           <TabBar tab={tab} onTab={setTab} badge={disrupted && tab !== 'news'} />
 
           <LinesSheet value={lines} onChange={setLines} now={now} onAsk={goChat} />
-          <TrackSheet dep={track?.dep} from={track?.from} now={now} live={live} onClose={() => setTrack(null)} toast={toast} />
+          <TrackSheet
+            dep={track?.dep}
+            from={track?.from}
+            now={now}
+            live={live}
+            onClose={() => setTrack(null)}
+            toast={toast}
+            onDirections={(req) => {
+              setTrack(null)
+              showDirections(req)
+            }}
+          />
+          <DirectionsSheet request={directions} location={location} onLocate={locate} onClose={() => setDirections(null)} />
           <Toast toast={crisisOpen ? null : toastItem} />
           <CrisisCard
             open={crisisOpen}

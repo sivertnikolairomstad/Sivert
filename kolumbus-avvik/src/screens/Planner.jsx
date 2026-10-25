@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpDown, ChevronRight, CircleOff, Clock, Flag, List, MapPin, MessageCircle, Navigation, TriangleAlert, Users, X } from 'lucide-react'
+import { ArrowUpDown, ChevronRight, CircleOff, Clock, Flag, Footprints, List, MapPin, MessageCircle, Navigation, TriangleAlert, Users, X } from 'lucide-react'
 import { Button, CrowdMeter, Group, LineBadge, SectionHeader, Tag } from '../components/ui.jsx'
 import Sheet from '../components/Sheet.jsx'
 import { REPORT_TYPES, OPERATOR_ANSWERS, crowdSeed } from '../data.js'
@@ -60,7 +60,7 @@ function Highlight({ name, query }) {
   )
 }
 
-export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, onTrack, store }) {
+export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, onTrack, onDirections, store }) {
   const { reports, setReports, feed, setFeed } = store
   const [from, setFrom] = useState('UiS øst')
   const [to, setTo] = useState('')
@@ -179,6 +179,12 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
       ) : (
         <>
           {nearest && <Nearest d={nearest} now={now} from={fromStop} to={toStop} onTrack={() => onTrack(nearest, fromStop)} />}
+          <div className="mx-4 mt-1">
+            <Button variant="plain" className="h-10 justify-start px-1" onClick={() => onDirections({ stop: fromStop, line: nearest?.line, toward: nearest?.toward })}>
+              <Footprints className="size-4" /> Vis vei til {fromStop}
+              {nearest?.platform && nearest.platform !== '–' && nearest.platform !== 'Kai' ? `, plattform ${nearest.platform}` : ''}
+            </Button>
+          </div>
 
           {toStop ? (
             <>

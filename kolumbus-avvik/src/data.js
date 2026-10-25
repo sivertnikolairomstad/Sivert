@@ -28,6 +28,8 @@ export const QUICK_REPLIES = [
   'Når går 7 fra Madlakrossen?',
   'Når går siste buss til Sandnes?',
   'Hvordan kommer jeg til Sola?',
+  'Hvor er UiS øst?',
+  'Hvor er nærmeste busstopp?',
   'Når går båten til Hommersåk?',
   'Hva gjør jeg med billetten min?',
   'Jeg vil snakke med et menneske',
