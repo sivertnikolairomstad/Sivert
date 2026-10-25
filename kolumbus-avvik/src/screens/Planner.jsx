@@ -5,7 +5,7 @@ import { Button, CrowdMeter, Group, LineBadge, SectionHeader, Tag } from '../com
 import Sheet from '../components/Sheet.jsx'
 import { REPORT_TYPES, OPERATOR_ANSWERS, crowdSeed } from '../data.js'
 import { ALL_STOPS, ALIASES } from '../routes.js'
-import { board, DIRECTIONS, DISRUPTED, isDisrupted, stopWeight } from '../board.js'
+import { board, DIRECTIONS, DISRUPTED, isDisrupted, stopLines, stopWeight } from '../board.js'
 import { clock, minutesUntil } from '../lib/time.js'
 
 const REPORT_ICONS = { Users, Clock, CircleOff, TriangleAlert }
@@ -24,13 +24,40 @@ function resolveStop(text) {
   return hits.length === 1 ? hits[0] : null
 }
 
-// Forslag: kallenavn først, så navn som starter med teksten, så de største holdeplassene
+// Forslag: holdeplasser som starter med bokstavene du har skrevet, deretter de der et ord
+// i navnet starter med dem («øst» → «UiS øst»). Store holdeplasser først innen hver gruppe.
 function suggest(text) {
   const t = text.trim().toLowerCase()
   if (!t) return []
-  const alias = Object.entries(ALIASES).filter(([k]) => k.startsWith(t)).map(([, v]) => v)
-  const hits = ALL_STOPS.filter((s) => s.toLowerCase().includes(t)).sort((a, b) => Number(b.toLowerCase().startsWith(t)) - Number(a.toLowerCase().startsWith(t)) || stopWeight(b) - stopWeight(a))
-  return [...new Set([...alias, ...hits])].filter((s) => s.toLowerCase() !== t).slice(0, 5)
+  const byWeight = (a, b) => stopWeight(b) - stopWeight(a) || a.localeCompare(b, 'nb')
+  const starts = ALL_STOPS.filter((s) => s.toLowerCase().startsWith(t)).sort(byWeight)
+  const words = ALL_STOPS.filter((s) => !s.toLowerCase().startsWith(t) && s.toLowerCase().split(/[\s\-/]+/).some((w) => w.startsWith(t))).sort(byWeight)
+  // Kallenavn («uis», «sentrum») først, men bare når de faktisk er skrevet ut
+  const alias = t.length >= 3 ? Object.entries(ALIASES).filter(([k]) => k.startsWith(t)).map(([, v]) => v) : []
+  return [...new Set([...alias, ...starts, ...words])].filter((s) => s.toLowerCase() !== t).slice(0, 8)
+}
+
+// Uthever bokstavene som matcher i forslaget
+function lineSummary(stop) {
+  const lines = stopLines(stop)
+  if (!lines.length) return ''
+  const shown = lines.slice(0, 6).join(', ')
+  return `Linje ${shown}${lines.length > 6 ? ` +${lines.length - 6}` : ''}`
+}
+
+function Highlight({ name, query }) {
+  const t = query.trim().toLowerCase()
+  const lower = name.toLowerCase()
+  const i = lower.startsWith(t) ? 0 : lower.search(new RegExp(`(^|[\\s\\-/])${t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`))
+  if (!t || i < 0) return name
+  const at = lower.startsWith(t) ? 0 : i + (/[\s\-/]/.test(lower[i]) ? 1 : 0)
+  return (
+    <>
+      {name.slice(0, at)}
+      <strong className="font-semibold">{name.slice(at, at + t.length)}</strong>
+      {name.slice(at + t.length)}
+    </>
+  )
 }
 
 export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, store }) {
@@ -114,9 +141,15 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
                       focus === 'from' ? setFrom(s) : setTo(s)
                       setFocus(null)
                     }}
-                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-[15px] active:bg-surface-2"
+                    className="flex w-full items-center gap-3 px-4 py-2 text-left active:bg-surface-2"
                   >
-                    <MapPin className="size-4 text-faint" /> {s}
+                    <MapPin className="size-4 shrink-0 text-faint" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] font-normal">
+                        <Highlight name={s} query={focus === 'from' ? from : to} />
+                      </span>
+                      <span className="block truncate text-[12px] text-faint">{lineSummary(s)}</span>
+                    </span>
                   </button>
                 </li>
               ))}
@@ -141,7 +174,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
 
       {!fromStop ? (
         <p className="mx-4 mt-6 rounded-xl bg-surface px-4 py-5 text-center text-[15px] text-muted">
-          {from.trim() ? `Fant ingen holdeplass som heter «${from.trim()}».` : 'Skriv inn holdeplassen du står ved.'}
+          {!from.trim() ? 'Skriv inn holdeplassen du står ved.' : suggest(from).length ? 'Velg en holdeplass fra listen.' : `Fant ingen holdeplass som starter med «${from.trim()}».`}
         </p>
       ) : (
         <>

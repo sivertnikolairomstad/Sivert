@@ -88,5 +88,16 @@ export function cancelledDeparture(now) {
   return board(DISRUPTED.stop, now, { count: 1, horizon: 600 }).find(isDisrupted)
 }
 
-// Hvor mange kjøremønstre som stopper ved holdeplassen; brukes til å rangere søkeforslag
-export const stopWeight = (name) => AT.get(name)?.length ?? 0
+// Hvor viktig holdeplassen er: antall vanlige linjer (ikke skolebuss), deretter antall kjøremønstre
+export const stopWeight = (name) => {
+  const list = AT.get(name) ?? []
+  const lines = new Set(list.filter(([pi]) => PATTERNS[pi].route.cat !== 'skole').map(([pi]) => PATTERNS[pi].route.id))
+  return lines.size * 1000 + list.length
+}
+
+// Linjene som stopper ved holdeplassen, sortert som linjenumre
+export function stopLines(name) {
+  const routes = [...new Set((AT.get(name) ?? []).map(([pi]) => PATTERNS[pi].route))]
+  // Vanlige linjer før skolebusser
+  return routes.sort((a, b) => (a.cat === 'skole') - (b.cat === 'skole') || a.id.localeCompare(b.id, 'nb', { numeric: true })).map((r) => r.id)
+}
