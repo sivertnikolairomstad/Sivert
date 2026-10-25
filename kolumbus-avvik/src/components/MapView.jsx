@@ -17,7 +17,7 @@ function busIcon(v, focused) {
 }
 
 // Leaflet-kart inne i appen. Alt er valgfritt: busser, en markert rute, holdeplasser og «deg».
-export default function MapView({ vehicles = [], onVehicle, focusId, follow, path, pathColor = '#0a6b7c', stops = [], you, center = [58.93, 5.72], zoom = 12, className = '' }) {
+export default function MapView({ vehicles = [], onVehicle, focusId, follow, path, pathColor = '#0a6b7c', walk, stops = [], you, center = [58.93, 5.72], zoom = 12, fit, className = '' }) {
   const el = useRef(null)
   const map = useRef(null)
   const layers = useRef({})
@@ -37,7 +37,7 @@ export default function MapView({ vehicles = [], onVehicle, focusId, follow, pat
         { color: colorOf(r), weight: 1.5, opacity: 0.25, interactive: false },
       ).addTo(net)
     }
-    layers.current = { buses: L.layerGroup().addTo(m), path: L.layerGroup().addTo(m), stops: L.layerGroup().addTo(m), you: L.layerGroup().addTo(m) }
+    layers.current = { buses: L.layerGroup().addTo(m), path: L.layerGroup().addTo(m), walk: L.layerGroup().addTo(m), stops: L.layerGroup().addTo(m), you: L.layerGroup().addTo(m) }
     const setZoomClass = () => el.current?.classList.toggle('mr-far', m.getZoom() < 13)
     m.on('zoomend', setZoomClass)
     setZoomClass()
@@ -92,6 +92,20 @@ export default function MapView({ vehicles = [], onVehicle, focusId, follow, pat
     }
   }, [path, pathColor])
 
+  // Gangrute: stiplet blå linje fra deg til holdeplassen
+  useEffect(() => {
+    const g = layers.current.walk
+    if (!g) return
+    g.clearLayers()
+    if (walk?.length) L.polyline(walk, { color: '#1a73e8', weight: 5, dashArray: '2 9', lineCap: 'round' }).addTo(g)
+  }, [walk])
+
+  // Vis hele området (f.eks. deg og holdeplassen) når `fit` endrer seg
+  const fitKey = fit ? fit.flat().map((x) => x.toFixed(4)).join(',') : ''
+  useEffect(() => {
+    if (fit?.length && map.current) map.current.fitBounds(fit, { padding: [36, 36], maxZoom: 17 })
+  }, [fitKey])
+
   useEffect(() => {
     const g = layers.current.stops
     if (!g) return
@@ -113,6 +127,7 @@ export default function MapView({ vehicles = [], onVehicle, focusId, follow, pat
   // Flytt kartet når midtpunktet endrer seg (f.eks. ny holdeplass)
   const centerKey = center.join(',')
   useEffect(() => {
+    if (fit?.length) return
     map.current?.setView(center, map.current.getZoom() < zoom ? zoom : map.current.getZoom(), { animate: true })
   }, [centerKey])
 

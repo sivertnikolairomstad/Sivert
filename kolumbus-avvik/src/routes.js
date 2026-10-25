@@ -15,7 +15,7 @@ export const CATEGORIES = {
 }
 
 export const STATIONS = DATA.stations.map(([name, lat, lon]) => ({ name, lat, lon }))
-const QUAYS = DATA.quays.map(([s, platform]) => ({ station: STATIONS[s], platform }))
+export const QUAYS = DATA.quays.map(([s, platform, lat, lon]) => ({ station: STATIONS[s], platform, lat, lon }))
 export const PATTERNS = DATA.patterns.map(([r, dir, headsign, q, o, t]) => ({ r, dir, headsign, quays: q.map((i) => QUAYS[i]), offs: o, times: t }))
 
 // 0 = hverdag, 1 = lørdag, 2 = søndag

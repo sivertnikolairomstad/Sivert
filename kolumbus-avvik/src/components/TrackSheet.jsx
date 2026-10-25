@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Bell, BellRing } from 'lucide-react'
+import { Bell, BellRing, Footprints } from 'lucide-react'
 import Sheet from './Sheet.jsx'
 import MapView from './MapView.jsx'
 import { LineBadge } from './ui.jsx'
@@ -14,7 +14,7 @@ const fmt = (m) => {
 }
 
 // Følg bussen du venter på: hvor den er, hvor mange stopp den har igjen og når den er fremme
-export default function TrackSheet({ dep, from, now, live, onClose, toast }) {
+export default function TrackSheet({ dep, from, now, live, onClose, toast, onDirections }) {
   const lastRef = useRef(null)
   if (dep) lastRef.current = { dep, from }
   const shown = dep ? { dep, from } : lastRef.current
@@ -80,6 +80,14 @@ export default function TrackSheet({ dep, from, now, live, onClose, toast }) {
         center={[t.stops[t.target]?.lat ?? t.position.lat, t.stops[t.target]?.lon ?? t.position.lon]}
         zoom={13}
       />
+
+      <button
+        type="button"
+        onClick={() => onDirections({ stop: shown.from, line: shown.dep.line.replace(/E$/, ''), toward: shown.dep.toward })}
+        className="mx-4 mt-2 flex items-center gap-2 text-[14px] font-medium text-accent"
+      >
+        <Footprints className="size-4" /> Vis vei til holdeplassen
+      </button>
 
       <div className="flex items-center justify-between px-4 pt-5 pb-2">
         <h3 className="text-[17px] font-semibold">På vei til deg</h3>
