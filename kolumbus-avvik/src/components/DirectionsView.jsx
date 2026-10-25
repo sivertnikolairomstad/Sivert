@@ -68,7 +68,7 @@ export default function DirectionsView({ req, location, onLocate, compact = fals
 
       <div className={`${pad} mt-3 mb-1 flex items-baseline justify-between`}>
         <p className="text-[14px] font-semibold">Slik går du</p>
-        <span className="text-[12px] text-faint">{route ? 'Gangrute' : loading ? 'Henter gangrute …' : 'Luftlinje (uten nett)'}</span>
+        <span className="text-[12px] text-faint">{route ? 'Gangrute fra OpenStreetMap' : loading ? 'Henter gangrute …' : 'Fant ikke gangrute, viser retning'}</span>
       </div>
       <ol className={`${compact ? 'mx-3.5' : 'mx-4'} overflow-hidden rounded-xl bg-surface-2`}>
         {steps.map((s, i) => (
