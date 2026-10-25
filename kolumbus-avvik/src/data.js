@@ -1,27 +1,5 @@
-// Scenario og tekster for prototypen. Avganger regnes relativt til «nå».
+// Scenario og tekster for prototypen. Avgangstavlen lages i board.js.
 // Linjenettet ligger i routes.js, chatlogikken i assistant.js.
-
-export const ROUTE = { from: 'UiS Tjodhallen', to: 'Stavanger sentrum' }
-
-export const departures = [
-  { id: 'd1', line: '6', dest: 'Stavanger sentrum', inMin: 3, travel: 17, platform: 'A', crowd: 0.55 },
-  { id: 'd2', line: '7', dest: 'Stavanger sentrum', inMin: 9, travel: 18, platform: 'B', crowd: 0.35 },
-  { id: 'd3', line: '6', dest: 'Stavanger sentrum', inMin: 18, travel: 17, platform: 'A', crowd: 0.2 },
-  { id: 'd4', line: '7', dest: 'Stavanger sentrum', inMin: 24, travel: 18, platform: 'B', crowd: 0.15 },
-]
-
-// Avgangen som innstilles når avvikssimulatoren skrus på
-export const CANCELLED_ID = 'd1'
-
-export const extraBus = {
-  id: 'extra',
-  line: '6E',
-  dest: 'Stavanger sentrum (ekstrabuss)',
-  travel: 16,
-  platform: 'A',
-  crowd: 0.05,
-  extra: true,
-}
 
 export const REPORT_TYPES = [
   { id: 'full', label: 'Full buss', icon: 'Users' },

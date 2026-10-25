@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { TriangleAlert } from 'lucide-react'
 import { Button } from './ui.jsx'
-import { clock, depTime } from '../lib/time.js'
-import { departures, CANCELLED_ID } from '../data.js'
+import { clock } from '../lib/time.js'
+import { cancelledDeparture } from '../board.js'
 
 const DELAY_REASONS = ['Forelesning', 'Jobb', 'Henting', 'Annet']
 
@@ -21,7 +21,7 @@ export default function CrisisCard({ open, now, onClose, onChat, onPlan }) {
 }
 
 function Card({ now, onClose, onChat, onPlan }) {
-  const dep = departures.find((d) => d.id === CANCELLED_ID)
+  const dep = cancelledDeparture(now)
   const [step, setStep] = useState('ask') // ask → reason → ack
   const [reason, setReason] = useState(null)
   const ref = useRef(null)
@@ -60,7 +60,7 @@ function Card({ now, onClose, onChat, onPlan }) {
         </button>
       </div>
       <h2 id="crisis-title" className="mt-2 text-[17px] leading-snug font-semibold">
-        Linje {dep.line} kl. {clock(depTime(dep.inMin, now))} fra UiS Tjodhallen er innstilt
+        Linje {dep.line} kl. {clock(dep.at)} fra UiS Tjodhallen er innstilt
       </h2>
       <p className="mt-1 text-[14px] leading-relaxed text-muted">
         Teknisk feil. Ekstrabuss er satt inn. 38 reisende er berørt.
