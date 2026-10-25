@@ -1,320 +1,215 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import {
-  AlertTriangle,
-  ArrowRight,
-  Bell,
-  CheckCircle2,
-  ChevronRight,
-  Map,
-  MessageCircle,
-  Route,
-  Search,
-  Ticket,
-  User,
-  Wifi,
-  BatteryFull,
-  Signal,
-} from 'lucide-react'
-import { disruption, originalTrip, alternativeTrip } from './data.js'
-import { LineBadge, StatusPill } from './components/ui.jsx'
-import RouteSheet from './components/RouteSheet.jsx'
-import ChatSheet from './components/ChatSheet.jsx'
+import TopBar from './components/TopBar.jsx'
+import CrisisCard from './components/CrisisCard.jsx'
+import Toasts from './components/Toasts.jsx'
+import Planner, { initialFeed } from './tabs/Planner.jsx'
+import Support from './tabs/Support.jsx'
+import Social from './tabs/Social.jsx'
+import Theory from './tabs/Theory.jsx'
+import { answer } from './data.js'
+import { useNow } from './lib/time.js'
+import { TABS } from './lib/tabs.js'
+
+
+let msgId = 0
+const msg = (m) => ({ id: ++msgId, at: Date.now(), ...m })
 
 export default function App() {
-  const [sheet, setSheet] = useState(null) // null | 'route' | 'chat'
-  const [rebooked, setRebooked] = useState(false)
-  const closeSheet = useCallback(() => setSheet(null), [])
+  const now = useNow()
+  const [tab, setTab] = useState('plan')
+  const [disrupted, setDisrupted] = useState(false)
+  const [crisisOpen, setCrisisOpen] = useState(false)
+  const [extraBus, setExtraBus] = useState(null) // avgangstid for ekstrabussen når den er satt inn
+  const [toasts, setToasts] = useState([])
+  const [reports, setReports] = useState({}) // depId → { type, label, count, mine }
+  const [feed, setFeed] = useState(initialFeed)
+  const [messages, setMessages] = useState(() => [
+    msg({ from: 'ai', text: 'Hei! Æ er Move-assistenten. Spør meg om hva som helst om reisen din – æ svarer med en gang, og setter deg over til en av oss på trafikksentralen hvis du vil det 💚' }),
+  ])
+  const [typing, setTyping] = useState(false)
+  const timers = useRef([])
+  const extraTimer = useRef(null)
+  const later = (fn, ms) => timers.current.push(setTimeout(fn, ms))
+  useEffect(() => () => [...timers.current, extraTimer.current].forEach(clearTimeout), [])
+
+  const toast = useCallback((t) => {
+    const id = ++msgId
+    setToasts((ts) => [...ts, { id, ...t }])
+    setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), t.ms ?? 4200)
+  }, [])
+
+  const toggleDisruption = useCallback(() => {
+    const next = !disrupted
+    setDisrupted(next)
+    setCrisisOpen(next)
+    setExtraBus(null)
+    clearTimeout(extraTimer.current)
+    if (next) {
+      // Operatøren handler synlig etter noen sekunder – ekstrabussen dukker opp for alle
+      extraTimer.current = setTimeout(() => {
+        setExtraBus(new Date(Math.ceil(Date.now() / 60000) * 60000 + 6 * 60000))
+        toast({ tone: 'ok', title: 'Ekstrabuss 6E satt inn', body: 'Trafikksentralen svarte på avviket. Går fra plattform A.' })
+      }, 4500)
+      setMessages((m) => [
+        ...m,
+        msg({ from: 'system', text: 'Avvik: Linje 6 fra UiS Tjodhallen er innstilt (teknisk feil)' }),
+        msg({ from: 'ai', text: 'Hei igjen! Æ ser at 6-eren du pleier å ta fra UiS er innstilt. Beklager så mye 😔 Ekstrabuss er på vei. Fortell meg gjerne hvordan det påvirker deg, så finner vi en løsning sammen.' }),
+      ])
+    } else {
+      setMessages((m) => [...m, msg({ from: 'system', text: 'Avviket er løst – trafikken går normalt igjen' })])
+    }
+  }, [disrupted, toast])
+
+  const sendChat = useCallback(
+    (text) => {
+      if (!text.trim()) return
+      setMessages((m) => [...m, msg({ from: 'me', text: text.trim() })])
+      setTyping(true)
+      // «Med en gang»: kort skriveindikator så svaret oppleves som et svar, ikke en blink
+      later(() => {
+        setTyping(false)
+        setMessages((m) => [...m, msg(answer(text, disrupted))])
+      }, 650)
+    },
+    [disrupted],
+  )
+
+  const rateChat = (id, rating) => {
+    setMessages((m) => m.map((x) => (x.id === id ? { ...x, rating } : x)))
+    toast({
+      tone: rating === 'up' ? 'ok' : 'info',
+      title: rating === 'up' ? 'Takk for tilbakemeldingen!' : 'Takk – vi lærer av dette',
+      body: rating === 'up' ? 'Den hjelper oss å svare enda bedre.' : 'En fra trafikksentralen ser på samtalen.',
+    })
+  }
+
+  const openChat = (seed) => {
+    setCrisisOpen(false)
+    setTab('chat')
+    if (seed) sendChat(seed)
+  }
+
+  // Snarveier for presentasjon: A = avvik, 1–4 = faner
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.target.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return
+      if (e.key.toLowerCase() === 'a') toggleDisruption()
+      const i = Number(e.key) - 1
+      if (TABS[i]) setTab(TABS[i].id)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [toggleDisruption])
+
+  // Klammer: scrollTo returnerer en Promise i nyere Chromium, og React ville tolket den som cleanup
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+  }, [tab])
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="flex min-h-full items-center justify-center sm:p-8">
-        {/* Telefonramme på desktop, fullskjerm på mobil */}
-        <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-k-bg sm:h-[844px] sm:w-[390px] sm:rounded-[3rem] sm:shadow-[0_0_0_12px_#111,0_30px_80px_-10px_rgba(0,0,0,.45)]">
-          <TopBar />
+      <Backdrop alert={disrupted} />
+      <div className="relative min-h-dvh pb-28 sm:pb-12">
+        <TopBar now={now} tab={tab} onTab={setTab} disrupted={disrupted} onToggle={toggleDisruption} />
 
-          <main className="flex-1 overflow-y-auto pb-6">
-            <DisruptionAlert
-              rebooked={rebooked}
-              onRoute={() => setSheet('route')}
-              onChat={() => setSheet('chat')}
+        <AnimatePresence>
+          {crisisOpen && (
+            <CrisisCard
+              now={now}
+              onClose={() => setCrisisOpen(false)}
+              onChat={() => openChat()}
+              onPlan={() => {
+                setCrisisOpen(false)
+                setTab('plan')
+              }}
             />
-            <TripSection rebooked={rebooked} onOpenAlt={() => setSheet('route')} />
-          </main>
+          )}
+        </AnimatePresence>
 
-          <BottomNav />
+        <main className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {tab === 'plan' && (
+                <Planner
+                  now={now}
+                  disrupted={disrupted}
+                  extraBus={extraBus}
+                  toast={toast}
+                  onChat={openChat}
+                  onShowCrisis={() => setCrisisOpen(true)}
+                  store={{ reports, setReports, feed, setFeed }}
+                />
+              )}
+              {tab === 'chat' && (
+                <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} disrupted={disrupted} />
+              )}
+              {tab === 'some' && <Social />}
+              {tab === 'teori' && <Theory onTab={setTab} />}
+            </motion.div>
+          </AnimatePresence>
+        </main>
 
-          <RouteSheet
-            open={sheet === 'route'}
-            onClose={closeSheet}
-            trip={alternativeTrip}
-            selected={rebooked}
-            onSelect={() => {
-              setRebooked(true)
-              setTimeout(closeSheet, 700)
-            }}
-          />
-          <ChatSheet open={sheet === 'chat'} onClose={closeSheet} disruption={disruption} />
-        </div>
+        <MobileNav tab={tab} onTab={setTab} unread={disrupted && tab !== 'chat'} />
+        {/* Under kriseoverlegget mens det er åpent, så varsler ikke dekker handlingsknappene */}
+        <Toasts toasts={toasts} behind={crisisOpen} />
       </div>
     </MotionConfig>
   )
 }
 
-function TopBar() {
+function Backdrop({ alert }) {
   return (
-    <header className="bg-k-ink text-white">
-      <div className="flex h-11 items-center justify-between px-7 pt-1 text-[13px] font-semibold tabular-nums">
-        <span>07:44</span>
-        <span className="flex items-center gap-1.5" aria-hidden>
-          <Signal className="size-4" />
-          <Wifi className="size-4" />
-          <BatteryFull className="size-5" />
-        </span>
-      </div>
-      <div className="px-5 pt-2 pb-5">
-        <div className="flex items-center justify-between">
-          <Logo />
-          <button
-            type="button"
-            className="relative grid size-10 place-items-center rounded-full bg-white/10 transition hover:bg-white/15"
-            aria-label="Varsler, 1 ny"
-          >
-            <Bell className="size-5" />
-            <span className="absolute top-2 right-2.5 size-2.5 rounded-full bg-alert ring-2 ring-k-ink" />
-          </button>
-        </div>
-        <label htmlFor="search" className="sr-only">
-          Hvor vil du reise?
-        </label>
-        <div className="relative mt-4">
-          <Search className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-k-muted" />
-          <input
-            id="search"
-            type="search"
-            placeholder="Hvor vil du reise?"
-            className="h-12 w-full rounded-2xl bg-white pr-4 pl-12 text-[15px] text-k-ink placeholder:text-k-muted focus:ring-3 focus:ring-k-green focus:outline-none"
-          />
-        </div>
-      </div>
-    </header>
-  )
-}
-
-function Logo() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="grid size-9 place-items-center rounded-xl bg-k-green" aria-hidden>
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round">
-          <path d="M7 4v16M17 4l-8 8 8 8" />
-        </svg>
-      </span>
-      <span className="text-xl font-extrabold tracking-tight">
-        kolumbus<span className="text-k-green">.</span>
-      </span>
+    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+      <div className="absolute -top-40 -left-32 size-[34rem] rounded-full bg-emerald-500/20 blur-[120px]" />
+      <div className="absolute top-1/3 -right-40 size-[30rem] rounded-full bg-teal-400/10 blur-[120px]" />
+      <motion.div
+        className="absolute -top-24 right-1/4 size-[26rem] rounded-full bg-rose-500/25 blur-[120px]"
+        animate={{ opacity: alert ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+      />
+      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
     </div>
   )
 }
 
-function DisruptionAlert({ rebooked, onRoute, onChat }) {
+function MobileNav({ tab, onTab, unread }) {
   return (
-    <section aria-labelledby="alert-title" className="px-4 pt-4">
-      <motion.div
-        role="alert"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: 'spring', damping: 24, stiffness: 260, delay: 0.15 }}
-        className="overflow-hidden rounded-3xl bg-white shadow-[0_8px_30px_-12px_rgba(198,40,40,.35)] ring-1 ring-alert/25"
-      >
-        <div className="flex gap-3 bg-alert px-4 py-4 text-white">
-          <motion.span
-            className="grid size-10 shrink-0 place-items-center rounded-full bg-white/15"
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 1.6, repeat: 2, delay: 0.6 }}
-            aria-hidden
-          >
-            <AlertTriangle className="size-5" strokeWidth={2.5} />
-          </motion.span>
-          <div className="min-w-0">
-            <p className="text-xs font-semibold tracking-wider text-white/85 uppercase">
-              Driftsavvik · din reise
-            </p>
-            <h1 id="alert-title" className="mt-0.5 text-[19px] leading-tight font-bold">
-              Buss {disruption.line} til {disruption.destination} er innstilt
-            </h1>
-            <p className="mt-1 text-sm text-white/90">
-              Årsak: {disruption.reason}. Gjelder avgang {disruption.affectedDeparture} fra {disruption.from}.
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-2.5 p-4">
-          <AnimatePresence mode="wait" initial={false}>
-            {rebooked ? (
-              <motion.button
-                key="done"
-                type="button"
-                onClick={onRoute}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex min-h-14 w-full items-center gap-2.5 rounded-2xl bg-k-green-50 px-4 py-3 text-left ring-1 ring-k-green/40 ring-inset"
-              >
-                <CheckCircle2 className="size-6 shrink-0 text-k-green-700" />
-                <span className="flex-1">
-                  <span className="block font-semibold text-k-green-700">Du reiser nå med Buss 3</span>
-                  <span className="block text-sm text-k-ink-2">
-                    Går {alternativeTrip.depart} fra {alternativeTrip.platform}
-                  </span>
-                </span>
-                <ChevronRight className="size-5 text-k-green-700" />
-              </motion.button>
-            ) : (
-              <motion.button
-                key="cta"
-                type="button"
-                onClick={onRoute}
-                exit={{ opacity: 0, scale: 0.97 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex min-h-14 w-full items-center gap-2.5 rounded-2xl bg-k-green-600 px-4 py-3 text-left text-white shadow-sm transition-colors hover:bg-k-green-700"
-              >
-                <Route className="size-6 shrink-0" />
-                <span className="flex-1">
-                  <span className="block text-[15px] font-semibold">Se alternativ rute (Buss 3)</span>
-                  <span className="block text-sm text-white/90">
-                    {alternativeTrip.depart} → {alternativeTrip.arrive} · {alternativeTrip.delayVsOriginal}
-                  </span>
-                </span>
-                <ArrowRight className="size-5" />
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          <motion.button
-            type="button"
-            onClick={onChat}
-            whileTap={{ scale: 0.98 }}
-            className="flex min-h-14 w-full items-center gap-2.5 rounded-2xl bg-white px-4 py-3 text-left ring-2 ring-k-ink/85 ring-inset transition-colors hover:bg-k-bg"
-          >
-            <MessageCircle className="size-6 shrink-0 text-k-ink" />
-            <span className="flex-1">
-              <span className="block text-[15px] font-semibold">Åpne chat med kundeservice</span>
-              <span className="block text-sm text-k-muted">Svar innen ca. 2 min</span>
-            </span>
-            <ChevronRight className="size-5 text-k-muted" />
-          </motion.button>
-
-          <p className="pt-1 text-center text-xs text-k-muted">
-            Oppdatert {disruption.updatedAt} · Du får varsel fordi reisen er lagret
-          </p>
-        </div>
-      </motion.div>
-    </section>
-  )
-}
-
-function TripSection({ rebooked, onOpenAlt }) {
-  const t = originalTrip
-  return (
-    <section aria-labelledby="trip-title" className="px-4 pt-7">
-      <div className="mb-3 flex items-baseline justify-between px-1">
-        <h2 id="trip-title" className="text-lg font-bold tracking-tight">
-          Din reise i dag
-        </h2>
-        <span className="text-sm text-k-muted">Søn. 25. okt.</span>
-      </div>
-
-      <article className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-k-line">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <LineBadge line={t.line} tone="muted" />
-            <span className="text-sm font-medium text-k-muted">Planlagt reise</span>
-          </div>
-          <StatusPill>
-            <span className="size-1.5 rounded-full bg-white" aria-hidden />
-            Innstilt
-          </StatusPill>
-        </div>
-
-        <div className="mt-4 grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-1">
-          <time className="text-xl font-bold tabular-nums text-k-muted line-through decoration-alert decoration-2">
-            {t.depart}
-          </time>
-          <span className="relative mx-1 h-0.5 rounded-full bg-[repeating-linear-gradient(90deg,var(--color-alert)_0_6px,transparent_6px_10px)]" aria-hidden />
-          <time className="text-xl font-bold tabular-nums text-k-muted line-through decoration-alert decoration-2">
-            {t.arrive}
-          </time>
-          <p className="text-sm text-k-ink-2">{t.from}</p>
-          <span className="text-center text-xs text-k-muted">{t.duration}</span>
-          <p className="text-right text-sm text-k-ink-2">{t.to}</p>
-        </div>
-
-        <p className="mt-4 flex items-center gap-2 rounded-xl bg-alert-50 px-3 py-2.5 text-sm text-alert-700">
-          <AlertTriangle className="size-4 shrink-0" aria-hidden />
-          Avgangen kjøres ikke. Billetten din gjelder på alternativ rute.
-        </p>
-      </article>
-
-      <AnimatePresence>
-        {rebooked && (
-          <motion.article
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
-            className="overflow-hidden"
-          >
-            <button
-              type="button"
-              onClick={onOpenAlt}
-              className="w-full rounded-3xl bg-white p-4 text-left shadow-sm ring-2 ring-k-green"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <LineBadge line={alternativeTrip.line} />
-                  <span className="text-sm font-medium text-k-ink-2">Ny reise</span>
-                </div>
-                <StatusPill tone="ok">I rute</StatusPill>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xl font-bold tabular-nums">{alternativeTrip.depart}</span>
-                <span className="mx-3 h-0.5 flex-1 rounded-full bg-k-green" aria-hidden />
-                <span className="text-xl font-bold tabular-nums">{alternativeTrip.arrive}</span>
-              </div>
-              <p className="mt-1 text-sm text-k-muted">
-                {alternativeTrip.platform} · {alternativeTrip.walk.split(' til')[0]}
-              </p>
-            </button>
-          </motion.article>
-        )}
-      </AnimatePresence>
-    </section>
-  )
-}
-
-function BottomNav() {
-  const items = [
-    { icon: Route, label: 'Reise', active: true },
-    { icon: Ticket, label: 'Billetter' },
-    { icon: Map, label: 'Kart' },
-    { icon: User, label: 'Profil' },
-  ]
-  return (
-    <nav aria-label="Hovedmeny" className="border-t border-k-line bg-white px-2 pt-2 pb-6 sm:pb-7">
+    <nav
+      aria-label="Faner"
+      className="fixed inset-x-3 bottom-3 z-30 rounded-3xl border border-white/10 bg-slate-900/80 p-1.5 shadow-2xl backdrop-blur-xl sm:hidden"
+    >
       <ul className="grid grid-cols-4">
-        {items.map(({ icon: Icon, label, active }) => (
-          <li key={label}>
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-semibold ${
-                active ? 'text-k-green-700' : 'text-k-muted'
-              }`}
-            >
-              <Icon className="size-6" strokeWidth={active ? 2.5 : 2} />
-              {label}
-            </a>
-          </li>
-        ))}
+        {TABS.map(({ id, label, icon: Icon }) => {
+          const active = tab === id
+          return (
+            <li key={id}>
+              <button
+                type="button"
+                onClick={() => onTab(id)}
+                aria-current={active ? 'page' : undefined}
+                className={`relative flex w-full flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-semibold transition-colors ${
+                  active ? 'text-slate-950' : 'text-slate-400'
+                }`}
+              >
+                {active && (
+                  <motion.span layoutId="mnav" className="absolute inset-0 rounded-2xl bg-emerald-400" transition={{ type: 'spring', damping: 30, stiffness: 400 }} />
+                )}
+                <Icon className="relative size-5" />
+                <span className="relative">{label}</span>
+                {id === 'chat' && unread && (
+                  <span className="absolute top-1.5 right-[calc(50%-16px)] size-2.5 rounded-full bg-rose-400 ring-2 ring-slate-900" />
+                )}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )
