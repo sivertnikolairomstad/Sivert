@@ -110,7 +110,13 @@ export default function App() {
       timers.current.push(
         setTimeout(() => {
           setTyping(false)
-          setMessages((m) => [...m, msg(answer(text, { disrupted, now: new Date() }))])
+          const reply = answer(text, { disrupted, now: new Date() })
+          // Veibeskrivelse i chatten: spør om posisjonen første gang
+          if (reply.directions && !asked.current) {
+            asked.current = true
+            locate()
+          }
+          setMessages((m) => [...m, msg(reply)])
         }, 650),
       )
     },
@@ -164,7 +170,7 @@ export default function App() {
             )}
             {tab === 'kart' && <LiveMap now={now} live={live} onLine={setLines} />}
             {tab === 'news' && <News disrupted={disrupted} onAsk={goChat} onShowCrisis={() => setCrisisOpen(true)} />}
-            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} onDirections={showDirections} location={location} disrupted={disrupted} />}
+            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} onLocate={locate} location={location} disrupted={disrupted} />}
             {tab === 'teori' && <Theory onTab={setTab} />}
           </main>
 
