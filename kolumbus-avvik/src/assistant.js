@@ -6,6 +6,49 @@ import { clock } from './lib/time.js'
 
 const HOME = 'UiS øst'
 
+// ---------- Skrivefeil ----------
+
+function lev(a, b) {
+  if (Math.abs(a.length - b.length) > 3) return 9
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1))
+    prev = cur
+  }
+  return prev[b.length]
+}
+
+// Ord folk ofte staver feil, med hvor mange feil vi godtar
+const KEYWORDS = [
+  ['veibeskrivelse', 3],
+  ['veibeskrivelsen', 3],
+  ['busstopp', 2],
+  ['busstoppet', 2],
+  ['holdeplass', 2],
+  ['holdeplassen', 2],
+  ['bussholdeplass', 3],
+  ['nærmeste', 2],
+  ['stoppested', 2],
+  ['avganger', 2],
+  ['forsinket', 2],
+  ['billetten', 2],
+]
+
+// Retter vanlige skrivefeil ord for ord før spørsmålet tolkes («veibesrivelse» → «veibeskrivelse»)
+export function fixTypos(text) {
+  return text.replace(/[a-zæøåA-ZÆØÅ]{5,}/g, (w) => {
+    const lw = w.toLowerCase()
+    let best = null
+    for (const [k, max] of KEYWORDS) {
+      const d = lev(lw, k)
+      if (d <= max && d > 0 && (!best || d < best.d)) best = { k, d }
+      if (d === 0) return w
+    }
+    return best ? best.k : w
+  })
+}
+
 // Bare navn på minst fire tegn, så vanlige ord ikke tolkes som holdeplasser
 const stopsByLength = ALL_STOPS.filter((s) => s.length >= 4).sort((a, b) => b.length - a.length)
 
@@ -29,11 +72,22 @@ function findStops(text) {
       const cands = ALL_STOPS.filter((s) => s.toLowerCase().split(/[\s\-/]+/)[0] === m[0]).sort((a, b) => stopWeight(b) - stopWeight(a))
       if (cands.length) hits.push({ stop: cands[0], i: m.index, len: m[0].length })
     }
+  // Fortsatt ingenting: tillat én–to skrivefeil i holdeplassnavnet («madlakrossn» → «Madlakrossen»)
+  if (!hits.length)
+    for (const m of t.matchAll(/[a-zæøå]{5,}/g)) {
+      if (STOPWORDS.has(m[0])) continue
+      const max = m[0].length >= 8 ? 2 : 1
+      const cands = ALL_STOPS.filter((s) => {
+        const first = s.toLowerCase().split(/[\s\-/]+/)[0]
+        return first.length >= 5 && (lev(m[0], first) <= max || lev(m[0], s.toLowerCase()) <= max)
+      }).sort((a, b) => stopWeight(b) - stopWeight(a))
+      if (cands.length) hits.push({ stop: cands[0], i: m.index, len: m[0].length })
+    }
   return hits.sort((a, b) => a.i - b.i).map((h) => h.stop)
 }
 
 // Vanlige ord i spørsmål som også er starten på et holdeplassnavn
-const STOPWORDS = new Set(['neste', 'siste', 'første', 'bussen', 'buss', 'båten', 'ferja', 'ferjen', 'linje', 'linja', 'hvilke', 'hvilken', 'når', 'går', 'morgen', 'klokka', 'klokken', 'avganger', 'avgang', 'kommer', 'skal', 'reise', 'nattbussen', 'nattbuss', 'ofte'])
+const STOPWORDS = new Set(['veibeskrivelse', 'veibeskrivelsen', 'busstopp', 'busstoppet', 'holdeplass', 'holdeplassen', 'bussholdeplass', 'nærmeste', 'stoppested', 'finner', 'bussen', 'vise', 'veien', 'neste', 'siste', 'første', 'bussen', 'buss', 'båten', 'ferja', 'ferjen', 'linje', 'linja', 'hvilke', 'hvilken', 'når', 'går', 'morgen', 'klokka', 'klokken', 'avganger', 'avgang', 'kommer', 'skal', 'reise', 'nattbussen', 'nattbuss', 'ofte'])
 
 function findRoutes(text) {
   const found = []
@@ -91,7 +145,7 @@ function between(from, to, now) {
 const WEEKDAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag']
 
 const isDirectionsQuestion = (t) =>
-  /hvor er|hvor ligger|hvor står|veibeskriv|vei(en)? til|hvordan (går|finner|kommer) jeg (meg )?(til|fram til|frem til) (holdeplassen|stoppet|busstoppet|bussen)|hvordan går jeg|gå til|finne (holdeplassen|stoppet|busstoppet)|nærmeste (holdeplass|busstopp|stopp)/.test(t)
+  /hvor er|hvor ligger|hvor står|hvor finner jeg|veibeskriv|vei(en)? til|vis (meg )?vei|hvordan (går|finner|kommer) jeg (meg )?(til|fram til|frem til) (holdeplassen|stoppet|busstoppet|bussen)|hvordan går jeg|gå til|finne (holdeplassen|stoppet|busstoppet)|nærmeste|busstopp|holdeplass(en)? (ved|på|i)\b/.test(t)
 
 function directionsAnswer(text) {
   const t = text.toLowerCase()
@@ -304,7 +358,8 @@ const SERVICE = [
   { test: /^(hei|hallo)\b/i, reply: (d) => (d ? 'Hei! Neste linje 6 fra UiS øst mot Stavanger er innstilt. Hva lurer du på?' : 'Hei! Spør om en linje, en holdeplass eller reisen din.') },
 ]
 
-export function answer(text, { disrupted, now = new Date() }) {
+export function answer(raw, { disrupted, now = new Date() }) {
+  const text = fixTypos(raw)
   const service = SERVICE.find((r) => r.test.test(text.trim()))
   const reply = () => ({ from: service.handoff ? 'human' : 'ai', text: service.reply(disrupted, text), actions: service.actions })
   // Service-svar først når meldingen ikke handler om en bestemt linje eller et sted
@@ -323,9 +378,15 @@ export function answer(text, { disrupted, now = new Date() }) {
   if (route) return { from: 'ai', ...route }
   if (service) return reply()
 
+  // Nevner meldingen en holdeplass, vis avgangene derfra i stedet for å gi opp
+  const stop = findStops(text)[0]
+  if (stop) {
+    const deps = departures(`når går bussen fra ${stop}`, now, disrupted)
+    if (deps) return { from: 'ai', ...deps, actions: [`Hvor er ${stop}?`] }
+  }
   return {
     from: 'ai',
-    text: 'Det er jeg ikke sikker på. Prøv å spørre om en linje («Hvor går X74?») eller et sted («Hvordan kommer jeg til Sola?»). Du kan også få snakke med trafikksentralen.',
-    actions: ['Snakk med et menneske'],
+    text: 'Det forsto jeg ikke helt. Her er noe du kan spørre om:',
+    actions: ['Hvor er nærmeste busstopp?', 'Når går neste buss?', 'Hvordan kommer jeg til Sola?', 'Snakk med et menneske'],
   }
 }
