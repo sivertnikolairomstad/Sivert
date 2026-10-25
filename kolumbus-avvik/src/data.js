@@ -24,11 +24,12 @@ export const crowdSeed = [
 // ---------- Chat ----------
 
 export const QUICK_REPLIES = [
+  'Når går neste buss til sentrum?',
+  'Når går 7 fra Madlakrossen?',
+  'Når går siste buss til Sandnes?',
   'Hvordan kommer jeg til Sola?',
-  'Hvor går X74?',
-  'Når går neste 100 til Jørpeland?',
+  'Når går båten til Hommersåk?',
   'Hva gjør jeg med billetten min?',
-  'Hvilke nattbusser finnes?',
   'Jeg vil snakke med et menneske',
 ]
 

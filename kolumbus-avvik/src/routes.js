@@ -78,14 +78,15 @@ export function travelMinutes(route, a, b) {
   return null
 }
 
-// Kallenavn folk bruker om de største holdeplassene
+// Kallenavn folk bruker om de største holdeplassene. «Sentrum» er Jernbaneveien ved
+// Stavanger stasjon, der flest linjer stopper.
 export const ALIASES = {
   uis: 'UiS øst',
   universitetet: 'UiS øst',
   tjodhallen: 'UiS øst',
-  sentrum: 'Stavanger bussterminal',
-  stavanger: 'Stavanger bussterminal',
-  byen: 'Stavanger bussterminal',
+  sentrum: 'Jernbaneveien',
+  stavanger: 'Jernbaneveien',
+  byen: 'Jernbaneveien',
   sandnes: 'Sandnes bussterminal Ruten',
   ruten: 'Sandnes bussterminal Ruten',
   sola: 'Sola ungdomsskole',

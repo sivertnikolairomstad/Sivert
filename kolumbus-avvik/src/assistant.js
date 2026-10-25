@@ -1,7 +1,7 @@
 // Enkel, regelbasert «AI» for prototypen. Den kjenner hele linjenettet i routes.js og
 // svarer på spørsmål om linjer, holdeplasser og avganger, i tillegg til service-spørsmål.
 import { ROUTES, PATTERNS, CATEGORIES, ALL_STOPS, ALIASES, routeById, routesServing, nextDepartures } from './routes.js'
-import { board } from './board.js'
+import { board, DISRUPTED, isDisrupted, stopWeight } from './board.js'
 import { clock } from './lib/time.js'
 
 const HOME = 'UiS øst'
@@ -22,8 +22,18 @@ function findStops(text) {
     const m = new RegExp(`(^|[^a-zæøå])${alias.replace('_', ' ')}([^a-zæøå]|$)`, 'i').exec(t)
     if (m && !hits.some((h) => h.stop === stop || (h.i <= m.index + 1 && m.index + 1 < h.i + h.len))) hits.push({ stop, i: m.index + 1, len: alias.length })
   }
+  // Ingen eksakte treff: prøv ord som starter et holdeplassnavn («Hommersåk» → «Hommersåk kai»)
+  if (!hits.length)
+    for (const m of t.matchAll(/[a-zæøå]{4,}/g)) {
+      if (STOPWORDS.has(m[0])) continue
+      const cands = ALL_STOPS.filter((s) => s.toLowerCase().split(/[\s\-/]+/)[0] === m[0]).sort((a, b) => stopWeight(b) - stopWeight(a))
+      if (cands.length) hits.push({ stop: cands[0], i: m.index, len: m[0].length })
+    }
   return hits.sort((a, b) => a.i - b.i).map((h) => h.stop)
 }
+
+// Vanlige ord i spørsmål som også er starten på et holdeplassnavn
+const STOPWORDS = new Set(['neste', 'siste', 'første', 'bussen', 'buss', 'båten', 'ferja', 'ferjen', 'linje', 'linja', 'hvilke', 'hvilken', 'når', 'går', 'morgen', 'klokka', 'klokken', 'avganger', 'avgang', 'kommer', 'skal', 'reise', 'nattbussen', 'nattbuss', 'ofte'])
 
 function findRoutes(text) {
   const found = []
@@ -39,9 +49,10 @@ function findRoutes(text) {
   return [...new Set(found.map((id) => routeById(id)).filter(Boolean))]
 }
 
-const label = (x) => (x.mode === 'boat' && isNaN(x.id) ? `${x.note.split('.')[0].split(' og ')[0]} ${x.name}` : `${x.mode === 'boat' ? 'Båtrute' : 'Linje'} ${x.id}`)
+const label = (x) => `${x.mode === 'boat' ? 'Båtrute' : 'Linje'} ${x.id}`
 const often = (every) => (!every ? 'noen få ganger om dagen' : every < 60 ? `hvert ${every}. minutt` : every < 90 ? 'omtrent hver time' : `omtrent hver ${Math.round(every / 60)}. time`)
 const times = (x, now) => nextDepartures(x, now).map(clock).join(', ') || 'ingen flere i dag'
+export { isTimeQuestion }
 
 // Noen jevnt fordelte mellomstopp, så svaret ikke blir en liste på 60 holdeplasser
 const pick = (stops, n) => Array.from({ length: n }, (_, i) => stops[Math.round(((i + 1) * (stops.length - 1)) / (n + 1))])
@@ -77,6 +88,125 @@ function between(from, to, now) {
   return { text: `Fra ${from} til ${to}:\n${lines.join('\n')}`, routes: [...new Set(deps.slice(0, 3).map((d) => d.line))] }
 }
 
+const WEEKDAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag']
+
+const isTimeQuestion = (t) => /\bnår\b|neste|avgang|første|siste|\bkl\.?\s*\d|klokk[ae]|i ?morgen|rutetid|tidene|går (bussen|båten|ferja|ferjen|den)\b/.test(t)
+
+// Tolker «i morgen», ukedager, «kl. 18:30», «første» og «siste»
+function parseWhen(t, now) {
+  let day = new Date(now)
+  let dayLabel = ''
+  if (/i ?morgen/.test(t)) {
+    day = new Date(+now + 864e5)
+    dayLabel = 'i morgen'
+  } else {
+    const wd = WEEKDAYS.findIndex((d) => new RegExp(`\\b${d}`).test(t))
+    if (wd >= 0 && wd !== now.getDay()) {
+      day = new Date(+now + ((wd - now.getDay() + 7) % 7) * 864e5)
+      dayLabel = `på ${WEEKDAYS[wd]}`
+    }
+  }
+  const m = /\b(?:kl\.?|klokka|klokken)\s*(\d{1,2})(?:[:.](\d{2}))?/.exec(t) || /\b(\d{1,2})[:.](\d{2})\b/.exec(t)
+  const mode = /siste/.test(t) ? 'last' : /første/.test(t) ? 'first' : 'next'
+  const at = new Date(day)
+  if (m) at.setHours(+m[1], +(m[2] || 0), 0, 0)
+  else if (dayLabel || mode === 'first') at.setHours(4, 0, 0, 0)
+  else at.setTime(+now)
+  return { at, mode, dayLabel, hasTime: !!m, live: !m && !dayLabel && mode === 'next' }
+}
+
+function departures(text, now, disrupted) {
+  const t = text.toLowerCase()
+  const routes = findRoutes(text)
+  const lines = routes.map((r) => r.id)
+  let stops = findStops(text)
+  // «til X fra Y»: snu rekkefølgen
+  if (stops.length >= 2 && t.search(/\btil\b/) >= 0 && t.search(/\btil\b/) < t.search(/\bfra\b/)) stops = [...stops].reverse()
+  let from = null
+  let to = null
+  if (stops.length >= 2) [from, to] = [stops[0], stops[stops.length - 1]]
+  else if (stops.length === 1) /\btil\b/.test(t) && !/\bfra\b/.test(t) ? (to = stops[0]) : (from = stops[0])
+  const boat = /båt|ferje|ferja|hurtigbåt/.test(t)
+  const W = parseWhen(t, now)
+  // Båtspørsmål: bruk kaien, ikke bussholdeplassen med samme navn («Hommersåk» → «Hommersåk kai»)
+  const boatStop = (name) => {
+    const word = name.toLowerCase().split(/[\s\-/]+/)[0]
+    const served = PATTERNS.filter((p) => p.route.cat === 'bat').flatMap((p) => p.quays.map((q) => q.station.name))
+    return served.includes(name) ? name : served.find((n) => n.toLowerCase().startsWith(word)) ?? name
+  }
+  if (boat) {
+    if (to) to = boatStop(to)
+    if (from) from = boatStop(from)
+  }
+
+  // Uten avgangssted: UiS øst hvis linjen stopper der, ellers der linjen (mot målet) starter
+  if (!from) {
+    const servesHome = !routes.length || routes.some((r) => routesServing(HOME).includes(r))
+    if (servesHome && !boat) from = HOME
+    else {
+      const p = PATTERNS.find((p) => (routes.length ? routes.includes(p.route) : p.route.cat === 'bat') && (!to || p.quays.slice(1).some((q) => q.station.name === to)))
+      from = p ? p.quays[0].station.name : HOME
+    }
+  }
+  if (from === to) to = null
+
+  const query = (at, horizon, count) =>
+    board(from, at, { to, count, horizon })
+      .filter((d) => !lines.length || lines.includes(d.line))
+      .filter((d) => !boat || d.route.cat === 'bat')
+      .filter((d) => d.route.cat !== 'skole' || lines.includes(d.line))
+      .sort((a, b) => a.at - b.at)
+
+  const nowMin = W.at.getHours() * 60 + W.at.getMinutes()
+  let deps =
+    W.mode === 'last'
+      ? query(W.at, 28 * 60 - nowMin, 60).slice(-3)
+      : W.mode === 'first'
+        ? query(W.at, 20 * 60, 1).slice(0, 3)
+        : query(W.at, W.live ? 240 : 600, 3).slice(0, 5)
+
+  // Ingen avganger: let i dagene framover (f.eks. nattbusser som bare går i helgen)
+  if (!deps.length && lines.length) {
+    for (let d = 1; d <= 7 && !deps.length; d++) {
+      const day = new Date(+now + d * 864e5)
+      day.setHours(0, 0, 0, 0)
+      deps = query(day, 1440, 1).slice(0, 1)
+      if (deps.length) {
+        const dep = deps[0]
+        // Avganger før kl. 05 hører til natten før («natt til søndag»)
+        const night = dep.at.getHours() < 5
+        const when = night ? `natt til ${WEEKDAYS[day.getDay()]}` : d === 1 ? 'i morgen' : `på ${WEEKDAYS[day.getDay()]}`
+        return { text: `Linje ${dep.line} går ikke fra ${from}${to ? ` til ${to}` : ''} resten av dagen. Neste avgang er ${when} kl. ${clock(dep.at)} mot ${dep.toward}.`, routes: [dep.line] }
+      }
+    }
+  }
+  if (!deps.length) {
+    if (to) return between(from, to, W.at)
+    return { text: `Jeg finner ingen avganger fra ${from}${W.dayLabel ? ` ${W.dayLabel}` : ' de neste timene'}.` }
+  }
+
+  const mins = (d) => Math.round((d.at - now) / 60000)
+  const row = (d) => {
+    const cancelled = disrupted && from === DISRUPTED.stop && isDisrupted(d) && d === deps.find(isDisrupted)
+    const extra = [to && d.arrive ? `fremme ${clock(d.arrive)}` : '', W.live && mins(d) <= 30 ? (mins(d) <= 0 ? 'nå' : `om ${mins(d)} min`) : '', d.delay ? `+${d.delay} min` : ''].filter(Boolean).join(', ')
+    return `${clock(d.at)}  ${d.line} mot ${d.toward}${extra ? ` (${extra})` : ''}${cancelled ? ' – innstilt' : ''}`
+  }
+  const where = `fra ${from}${to ? ` til ${to}` : ''}`
+  const head =
+    W.mode === 'last'
+      ? `Siste avganger ${where}${W.dayLabel ? ` ${W.dayLabel}` : ' i dag'}:`
+      : W.mode === 'first'
+        ? `Første avganger ${where}${W.dayLabel ? ` ${W.dayLabel}` : ''}:`
+        : `${W.live ? 'Neste avganger' : 'Avganger'} ${where}${W.dayLabel ? ` ${W.dayLabel}` : ''}${W.hasTime ? ` fra kl. ${clock(W.at)}` : ''}:`
+  // Strukturert liste i tillegg til tekst, så chatten kan vise den som en avgangstavle
+  const list = deps.map((d) => {
+    const cancelled = disrupted && from === DISRUPTED.stop && isDisrupted(d) && d === deps.find(isDisrupted)
+    const notes = [to && d.arrive ? `fremme ${clock(d.arrive)}` : '', d.delay ? `+${d.delay} min` : ''].filter(Boolean).join(' · ')
+    return { time: clock(d.at), line: d.line, toward: d.toward, notes, soon: W.live && mins(d) <= 30 ? (mins(d) <= 0 ? 'nå' : `${mins(d)} min`) : '', cancelled }
+  })
+  return { text: `${head}\n${deps.map(row).join('\n')}`, title: head.replace(/:$/, ''), deps: list }
+}
+
 function routeAnswer(text, now, disrupted) {
   const t = text.toLowerCase()
   const routes = findRoutes(text)
@@ -105,27 +235,16 @@ function routeAnswer(text, now, disrupted) {
       const alt = routesServing(stops[stops.length - 1]).slice(0, 3)
       return { text: `${label(x)} stopper ikke ved ${stops[stops.length - 1]}. ${alt.length ? `Dit går linje ${alt.map((a) => a.id).join(', ')}.` : ''}`, routes: alt.map((a) => a.id) }
     }
-    if (/når|neste|avgang|går den|tid/.test(t)) {
-      // «fra X» er avgangsstedet; «til X» alene er reisemålet
-      const fromMatch = /\bfra\b/.test(t) ? stops[0] : stops.length === 1 && !/\btil\b/.test(t) ? stops[0] : null
-      const at = fromMatch
-      const here = at ? board(at, now, { count: 2, horizon: 600 }).filter((d) => d.line === x.id) : []
-      if (here.length) return { text: `Neste avganger med linje ${x.id} fra ${at}:\n${here.map((d) => `${clock(d.at)} mot ${d.toward}`).join('\n')}`, routes: [x.id] }
-      // «Når går neste 100 til Jørpeland?»: vis avganger fra startholdeplassen i retning mot målet
-      const dest = /\btil\b/.test(t) ? stops[stops.length - 1] : null
-      const p = dest && PATTERNS.find((p) => p.route === x && p.quays.slice(1).some((q) => q.station.name === dest))
-      const toDest = p ? board(p.quays[0].station.name, now, { to: dest, count: 3, horizon: 600 }).filter((d) => d.line === x.id) : []
-      if (toDest.length) return { text: `Neste linje ${x.id} fra ${p.quays[0].station.name} til ${dest}:\n${toDest.slice(0, 3).map((d) => `${clock(d.at)}, fremme ${clock(d.arrive)}`).join('\n')}`, routes: [x.id] }
-      return { text: `Neste avganger med ${label(x).toLowerCase()} fra ${x.stops[0]}: ${times(x, now)}.`, routes: [x.id] }
-    }
     return { text: describe(x, now), routes: [x.id] }
   }
 
   if (stops.length >= 2) return between(stops[0], stops[stops.length - 1], now)
   if (stops.length === 1 && /\btil\b|komme meg|reise/.test(t) && stops[0] !== HOME) return between(HOME, stops[0], now)
   if (stops.length === 1) {
-    const s = routesServing(stops[0])
-    return { text: `${stops[0]} har ${s.length} ${s.length === 1 ? 'linje' : 'linjer'}: ${s.map((x) => x.id).join(', ')}.`, routes: s.slice(0, 6).map((x) => x.id) }
+    const all = routesServing(stops[0])
+    const s = all.filter((x) => x.cat !== 'skole').sort((a, b) => a.id.localeCompare(b.id, 'nb', { numeric: true }))
+    const school = all.length - s.length
+    return { text: `Ved ${stops[0]} stopper linje ${s.map((x) => x.id).join(', ')}${school ? `, og ${school} skolebusser` : ''}. Spør «Når går bussen fra ${stops[0]}?» for neste avganger.`, routes: s.slice(0, 8).map((x) => x.id) }
   }
   return null
 }
@@ -141,7 +260,10 @@ const SERVICE = [
   },
   {
     test: /forelesning|rekk|møte|jobb|skole/i,
-    reply: () => 'Ja. Ekstrabussen 6E er i Stavanger sentrum om ca. 20 minutter. Vil du ha en forsinkelsesattest du kan vise foreleseren?',
+    reply: (d) =>
+      d
+        ? 'Ja. Ekstrabussen 6E er i Stavanger sentrum om ca. 20 minutter. Vil du ha en forsinkelsesattest du kan vise foreleseren?'
+        : 'Linje 6 og 7 går fra UiS øst mot sentrum flere ganger i timen, og turen tar rundt et kvarter. Vil du ha et varsel når neste buss er nær?',
     actions: ['Send attest', 'Varsle meg når bussen er nær'],
   },
   {
@@ -172,13 +294,19 @@ const SERVICE = [
 
 export function answer(text, { disrupted, now = new Date() }) {
   const service = SERVICE.find((r) => r.test.test(text.trim()))
+  const reply = () => ({ from: service.handoff ? 'human' : 'ai', text: service.reply(disrupted, text), actions: service.actions })
   // Service-svar først når meldingen ikke handler om en bestemt linje eller et sted
-  if (service && (service.handoff || /^(ja|nei|start|send|bestill|varsle|jeg venter)/i.test(text.trim()) || !findRoutes(text).length))
-    return { from: service.handoff ? 'human' : 'ai', text: service.reply(disrupted, text), actions: service.actions }
+  if (service && (service.handoff || /^(ja|nei|start|send|bestill|varsle|jeg venter)/i.test(text.trim()) || (!findRoutes(text).length && !findStops(text).length))) return reply()
+
+  // «Når går …»-spørsmål svares med avgangstider
+  if (isTimeQuestion(text.toLowerCase())) {
+    const deps = departures(text, now, disrupted)
+    if (deps) return { from: 'ai', ...deps }
+  }
 
   const route = routeAnswer(text, now, disrupted)
   if (route) return { from: 'ai', ...route }
-  if (service) return { from: 'ai', text: service.reply(disrupted, text), actions: service.actions }
+  if (service) return reply()
 
   return {
     from: 'ai',

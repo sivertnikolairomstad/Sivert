@@ -18,7 +18,7 @@ trafikksentralen løser avvik sammen, ikke en kanal som bare sender ut informasj
 | Reise | Søk på en holdeplass (f.eks. UiS øst): nærmeste avgang øverst, resten sortert etter retning (nord/øst/sør/vest). Med reisemål vises bare avganger dit, med ankomsttid. Trykk på en avgang for å følge bussen: hvor den er, hvor mange stopp den har igjen og når den er fremme «Rapporter» oppdaterer linjen for alle, og trafikksentralen svarer. «Alle linjer» viser hele linjenettet |
 | Kart | Alle busser i trafikk nå på kartet (simulert fra rutetabellen). Trykk på en buss for neste stopp og forsinkelse, og «Følg bussen» |
 | Nyheter | Siste oppdateringer fra Kolumbus, med «Nyttig» og «Still spørsmål om dette» |
-| Hjelp | Chat som kjenner alle linjene (`src/assistant.js`): linjer, holdeplasser, reiser mellom steder og avganger. Setter deg over til et menneske ved behov |
+| Hjelp | Chat som kjenner alle linjene (`src/assistant.js`). Spør om avganger: «Når går 7 fra Madlakrossen?», «siste buss til Sandnes», «første buss i morgen», «kl. 18 fra UiS til sentrum», «båten til Hommersåk». Svarene vises som en liten avgangstavle. Setter deg over til et menneske ved behov |
 | Teori | Grunig & Hunt, Cornelissen, SCCT, Stakeholder Salience, UGT, POEM og crowdcasting |
 
 ### Data

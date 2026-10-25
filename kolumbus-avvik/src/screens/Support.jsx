@@ -97,9 +97,32 @@ function Message({ m, prev, isLast, onSend, onRate, onRoute, busy }) {
   // Navnet vises bare når avsenderen bytter, som i vanlige meldingsapper
   const showName = prev?.from !== m.from
   return (
-    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="max-w-[82%]">
+    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={m.deps ? "w-[92%]" : "max-w-[82%]"}>
       {showName && <p className="mb-1 ml-1 text-[12px] text-faint">{NAMES[m.from]}</p>}
-      <p className={`rounded-2xl rounded-bl-md px-3.5 py-2 text-[15px] leading-snug whitespace-pre-line shadow-sm ${m.from === 'human' ? 'bg-sky-100' : 'bg-surface'}`}>{m.text}</p>
+      {m.deps ? (
+        <div className="overflow-hidden rounded-2xl rounded-bl-md bg-surface shadow-sm">
+          <p className="border-b border-line px-3.5 py-2 text-[14px] font-semibold">{m.title}</p>
+          <ul>
+            {m.deps.map((d, i) => (
+              <li key={i} className="flex items-center gap-2.5 border-line px-3.5 py-2 [&+&]:border-t">
+                <button type="button" onClick={() => onRoute(d.line)} aria-label={`Vis linje ${d.line}`} className="shrink-0">
+                  <LineBadge line={d.line} size="sm" state={d.cancelled ? 'cancelled' : 'ok'} />
+                </button>
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-[14px] ${d.cancelled ? 'text-faint line-through' : ''}`}>{d.toward}</span>
+                  {(d.notes || d.cancelled) && <span className={`block text-[12px] ${d.cancelled ? 'font-semibold text-danger' : 'text-muted'}`}>{d.cancelled ? 'Innstilt' : d.notes}</span>}
+                </span>
+                <span className="text-right tabular-nums">
+                  <span className="block text-[15px] font-semibold">{d.soon || d.time}</span>
+                  {d.soon && <span className="block text-[11px] text-faint">{d.time}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className={`rounded-2xl rounded-bl-md px-3.5 py-2 text-[15px] leading-snug whitespace-pre-line shadow-sm ${m.from === 'human' ? 'bg-sky-100' : 'bg-surface'}`}>{m.text}</p>
+      )}
       {m.routes?.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {m.routes.map((id) => (
