@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowUpDown, ChevronRight, CircleOff, Clock, Flag, MessageCircle, TriangleAlert, Users } from 'lucide-react'
+import { ArrowUpDown, ChevronRight, CircleOff, Clock, Flag, List, MessageCircle, TriangleAlert, Users } from 'lucide-react'
 import { Button, CrowdMeter, Group, LineBadge, SectionHeader, Tag } from '../components/ui.jsx'
 import Sheet from '../components/Sheet.jsx'
 import { ROUTE, departures, CANCELLED_ID, extraBus as extraDef, REPORT_TYPES, OPERATOR_ANSWERS, crowdSeed } from '../data.js'
@@ -11,7 +11,7 @@ const REPORT_ICONS = { Users, Clock, CircleOff, TriangleAlert }
 let feedId = 0
 export const initialFeed = () => crowdSeed.map((f) => ({ ...f, id: ++feedId, at: Date.now() - f.ago * 60000 }))
 
-export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, store }) {
+export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, store }) {
   const { reports, setReports, feed, setFeed } = store
   const [from, setFrom] = useState(ROUTE.from)
   const [to, setTo] = useState(ROUTE.to)
@@ -40,14 +40,14 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
 
   return (
     <div className="h-full overflow-y-auto pb-6">
-      <h1 className="px-4 pt-2 text-[30px] font-bold tracking-tight">Reise</h1>
-
-      <Group className="mt-3">
+      {/* Søket ligger i den mørke toppen, som i vanlige reiseapper */}
+      <div className="bg-brand px-4 pt-1 pb-4">
+      <div className="overflow-hidden rounded-xl bg-surface">
         <div className="flex items-center">
           <div className="min-w-0 flex-1">
             <Field label="Fra" value={from} onChange={setFrom} dot="bg-accent" />
             <div className="ml-10 border-t border-line" />
-            <Field label="Til" value={to} onChange={setTo} dot="bg-fg" />
+            <Field label="Til" value={to} onChange={setTo} dot="bg-danger" />
           </div>
           <button
             type="button"
@@ -61,17 +61,18 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
             <ArrowUpDown className="size-4" />
           </button>
         </div>
-      </Group>
+      </div>
+      </div>
 
       <AnimatePresence initial={false}>
         {disrupted && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <button type="button" onClick={onShowCrisis} className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center gap-3 rounded-xl bg-danger/12 px-4 py-3 text-left active:bg-danger/20">
-              <TriangleAlert className="size-5 shrink-0 text-danger" />
+            <button type="button" onClick={onShowCrisis} className="flex w-full items-center gap-3 bg-danger px-4 py-3 text-left text-white active:bg-danger/90">
+              <TriangleAlert className="size-5 shrink-0" />
               <span className="flex-1 text-[14px] leading-snug">
-                <span className="font-semibold text-danger">Linje 6 er innstilt.</span> Trykk for å si fra hvordan det påvirker deg.
+                <span className="font-semibold">Linje 6 er innstilt.</span> Trykk for å si fra hvordan det påvirker deg.
               </span>
-              <ChevronRight className="size-4 text-danger" />
+              <ChevronRight className="size-4" />
             </button>
           </motion.div>
         )}
@@ -88,9 +89,12 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
         </ul>
       </Group>
 
-      <div className="mx-4 mt-3">
+      <div className="mx-4 mt-3 grid grid-cols-2 gap-2">
         <Button variant="secondary" onClick={() => setReportOpen(true)}>
-          <Flag className="size-[18px] text-accent" /> Rapporter situasjon
+          <Flag className="size-[18px] text-accent" /> Rapporter
+        </Button>
+        <Button variant="secondary" onClick={onLines}>
+          <List className="size-[18px] text-accent" /> Alle linjer
         </Button>
       </div>
 
@@ -139,14 +143,14 @@ function DepartureRow({ d, now, report }) {
   return (
     <motion.li
       layout
-      initial={{ opacity: 0, backgroundColor: 'rgba(125,211,252,0.12)' }}
-      animate={{ opacity: 1, backgroundColor: 'rgba(0,0,0,0)' }}
+      initial={{ opacity: 0, backgroundColor: 'rgba(14,165,233,0.14)' }}
+      animate={{ opacity: 1, backgroundColor: 'rgba(255,255,255,0)' }}
       transition={{ backgroundColor: { duration: 2 } }}
       className="flex items-center gap-3 border-line px-4 py-3 [&+&]:border-t"
     >
       <LineBadge line={d.line} state={d.cancelled ? 'cancelled' : d.extra ? 'extra' : 'ok'} />
       <div className="min-w-0 flex-1">
-        <p className={`truncate text-[15px] ${d.cancelled ? 'text-faint' : ''}`}>{d.dest}</p>
+        <p className={`truncate text-[15px] font-medium ${d.cancelled ? 'text-faint' : ''}`}>{d.dest}</p>
         <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1">
           <span className="text-[12px] text-faint">Plattform {d.platform}</span>
           {d.cancelled ? <Tag tone="danger">Innstilt</Tag> : <CrowdMeter value={report?.type === 'full' ? 0.95 : d.crowd} />}
@@ -196,7 +200,7 @@ function ReportSheet({ open, onClose, rows, onSubmit }) {
             type="button"
             onClick={() => setDepId(r.id)}
             aria-pressed={selected === r.id}
-            className={`h-9 shrink-0 rounded-full px-3.5 text-[14px] font-medium tabular-nums ${selected === r.id ? 'bg-fg text-bg' : 'bg-surface-2 text-fg'}`}
+            className={`h-9 shrink-0 rounded-full px-3.5 text-[14px] font-medium tabular-nums ${selected === r.id ? 'bg-brand text-white' : 'bg-surface-2 text-fg'}`}
           >
             {r.line} · {clock(r.at)}
           </button>
@@ -214,7 +218,7 @@ function ReportSheet({ open, onClose, rows, onSubmit }) {
               type="button"
               onClick={() => setType(r.id)}
               aria-pressed={on}
-              className={`flex h-14 items-center gap-2.5 rounded-xl px-3.5 text-[15px] ring-inset ${on ? 'bg-accent/15 text-accent ring-2 ring-accent' : 'bg-surface-2'}`}
+              className={`flex h-14 items-center gap-2.5 rounded-xl px-3.5 text-[15px] ring-inset ${on ? 'bg-accent/10 text-accent ring-2 ring-accent' : 'bg-surface-2'}`}
             >
               <Icon className="size-5 shrink-0" /> {r.label}
             </button>

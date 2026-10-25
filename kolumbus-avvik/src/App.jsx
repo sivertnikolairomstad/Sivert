@@ -6,9 +6,10 @@ import Toast from './components/Toast.jsx'
 import { Switch } from './components/ui.jsx'
 import Planner, { initialFeed } from './screens/Planner.jsx'
 import Support from './screens/Support.jsx'
-import Social from './screens/Social.jsx'
+import News from './screens/News.jsx'
+import LinesSheet from './components/LinesSheet.jsx'
 import Theory from './screens/Theory.jsx'
-import { answer } from './data.js'
+import { answer } from './assistant.js'
 import { clock, useNow } from './lib/time.js'
 import { TABS } from './lib/tabs.js'
 
@@ -25,9 +26,10 @@ export default function App() {
   const [reports, setReports] = useState({})
   const [feed, setFeed] = useState(initialFeed)
   const [messages, setMessages] = useState(() => [
-    msg({ from: 'ai', text: 'Hei! Jeg er Move-assistenten. Spør om hva som helst om reisen din. Vil du heller snakke med et menneske, setter jeg deg over til trafikksentralen.' }),
+    msg({ from: 'ai', text: 'Hei! Jeg er Move-assistenten og kjenner alle Kolumbus-linjene. Spør om en linje, et sted eller reisen din. Vil du heller snakke med et menneske, setter jeg deg over til trafikksentralen.' }),
   ])
   const [typing, setTyping] = useState(false)
+  const [lines, setLines] = useState(null) // null = lukket, '' = liste, id = valgt linje
   const timers = useRef([])
   const extraTimer = useRef(null)
   const toastTimer = useRef(null)
@@ -69,7 +71,7 @@ export default function App() {
       timers.current.push(
         setTimeout(() => {
           setTyping(false)
-          setMessages((m) => [...m, msg(answer(text, disrupted))])
+          setMessages((m) => [...m, msg(answer(text, { disrupted, now: new Date() }))])
         }, 650),
       )
     },
@@ -78,9 +80,11 @@ export default function App() {
 
   const rateChat = (id, rating) => setMessages((m) => m.map((x) => (x.id === id ? { ...x, rating } : x)))
 
-  const goChat = () => {
+  const goChat = (question) => {
     setCrisisOpen(false)
+    setLines(null)
     setTab('chat')
+    if (typeof question === 'string') sendChat(question)
   }
 
   // Snarveier for presentasjonen: A = avvik, 1–4 = faner
@@ -98,9 +102,11 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <div className="flex h-dvh items-center justify-center sm:p-6">
-        <div className="relative flex h-full w-full flex-col overflow-hidden bg-bg sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[54px] sm:shadow-[0_0_0_11px_#1a1d1c,0_0_0_12px_#2c302e,0_40px_80px_-20px_rgba(0,0,0,0.9)]">
-          <StatusBar now={now} />
-          <AppBar disrupted={disrupted} onToggle={toggleDisruption} />
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-bg sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[54px] sm:shadow-[0_0_0_11px_#16191b,0_0_0_12px_#33383b,0_40px_80px_-20px_rgba(0,0,0,0.45)]">
+          <div className="shrink-0 bg-brand text-white">
+            <StatusBar now={now} />
+            <AppBar disrupted={disrupted} onToggle={toggleDisruption} />
+          </div>
 
           <main className="relative min-h-0 flex-1">
             {tab === 'plan' && (
@@ -111,16 +117,18 @@ export default function App() {
                 toast={toast}
                 onShowCrisis={() => setCrisisOpen(true)}
                 onChat={goChat}
+                onLines={() => setLines('')}
                 store={{ reports, setReports, feed, setFeed }}
               />
             )}
-            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} disrupted={disrupted} />}
-            {tab === 'some' && <Social />}
+            {tab === 'news' && <News disrupted={disrupted} onAsk={goChat} onShowCrisis={() => setCrisisOpen(true)} />}
+            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} disrupted={disrupted} />}
             {tab === 'teori' && <Theory onTab={setTab} />}
           </main>
 
-          <TabBar tab={tab} onTab={setTab} badge={disrupted && tab !== 'chat'} />
+          <TabBar tab={tab} onTab={setTab} badge={disrupted && tab !== 'news'} />
 
+          <LinesSheet value={lines} onChange={setLines} now={now} onAsk={goChat} />
           <Toast toast={crisisOpen ? null : toastItem} />
           <CrisisCard
             open={crisisOpen}
@@ -153,14 +161,10 @@ function StatusBar({ now }) {
 
 function AppBar({ disrupted, onToggle }) {
   return (
-    <header className="flex h-12 shrink-0 items-center gap-2.5 px-4">
-      <span className="grid size-8 place-items-center rounded-lg bg-accent" aria-hidden>
-        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="#062b1b" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 18V7l8 7 8-7v11" />
-        </svg>
-      </span>
-      <span className="text-[17px] font-semibold">Move Rogaland</span>
-      <label className="ml-auto flex items-center gap-2 text-[13px] text-muted">
+    <header className="flex h-12 items-center gap-2 px-4 pb-1">
+      <Logo />
+      <span className="text-[17px] font-semibold tracking-tight">Move Rogaland</span>
+      <label className="ml-auto flex items-center gap-2 text-[13px] text-white/75">
         <span>Simuler avvik</span>
         <Switch on={disrupted} onToggle={onToggle} label="Simuler avvik" />
       </label>
@@ -168,9 +172,19 @@ function AppBar({ disrupted, onToggle }) {
   )
 }
 
+function Logo() {
+  // To piler i hver sin retning: kommunikasjon begge veier
+  return (
+    <svg viewBox="0 0 28 28" className="size-7" aria-hidden>
+      <rect width="28" height="28" rx="7" fill="#fff" />
+      <path d="M7 11h12l-3-3M21 17H9l3 3" fill="none" stroke="#0b3d4a" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function TabBar({ tab, onTab, badge }) {
   return (
-    <nav aria-label="Faner" className="shrink-0 border-t border-line bg-bg/90 pb-6 backdrop-blur sm:pb-7">
+    <nav aria-label="Faner" className="shrink-0 border-t border-line bg-surface pb-6 sm:pb-7">
       <ul className="grid grid-cols-4">
         {TABS.map(({ id, label, icon: Icon }) => {
           const active = tab === id
@@ -180,11 +194,11 @@ function TabBar({ tab, onTab, badge }) {
                 type="button"
                 onClick={() => onTab(id)}
                 aria-current={active ? 'page' : undefined}
-                className={`relative flex w-full flex-col items-center gap-0.5 pt-2 text-[10px] font-medium ${active ? 'text-accent' : 'text-faint'}`}
+                className={`relative flex w-full flex-col items-center gap-0.5 pt-2 text-[11px] font-medium ${active ? 'text-brand' : 'text-faint'}`}
               >
-                <Icon className="size-6" strokeWidth={active ? 2.3 : 1.8} />
+                <Icon className="size-6" strokeWidth={active ? 2.4 : 1.7} />
                 {label}
-                {id === 'chat' && badge && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1.5 left-[calc(50%+6px)] size-2.5 rounded-full bg-danger" />}
+                {id === 'news' && badge && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1.5 left-[calc(50%+6px)] size-2.5 rounded-full bg-danger" />}
               </button>
             </li>
           )

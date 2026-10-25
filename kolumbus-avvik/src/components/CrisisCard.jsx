@@ -50,7 +50,7 @@ function Card({ now, onClose, onChat, onPlan }) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -60, opacity: 0 }}
       transition={{ type: 'spring', damping: 26, stiffness: 340 }}
-      className="relative mx-3 mt-[52px] max-h-[calc(100%-64px)] overflow-y-auto rounded-2xl bg-surface p-4 shadow-2xl ring-1 ring-danger/40 outline-none"
+      className="relative mx-3 mt-[52px] max-h-[calc(100%-64px)] overflow-y-auto rounded-2xl bg-surface p-4 shadow-2xl ring-1 ring-line outline-none"
     >
       <div className="flex items-center gap-2 text-[13px] font-semibold text-danger">
         <TriangleAlert className="size-4" />
@@ -102,7 +102,7 @@ function Card({ now, onClose, onChat, onPlan }) {
 
         {step === 'ack' && (
           <motion.div key="ack" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 space-y-2">
-            <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3.5 py-2 text-[15px] text-accent-ink">
+            <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-sm bg-accent px-3.5 py-2 text-[15px] text-white">
               Jeg blir forsinket til: {reason.toLowerCase()}
             </p>
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="max-w-[90%] rounded-2xl rounded-bl-sm bg-surface-2 px-3.5 py-2.5">

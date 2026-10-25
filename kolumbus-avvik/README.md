@@ -14,11 +14,14 @@ trafikksentralen løser avvik sammen, ikke en kanal som bare sender ut informasj
 
 | Fane | Toveis-funksjon |
 | --- | --- |
-| Toppbar | «Simuler avvik»-bryter. Krisekortet ber brukeren svare («Gi beskjed at jeg blir forsinket» / «Start direkte dialog med operatør») |
-| 1 · Reise | Sanntidsavganger UiS Tjodhallen → Stavanger sentrum. «Rapporter situasjon» oppdaterer linjen for alle, og trafikksentralen svarer |
-| 2 · Hjelp | Chat med AI som svarer med en gang, overlevering til menneske, hurtigvalg, egne meldinger og tilbakemelding på svar |
-| 3 · SoMe | Enveis og toveis svar på samme klage, med utfallet side om side og avspilling steg for steg (kontekstkollaps) |
-| 4 · Teori | Grunig & Hunt, Cornelissen, SCCT, Stakeholder Salience, UGT, POEM og crowdcasting |
+| Toppbar | «Simuler avvik»-bryter. Avviksvarselet ber brukeren svare: gi beskjed om forsinkelse eller snakk med trafikksentralen |
+| Reise | Sanntidsavganger UiS Tjodhallen → Stavanger sentrum. «Rapporter» oppdaterer linjen for alle, og trafikksentralen svarer. «Alle linjer» viser hele linjenettet |
+| Nyheter | Siste oppdateringer fra Kolumbus, med «Nyttig» og «Still spørsmål om dette» |
+| Hjelp | Chat som kjenner alle linjene (`src/assistant.js`): linjer, holdeplasser, reiser mellom steder og avganger. Setter deg over til et menneske ved behov |
+| Teori | Grunig & Hunt, Cornelissen, SCCT, Stakeholder Salience, UGT, POEM og crowdcasting |
+
+Linjenettet ligger i `src/routes.js`. Linjenumre og traséer bygger på Kolumbus' rutehefter
+og ruteendringene fra 1. juli 2026. Holdeplasser er forenklet, og alle tider er oppdiktet.
 
 **Snarveier under presentasjonen:** `A` slår avvik av/på, `1`–`4` bytter fane.
 

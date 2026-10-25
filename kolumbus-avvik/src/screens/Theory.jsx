@@ -5,7 +5,7 @@ import Sheet from '../components/Sheet.jsx'
 import { grunigModels, theories } from '../data.js'
 
 const ICONS = { ArrowLeftRight, ShieldAlert, Target, Smartphone, Megaphone }
-const TAB_LABEL = { plan: 'Reise', chat: 'Hjelp', some: 'SoMe' }
+const TAB_LABEL = { plan: 'Reise', chat: 'Hjelp', news: 'Nyheter' }
 
 export default function Theory({ onTab }) {
   const [openId, setOpenId] = useState(null)
@@ -16,7 +16,7 @@ export default function Theory({ onTab }) {
 
   return (
     <div className="h-full overflow-y-auto pb-6">
-      <h1 className="px-4 pt-2 text-[30px] font-bold tracking-tight">Teori</h1>
+      <h1 className="px-4 pt-4 text-[26px] font-bold tracking-tight">Teori</h1>
       <p className="px-4 pt-1 text-[14px] leading-relaxed text-muted">Rammeverket bak løsningen. Hovedgrepet er å gå fra enveis informasjon til toveis dialog.</p>
 
       <SectionHeader title="Grunig & Hunts fire modeller" />
@@ -24,7 +24,7 @@ export default function Theory({ onTab }) {
         <ol>
           {grunigModels.map((m, i) => (
             <li key={m.name} className="flex items-center gap-3 border-line px-4 py-3 [&+&]:border-t">
-              <span className={`grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-semibold ${m.target ? 'bg-accent text-accent-ink' : 'bg-surface-2 text-muted'}`}>{i + 1}</span>
+              <span className={`grid size-6 shrink-0 place-items-center rounded-full text-[12px] font-semibold ${m.target ? 'bg-accent text-white' : 'bg-surface-2 text-muted'}`}>{i + 1}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[15px]">{m.name}</span>
                 <span className="block text-[13px] text-muted">{m.flow}</span>
@@ -93,15 +93,15 @@ function Salience() {
   return (
     <svg viewBox="0 0 180 160" className="mx-auto mt-4 w-48" role="img" aria-label="Makt, legitimitet og hast overlapper i definitive interessenter">
       {circles.map((c) => (
-        <circle key={c.label} cx={c.cx} cy={c.cy} r="40" fill="rgba(62,207,142,0.08)" stroke="#2a302e" strokeWidth="1.5" />
+        <circle key={c.label} cx={c.cx} cy={c.cy} r="40" fill="rgba(10,107,124,0.07)" stroke="#c9d1d6" strokeWidth="1.5" />
       ))}
       {circles.map((c) => (
-        <text key={c.label + 't'} x={c.lx} y={c.ly} textAnchor="middle" fill="#949e9a" fontSize="10">
+        <text key={c.label + 't'} x={c.lx} y={c.ly} textAnchor="middle" fill="#55626a" fontSize="10">
           {c.label}
         </text>
       ))}
-      <circle cx="90" cy="74" r="10" fill="#3ecf8e" />
-      <text x="90" y="77.5" textAnchor="middle" fill="#062b1b" fontSize="9" fontWeight="700">
+      <circle cx="90" cy="74" r="10" fill="#0a6b7c" />
+      <text x="90" y="77.5" textAnchor="middle" fill="#fff" fontSize="9" fontWeight="700">
         D
       </text>
     </svg>
@@ -117,7 +117,7 @@ function Scct() {
   return (
     <div className="mt-4 grid grid-cols-3 gap-2">
       {clusters.map(([name, ex, on]) => (
-        <div key={name} className={`rounded-lg px-2 py-2 text-center ${on ? 'bg-warn/15 text-warn' : 'bg-surface-2 text-muted'}`}>
+        <div key={name} className={`rounded-lg px-2 py-2 text-center ${on ? 'bg-amber-100 text-warn' : 'bg-surface-2 text-muted'}`}>
           <p className="text-[13px] font-semibold">{name}</p>
           <p className="text-[11px] opacity-80">{ex}</p>
         </div>
