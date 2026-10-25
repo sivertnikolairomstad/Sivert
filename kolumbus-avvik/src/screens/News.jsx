@@ -12,8 +12,8 @@ const LIVE = {
   id: 'live',
   tag: 'Driftsmelding',
   date: 'Nå',
-  title: 'Linje 6 fra UiS Tjodhallen er innstilt',
-  body: 'Avgangen er innstilt på grunn av teknisk feil. Ekstrabuss 6E går fra plattform A, og linje 7 går som normalt. Si fra hvordan dette påvirker deg, så hjelper vi deg videre.',
+  title: 'Linje 6 fra UiS øst mot Stavanger er innstilt',
+  body: 'Avgangen er innstilt på grunn av teknisk feil. Ekstrabuss 6E går fra plattform B, og linje 7 går som normalt. Si fra hvordan dette påvirker deg, så hjelper vi deg videre.',
   ask: 'Hvor går linje 6?',
   useful: 18,
 }
