@@ -1,12 +1,13 @@
 // Scenario og tekster for prototypen. Avganger regnes relativt til «nå».
+// Linjenettet ligger i routes.js, chatlogikken i assistant.js.
 
 export const ROUTE = { from: 'UiS Tjodhallen', to: 'Stavanger sentrum' }
 
 export const departures = [
   { id: 'd1', line: '6', dest: 'Stavanger sentrum', inMin: 3, travel: 17, platform: 'A', crowd: 0.55 },
-  { id: 'd2', line: 'X60', dest: 'Stavanger sentrum via Kannik', inMin: 9, travel: 14, platform: 'B', crowd: 0.35 },
+  { id: 'd2', line: '7', dest: 'Stavanger sentrum', inMin: 9, travel: 18, platform: 'B', crowd: 0.35 },
   { id: 'd3', line: '6', dest: 'Stavanger sentrum', inMin: 18, travel: 17, platform: 'A', crowd: 0.2 },
-  { id: 'd4', line: 'X60', dest: 'Stavanger sentrum via Kannik', inMin: 24, travel: 14, platform: 'B', crowd: 0.15 },
+  { id: 'd4', line: '7', dest: 'Stavanger sentrum', inMin: 24, travel: 18, platform: 'B', crowd: 0.15 },
 ]
 
 // Avgangen som innstilles når avvikssimulatoren skrus på
@@ -39,119 +40,70 @@ export const OPERATOR_ANSWERS = {
 
 export const crowdSeed = [
   { who: 'Reisende', text: 'Ganske fullt på 6-eren, men det går fint å komme seg på.', ago: 4 },
-  { who: 'Trafikksentralen', text: 'X60 går som normalt.', ago: 7, operator: true },
+  { who: 'Trafikksentralen', text: 'Linje 7 går som normalt.', ago: 7, operator: true },
 ]
 
 // ---------- Chat ----------
 
 export const QUICK_REPLIES = [
+  'Hvordan kommer jeg til Sola?',
+  'Hvor går X74?',
+  'Når går neste 100 til Jørpeland?',
   'Hva gjør jeg med billetten min?',
-  'Rekker jeg forelesningen kl. 16?',
-  'Kan dere ordne taxi?',
+  'Hvilke nattbusser finnes?',
   'Jeg vil snakke med et menneske',
 ]
 
-const RULES = [
+// ---------- Nyheter ----------
+// Basert på Kolumbus' egne kunngjøringer, forkortet og omskrevet for prototypen.
+
+export const NEWS = [
   {
-    test: /billett|kort|betal|refus|penger|reisegaranti/i,
-    reply: (d) =>
-      d
-        ? 'Billetten din gjelder på ekstrabussen og på X60, så du trenger ikke gjøre noe. Blir du forsinket mer enn 20 minutter, dekker reisegarantien taxi. Vil du at jeg starter en refusjon nå?'
-        : 'Billetten din gjelder på alle busser i samme sone. Blir du forsinket mer enn 20 minutter, dekker reisegarantien taxi. Jeg kan ordne det her i chatten.',
-    actions: ['Ja, start refusjon', 'Nei takk'],
+    id: 'bussveien',
+    tag: 'Nyhet',
+    date: '1. juli 2026',
+    title: 'Bussveien er åpnet mellom Stavanger og Sandnes',
+    body: 'Linje 1 går mellom Stavanger sentrum og Sandnes sentrum, og linje 2 går mellom Stavanger sentrum og Forus Nord. I rushtiden går det buss hvert femte minutt. Linje 1 går hele døgnet.',
+    ask: 'Hvor går linje 1?',
+    useful: 412,
   },
   {
-    test: /forelesning|rekk|møte|jobb|skole|kl\.? ?\d/i,
-    reply: () =>
-      'Ja. Ekstrabussen 6E fra plattform A er i sentrum om ca. 20 minutter. Vil du ha en forsinkelsesattest du kan vise foreleseren?',
-    actions: ['Send attest', 'Varsle meg når bussen er nær'],
+    id: 'numre',
+    tag: 'Ruteendring',
+    date: '1. juli 2026',
+    title: 'Nye linjenumre på Nord-Jæren',
+    body: 'Rute 1 Stavanger – Hundvåg heter nå 9. Rute 2 Stavanger – Sandnes heter nå 1, og rute 2 Stavanger – Risavika heter nå 4. Rute 3 Stavanger – Forus heter nå 2. Rute 3 er en ny rute mellom Stavanger og Viste hageby.',
+    ask: 'Hvor går linje 3?',
+    useful: 287,
   },
   {
-    test: /taxi|drosje/i,
-    reply: () =>
-      'Det kan vi. Neste buss går om under 20 minutter, men har du dårlig tid, sender vi taxi på vår regning. Skal jeg bestille til UiS Tjodhallen?',
-    actions: ['Bestill taxi', 'Jeg venter på bussen'],
+    id: '11-16',
+    tag: 'Ruteendring',
+    date: '1. juli 2026',
+    title: 'Endringer på rute 11 og 16',
+    body: 'Rute 11 går nå bare til og fra Jåttåvågen og kjører ikke lenger annenhver avgang til Hinna gravlund. Rute 16 kjører ikke lenger avganger om Lassa.',
+    ask: 'Hvor går linje 16?',
+    useful: 64,
   },
   {
-    test: /menneske|person|ringe|klage|sint|elendig|dårlig/i,
-    handoff: true,
-    reply: () =>
-      'Hei, dette er Ingrid fra trafikksentralen. Jeg har lest samtalen, så du slipper å gjenta deg. Jeg forstår godt at du er lei. Hva ville hjulpet deg mest akkurat nå?',
+    id: '800',
+    tag: 'Båt',
+    date: '15. april 2026',
+    title: 'Nye tider for båtrute 800 til Byøyene og Hommersåk',
+    body: 'Ny rutetabell for Stavanger – Byøyene – Usken – Hommersåk. Kveldsavgangene mandag til torsdag går fra Fiskepiren 3.',
+    ask: 'Når går båtrute 800?',
+    useful: 39,
   },
   {
-    test: /^(ja|start|send|bestill|varsle)/i,
-    reply: (_, t) =>
-      /taxi/i.test(t)
-        ? 'Taxi er bestilt. Den står ved hovedinngangen til Tjodhallen om ca. 6 minutter, og du får sjåførens navn på SMS.'
-        : /attest/i.test(t)
-          ? 'Attesten er sendt til e-posten din og ligger under Mine reiser.'
-          : /varsle/i.test(t)
-            ? 'Greit. Du får et varsel når 6E er 2 minutter unna.'
-            : 'Refusjonen er startet med saksnummer MR-20481. Du får svar innen 24 timer.',
-  },
-  {
-    test: /nei|venter/i,
-    reply: () => 'Helt i orden. Skriv her hvis du trenger noe mer. God tur!',
-  },
-  {
-    test: /takk|flott|supert|bra/i,
-    reply: () => 'Så bra. Takk for at du sa fra, det hjelper oss med å gjøre det bedre for alle som reiser.',
-  },
-  {
-    test: /hei|hallo/i,
-    reply: (d) => (d ? 'Hei! Linje 6 fra UiS er innstilt akkurat nå. Hva kan jeg hjelpe deg med?' : 'Hei! Hva kan jeg hjelpe deg med?'),
+    id: 'ryfylke',
+    tag: 'Båt',
+    date: '14. oktober 2025',
+    title: 'Nytt bestillingsnummer for hurtigbåt i Ryfylke',
+    body: 'Hurtigbåtene til og fra Ryfylke har fått nytt bestillingsnummer. Billetter kjøpes fortsatt på billetter.kolumbus.no.',
+    ask: 'Hvor går hurtigbåten i Ryfylke?',
+    useful: 22,
   },
 ]
-
-export function answer(text, disrupted) {
-  const rule = RULES.find((r) => r.test.test(text.trim()))
-  if (!rule)
-    return {
-      from: 'ai',
-      text: 'Takk, det har jeg notert. Jeg har sendt det videre til trafikksentralen, og du får svar her, vanligvis innen et par minutter.',
-    }
-  return { from: rule.handoff ? 'human' : 'ai', text: rule.reply(disrupted, text), actions: rule.actions }
-}
-
-// ---------- Sosiale medier ----------
-
-export const somePost = 'Linje 6 fra UiS er innstilt på grunn av teknisk feil.'
-
-export const someOriginal = {
-  author: 'Marius H.',
-  text: 'Tredje gang denne uka at 6-eren fra UiS bare forsvinner. Står her i regnet med 40 andre. Hva skal vi gjøre?',
-}
-
-export const someOld = {
-  brand: 'Kollektivselskapet',
-  reply: 'Hei. Vi viser til informasjon om reisegarantien på våre nettsider. Mvh. Kundesenteret',
-  followUps: [
-    { author: 'Sara L.', text: 'Typisk. Kopier og lim inn.' },
-    { author: 'Marius H.', text: 'Svarte dere egentlig på spørsmålet?' },
-    { author: 'Jonas K.', text: 'Har sluttet å spørre dem om noe.' },
-  ],
-  footnote: 'Ingen videre svar. Innlegget er delt 48 ganger.',
-  sentiment: 12,
-  reactions: { angry: 214, like: 3 },
-}
-
-export const someNew = {
-  brand: 'Move Rogaland',
-  reply:
-    'Hei Marius, det forstår vi godt. Det er ikke greit å bli stående i regnet. Ekstrabuss 6E går fra plattform A om 6 minutter, og billetten din gjelder. Vi sender deg en melding nå, så ordner vi resten.',
-  followUps: [
-    { author: 'Marius H.', text: 'Ok, takk for raskt svar. Ser bussen komme nå.' },
-    { author: 'Sara L.', text: 'Bra at dere svarer ordentlig.' },
-    { author: 'Move Rogaland', text: 'Takk for tålmodigheten. Vi følger med på linjen resten av kvelden.', brand: true },
-  ],
-  dm: [
-    { from: 'brand', text: 'Hei igjen, Marius. Vil du at vi refunderer dagens billett?' },
-    { from: 'user', text: 'Ja, gjerne.' },
-    { from: 'brand', text: 'Det er ordnet. Takk for at du sa fra, det gjorde at vi kunne varsle alle.' },
-  ],
-  sentiment: 78,
-  reactions: { angry: 9, like: 186 },
-}
 
 // ---------- Teori ----------
 
@@ -200,7 +152,7 @@ export const theories = [
       'Makt: en offentlig stemme i sosiale medier og valget om å ta bilen',
       'Legitimitet: betalende kunder. Hast: de trenger svar nå',
     ],
-    tab: 'some',
+    tab: 'chat',
   },
   {
     id: 'ugt',

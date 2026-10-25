@@ -3,17 +3,19 @@
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 
-  --color-bg: #0b0d0c;
-  --color-surface: #161a19;
-  --color-surface-2: #1f2422;
-  --color-line: #2a302e;
-  --color-fg: #f2f4f3;
-  --color-muted: #949e9a;
-  --color-faint: #6b7571;
-  --color-accent: #3ecf8e;
-  --color-accent-ink: #062b1b;
-  --color-danger: #ff5c5c;
-  --color-warn: #f4b740;
+  --color-brand: #0b3d4a;
+  --color-brand-2: #12505f;
+  --color-bg: #f1f3f4;
+  --color-surface: #ffffff;
+  --color-surface-2: #eceff1;
+  --color-line: #e1e5e8;
+  --color-fg: #111a1f;
+  --color-muted: #55626a;
+  --color-faint: #808c93;
+  --color-accent: #0a6b7c;
+  --color-accent-ink: #ffffff;
+  --color-danger: #c62d1f;
+  --color-warn: #a35f00;
 }
 
 html,
@@ -24,10 +26,9 @@ body,
 
 body {
   margin: 0;
-  background: #050605;
+  background: #d9dee1;
   color: var(--color-fg);
   -webkit-font-smoothing: antialiased;
-  color-scheme: dark;
 }
 
 :focus-visible {
@@ -35,14 +36,14 @@ body {
   outline-offset: 2px;
 }
 
+/* Tekstfelt har egen fokusstil; unngå dobbel ramme */
+input:focus-visible {
+  outline: none;
+}
+
 .no-scrollbar {
   scrollbar-width: none;
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-/* Tekstfelt har egen fokusstil (markør/kant); unngå dobbel ramme */
-input:focus-visible {
-  outline: none;
 }

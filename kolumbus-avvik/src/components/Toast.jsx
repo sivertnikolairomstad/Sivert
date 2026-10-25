@@ -11,7 +11,7 @@ export default function Toast({ toast }) {
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="flex w-full items-start gap-3 rounded-2xl bg-surface-2/95 px-4 py-3 shadow-lg ring-1 ring-line backdrop-blur"
+            className="flex w-full items-start gap-3 rounded-2xl bg-surface px-4 py-3 shadow-lg ring-1 ring-line"
           >
             <CheckCircle2 className="mt-0.5 size-[18px] shrink-0 text-accent" />
             <div className="min-w-0">

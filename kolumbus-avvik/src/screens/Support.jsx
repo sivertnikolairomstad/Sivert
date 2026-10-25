@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { QUICK_REPLIES } from '../data.js'
+import { LineBadge } from '../components/ui.jsx'
 
 const NAMES = { ai: 'Move-assistenten', human: 'Ingrid, trafikksentralen' }
 
-export default function Support({ messages, typing, onSend, onRate, disrupted }) {
+export default function Support({ messages, typing, onSend, onRate, onRoute, disrupted }) {
   const [draft, setDraft] = useState('')
   const listRef = useRef(null)
   const humanJoined = messages.some((m) => m.from === 'human')
@@ -26,23 +27,23 @@ export default function Support({ messages, typing, onSend, onRate, disrupted })
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 border-b border-line px-4 pb-3">
+      <div className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3">
         <Avatar kind={humanJoined ? 'human' : 'ai'} />
         <div className="min-w-0 flex-1">
           <p className="text-[16px] font-semibold">{humanJoined ? 'Ingrid' : 'Move-assistenten'}</p>
-          <p className="text-[12px] text-muted">{humanJoined ? 'Trafikksentralen' : 'Svarer med en gang · Menneske ved behov'}</p>
+          <p className="text-[12px] text-muted">{humanJoined ? 'Trafikksentralen' : 'Kjenner alle Kolumbus-linjene'}</p>
         </div>
-        {disrupted && <span className="rounded bg-danger/15 px-1.5 py-0.5 text-[11px] font-semibold text-danger">Avvik linje 6</span>}
+        {disrupted && <span className="rounded bg-danger px-1.5 py-0.5 text-[11px] font-semibold text-white">Avvik linje 6</span>}
       </div>
 
       <div ref={listRef} role="log" aria-label="Samtale" className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-4">
         <AnimatePresence initial={false}>
           {messages.map((m, i) => (
-            <Message key={m.id} m={m} prev={messages[i - 1]} isLast={m === lastAgent} onSend={onSend} onRate={onRate} busy={typing} />
+            <Message key={m.id} m={m} prev={messages[i - 1]} isLast={m === lastAgent} onSend={onSend} onRate={onRate} onRoute={onRoute} busy={typing} />
           ))}
         </AnimatePresence>
         {typing && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex w-fit gap-1 rounded-2xl bg-surface-2 px-4 py-3">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex w-fit gap-1 rounded-2xl bg-surface px-4 py-3 shadow-sm">
             <span className="sr-only">Skriver</span>
             {[0, 1, 2].map((i) => (
               <motion.span key={i} className="size-2 rounded-full bg-faint" animate={{ opacity: [0.3, 1, 0.3] }} transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }} />
@@ -51,7 +52,7 @@ export default function Support({ messages, typing, onSend, onRate, disrupted })
         )}
       </div>
 
-      <div className="border-t border-line pt-2 pb-2">
+      <div className="border-t border-line bg-surface pt-2 pb-2">
         {quick.length > 0 && (
           <div className="no-scrollbar mb-2 flex gap-2 overflow-x-auto px-3">
             {quick.map((q) => (
@@ -73,7 +74,7 @@ export default function Support({ messages, typing, onSend, onRate, disrupted })
             autoComplete="off"
             className="h-10 min-w-0 flex-1 rounded-full border border-line bg-transparent px-4 text-[16px] outline-none placeholder:text-faint focus:border-faint"
           />
-          <button type="submit" disabled={!draft.trim() || typing} aria-label="Send" className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-accent-ink disabled:bg-surface-2 disabled:text-faint">
+          <button type="submit" disabled={!draft.trim() || typing} aria-label="Send" className="grid size-9 shrink-0 place-items-center rounded-full bg-accent text-white disabled:bg-surface-2 disabled:text-faint">
             <ArrowUp className="size-5" strokeWidth={2.5} />
           </button>
         </form>
@@ -82,14 +83,14 @@ export default function Support({ messages, typing, onSend, onRate, disrupted })
   )
 }
 
-function Message({ m, prev, isLast, onSend, onRate, busy }) {
+function Message({ m, prev, isLast, onSend, onRate, onRoute, busy }) {
   if (m.from === 'system')
     return <p className="py-2 text-center text-[12px] text-faint">{m.text}</p>
 
   if (m.from === 'me')
     return (
       <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="flex justify-end">
-        <p className="max-w-[78%] rounded-2xl rounded-br-md bg-accent px-3.5 py-2 text-[15px] leading-snug text-accent-ink">{m.text}</p>
+        <p className="max-w-[78%] rounded-2xl rounded-br-md bg-accent px-3.5 py-2 text-[15px] leading-snug text-white">{m.text}</p>
       </motion.div>
     )
 
@@ -98,11 +99,20 @@ function Message({ m, prev, isLast, onSend, onRate, busy }) {
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="max-w-[82%]">
       {showName && <p className="mb-1 ml-1 text-[12px] text-faint">{NAMES[m.from]}</p>}
-      <p className={`rounded-2xl rounded-bl-md px-3.5 py-2 text-[15px] leading-snug ${m.from === 'human' ? 'bg-sky-400/15' : 'bg-surface-2'}`}>{m.text}</p>
+      <p className={`rounded-2xl rounded-bl-md px-3.5 py-2 text-[15px] leading-snug whitespace-pre-line shadow-sm ${m.from === 'human' ? 'bg-sky-100' : 'bg-surface'}`}>{m.text}</p>
+      {m.routes?.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {m.routes.map((id) => (
+            <button key={id} type="button" onClick={() => onRoute(id)} aria-label={`Vis linje ${id}`} className="rounded-md active:opacity-70">
+              <LineBadge line={id} size="sm" />
+            </button>
+          ))}
+        </div>
+      )}
       {isLast && m.actions && (
         <div className="mt-2 flex flex-wrap gap-2">
           {m.actions.map((a) => (
-            <button key={a} type="button" disabled={busy} onClick={() => onSend(a)} className="h-8 rounded-full bg-accent/15 px-3 text-[13px] font-medium text-accent active:bg-accent/25 disabled:opacity-50">
+            <button key={a} type="button" disabled={busy} onClick={() => onSend(a)} className="h-8 rounded-full bg-surface px-3 text-[13px] font-medium text-accent ring-1 ring-line ring-inset active:bg-surface-2 disabled:opacity-50">
               {a}
             </button>
           ))}
@@ -131,7 +141,7 @@ function Message({ m, prev, isLast, onSend, onRate, busy }) {
 
 function Avatar({ kind }) {
   return (
-    <span className={`grid size-9 shrink-0 place-items-center rounded-full text-[14px] font-semibold ${kind === 'human' ? 'bg-sky-400/20 text-sky-300' : 'bg-accent/20 text-accent'}`} aria-hidden>
+    <span className={`grid size-9 shrink-0 place-items-center rounded-full text-[14px] font-semibold ${kind === 'human' ? 'bg-sky-100 text-sky-800' : 'bg-brand text-white'}`} aria-hidden>
       {kind === 'human' ? 'I' : 'M'}
     </span>
   )
