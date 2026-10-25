@@ -91,15 +91,15 @@ function between(from, to, now) {
 const WEEKDAYS = ['søndag', 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag']
 
 const isDirectionsQuestion = (t) =>
-  /hvor er|hvor ligger|hvor står|veibeskrivelse|vei(en)? til (holdeplassen|stoppet|busstoppet|plattform|bussen)|hvordan (går|finner|kommer) jeg (meg )?(til|fram til|frem til) (holdeplassen|stoppet|busstoppet|bussen)|finne (holdeplassen|stoppet|busstoppet)|nærmeste (holdeplass|busstopp|stopp)/.test(t)
+  /hvor er|hvor ligger|hvor står|veibeskriv|vei(en)? til|hvordan (går|finner|kommer) jeg (meg )?(til|fram til|frem til) (holdeplassen|stoppet|busstoppet|bussen)|hvordan går jeg|gå til|finne (holdeplassen|stoppet|busstoppet)|nærmeste (holdeplass|busstopp|stopp)/.test(t)
 
 function directionsAnswer(text) {
   const t = text.toLowerCase()
   const stop = findStops(text)[0]
   const line = findRoutes(text)[0]?.id
   if (stop) return { text: `Her er veien til ${stop}${line ? `, der linje ${line} går fra` : ''}.`, directions: { stop, line } }
-  if (/nærmeste/.test(t)) return { text: 'Her er nærmeste holdeplass.', directions: { nearest: true } }
-  return { text: 'Hvilken holdeplass vil du finne? Skriv for eksempel «Hvor er UiS øst?».' }
+  // Uten holdeplass: vis veien til nærmeste
+  return { text: 'Her er veien til nærmeste holdeplass.', directions: { nearest: true } }
 }
 
 const isTimeQuestion = (t) => /\bnår\b|neste|avgang|første|siste|\bkl\.?\s*\d|klokk[ae]|i ?morgen|rutetid|tidene|går (bussen|båten|ferja|ferjen|den)\b/.test(t)

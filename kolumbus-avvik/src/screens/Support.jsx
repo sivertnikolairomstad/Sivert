@@ -3,12 +3,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowUp, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { QUICK_REPLIES } from '../data.js'
 import { LineBadge } from '../components/ui.jsx'
-import { Footprints, ChevronRight } from 'lucide-react'
-import { fmtDistance, heading, nearestStops, targetFor, walkMeters, walkMinutes } from '../directions.js'
+import DirectionsView from '../components/DirectionsView.jsx'
+import { nearestStops } from '../directions.js'
 
 const NAMES = { ai: 'Move-assistenten', human: 'Ingrid, trafikksentralen' }
 
-export default function Support({ messages, typing, onSend, onRate, onRoute, onDirections, location, disrupted }) {
+export default function Support({ messages, typing, onSend, onRate, onRoute, onLocate, location, disrupted }) {
   const [draft, setDraft] = useState('')
   const listRef = useRef(null)
   const humanJoined = messages.some((m) => m.from === 'human')
@@ -41,7 +41,7 @@ export default function Support({ messages, typing, onSend, onRate, onRoute, onD
       <div ref={listRef} role="log" aria-label="Samtale" className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 py-4">
         <AnimatePresence initial={false}>
           {messages.map((m, i) => (
-            <Message key={m.id} m={m} prev={messages[i - 1]} isLast={m === lastAgent} onSend={onSend} onRate={onRate} onRoute={onRoute} onDirections={onDirections} location={location} busy={typing} />
+            <Message key={m.id} m={m} prev={messages[i - 1]} isLast={m === lastAgent} onSend={onSend} onRate={onRate} onRoute={onRoute} onLocate={onLocate} location={location} busy={typing} />
           ))}
         </AnimatePresence>
         {typing && (
@@ -85,7 +85,7 @@ export default function Support({ messages, typing, onSend, onRate, onRoute, onD
   )
 }
 
-function Message({ m, prev, isLast, onSend, onRate, onRoute, onDirections, location, busy }) {
+function Message({ m, prev, isLast, onSend, onRate, onRoute, onLocate, location, busy }) {
   if (m.from === 'system')
     return <p className="py-2 text-center text-[12px] text-faint">{m.text}</p>
 
@@ -99,7 +99,7 @@ function Message({ m, prev, isLast, onSend, onRate, onRoute, onDirections, locat
   // Navnet vises bare når avsenderen bytter, som i vanlige meldingsapper
   const showName = prev?.from !== m.from
   return (
-    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={m.deps ? "w-[92%]" : "max-w-[82%]"}>
+    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={m.deps || m.directions ? "w-[92%]" : "max-w-[82%]"}>
       {showName && <p className="mb-1 ml-1 text-[12px] text-faint">{NAMES[m.from]}</p>}
       {m.deps ? (
         <div className="overflow-hidden rounded-2xl rounded-bl-md bg-surface shadow-sm">
@@ -125,7 +125,12 @@ function Message({ m, prev, isLast, onSend, onRate, onRoute, onDirections, locat
       ) : (
         <p className={`rounded-2xl rounded-bl-md px-3.5 py-2 text-[15px] leading-snug whitespace-pre-line shadow-sm ${m.from === 'human' ? 'bg-sky-100' : 'bg-surface'}`}>{m.text}</p>
       )}
-      {m.directions && <DirectionsCard req={m.directions} location={location} onOpen={onDirections} />}
+      {m.directions && (
+        // Veibeskrivelsen vises rett i chatten: kart, avstand og steg for steg
+        <div className="mt-1.5 overflow-hidden rounded-2xl bg-surface pt-3 shadow-sm">
+          <DirectionsView compact req={{ ...m.directions, stop: m.directions.stop ?? nearestStops(location, 1)[0].name }} location={location} onLocate={onLocate} />
+        </div>
+      )}
       {m.routes?.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {m.routes.map((id) => (
@@ -173,28 +178,3 @@ function Avatar({ kind }) {
   )
 }
 
-// Kort med avstand og retning til holdeplassen; trykk for full veibeskrivelse med kart
-function DirectionsCard({ req, location, onOpen }) {
-  const stop = req.stop ?? nearestStops(location, 1)[0].name
-  const target = targetFor(stop, location, req)
-  if (!target) return null
-  const meters = walkMeters(location, target)
-  return (
-    <button type="button" onClick={() => onOpen({ ...req, stop })} className="mt-1.5 flex w-full items-center gap-3 rounded-2xl bg-surface px-3.5 py-3 text-left shadow-sm active:bg-surface-2">
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
-        <Footprints className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block truncate text-[15px] font-semibold">
-          {stop}
-          {target.platform && target.platform !== '–' ? `, plattform ${target.platform}` : ''}
-        </span>
-        <span className="block text-[13px] text-muted">
-          {fmtDistance(meters)} mot {heading(location, target)} · ca. {walkMinutes(meters)} min å gå
-        </span>
-        <span className="block text-[13px] font-medium text-accent">Vis veibeskrivelse</span>
-      </span>
-      <ChevronRight className="size-4 shrink-0 text-faint" />
-    </button>
-  )
-}
