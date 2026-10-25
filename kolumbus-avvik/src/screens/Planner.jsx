@@ -4,12 +4,11 @@ import { ArrowUpDown, ChevronRight, CircleOff, Clock, Flag, List, MapPin, Messag
 import { Button, CrowdMeter, Group, LineBadge, SectionHeader, Tag } from '../components/ui.jsx'
 import Sheet from '../components/Sheet.jsx'
 import { REPORT_TYPES, OPERATOR_ANSWERS, crowdSeed } from '../data.js'
-import { ALL_STOPS } from '../routes.js'
-import { board, DIRECTIONS, DISRUPTED } from '../board.js'
+import { ALL_STOPS, ALIASES } from '../routes.js'
+import { board, DIRECTIONS, DISRUPTED, isDisrupted, stopWeight } from '../board.js'
 import { clock, minutesUntil } from '../lib/time.js'
 
 const REPORT_ICONS = { Users, Clock, CircleOff, TriangleAlert }
-const ALIASES = { uis: 'UiS Tjodhallen', sentrum: 'Stavanger sentrum', stavanger: 'Stavanger sentrum', sandnes: 'Sandnes sentrum', sola: 'Sola sentrum', sykehuset: 'SUS', haugesund: 'Haugesund' }
 
 let feedId = 0
 export const initialFeed = () => crowdSeed.map((f) => ({ ...f, id: ++feedId, at: Date.now() - f.ago * 60000 }))
@@ -25,9 +24,18 @@ function resolveStop(text) {
   return hits.length === 1 ? hits[0] : null
 }
 
+// Forslag: kallenavn først, så navn som starter med teksten, så de største holdeplassene
+function suggest(text) {
+  const t = text.trim().toLowerCase()
+  if (!t) return []
+  const alias = Object.entries(ALIASES).filter(([k]) => k.startsWith(t)).map(([, v]) => v)
+  const hits = ALL_STOPS.filter((s) => s.toLowerCase().includes(t)).sort((a, b) => Number(b.toLowerCase().startsWith(t)) - Number(a.toLowerCase().startsWith(t)) || stopWeight(b) - stopWeight(a))
+  return [...new Set([...alias, ...hits])].filter((s) => s.toLowerCase() !== t).slice(0, 5)
+}
+
 export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, store }) {
   const { reports, setReports, feed, setFeed } = store
-  const [from, setFrom] = useState('UiS Tjodhallen')
+  const [from, setFrom] = useState('UiS øst')
   const [to, setTo] = useState('')
   const [focus, setFocus] = useState(null) // 'from' | 'to' | null
   const [reportOpen, setReportOpen] = useState(false)
@@ -38,9 +46,9 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
     if (!fromStop) return []
     const list = board(fromStop, now, { to: toStop, count: 3 })
     if (disrupted && fromStop === DISRUPTED.stop) {
-      const first = list.find((d) => d.key === DISRUPTED.key)
+      const first = list.find(isDisrupted)
       if (first) first.cancelled = true
-      if (extraBus && first) list.push({ ...first, id: 'extra', key: '6E|Stavanger sentrum', line: '6E', at: extraBus, cancelled: false, extra: true, crowd: 0.05, arrive: first.travel ? new Date(+extraBus + first.travel * 60000) : null })
+      if (extraBus && first) list.push({ ...first, id: 'extra', key: `6E|${first.toward}`, line: '6E', at: extraBus, cancelled: false, extra: true, crowd: 0.05, arrive: first.travel ? new Date(+extraBus + first.travel * 60000) : null })
     }
     return list.sort((a, b) => a.at - b.at)
   }, [fromStop, toStop, now, disrupted, extraBus])
@@ -69,7 +77,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
     }, 2600)
   }
 
-  const suggestions = focus ? ALL_STOPS.filter((s) => (focus === 'from' ? from : to).trim() && s.toLowerCase().includes((focus === 'from' ? from : to).trim().toLowerCase()) && s !== (focus === 'from' ? fromStop : toStop)).slice(0, 5) : []
+  const suggestions = focus ? suggest(focus === 'from' ? from : to) : []
 
   return (
     <div className="h-full overflow-y-auto pb-6">
@@ -123,7 +131,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
             <button type="button" onClick={onShowCrisis} className="flex w-full items-center gap-3 bg-danger px-4 py-3 text-left text-white active:bg-danger/90">
               <TriangleAlert className="size-5 shrink-0" />
               <span className="flex-1 text-[14px] leading-snug">
-                <span className="font-semibold">Linje 6 fra UiS er innstilt.</span> Trykk for å si fra hvordan det påvirker deg.
+                <span className="font-semibold">Linje 6 fra UiS øst er innstilt.</span> Trykk for å si fra hvordan det påvirker deg.
               </span>
               <ChevronRight className="size-4" />
             </button>

@@ -1,74 +1,92 @@
-// Avgangstavle for en holdeplass: alle linjer som stopper der, i begge retninger,
-// med kompassretning regnet ut fra holdeplassens og endeholdeplassens koordinater.
-import { ROUTES, travelMinutes } from './routes.js'
-import { COORDS } from './coords.js'
+// Avgangstavle for en holdeplass med ekte avgangstider fra GTFS-dataene.
+// Retningen (nord/øst/sør/vest) regnes ut fra holdeplassen til endeholdeplassen.
+import { PATTERNS, dayIndex, dateAt } from './routes.js'
 
 export const DIRECTIONS = ['nord', 'øst', 'sør', 'vest']
-const PLATFORM = { nord: 'A', øst: 'B', sør: 'C', vest: 'D' }
 
-function bearing([lat1, lon1], [lat2, lon2]) {
+function bearing(a, b) {
   const toRad = (d) => (d * Math.PI) / 180
-  const y = Math.sin(toRad(lon2 - lon1)) * Math.cos(toRad(lat2))
-  const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lon2 - lon1))
+  const y = Math.sin(toRad(b.lon - a.lon)) * Math.cos(toRad(b.lat))
+  const x = Math.cos(toRad(a.lat)) * Math.sin(toRad(b.lat)) - Math.sin(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.cos(toRad(b.lon - a.lon))
   return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360
 }
 
 const compass = (deg) => DIRECTIONS[Math.round(deg / 90) % 4]
-
 const hash = (s) => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7)
 
-// Oppfunnede, men stabile tider: fast frekvens og en forskyvning per linje, retning og holdeplass
-function times(route, key, now, count) {
-  const seed = hash(key) % route.every
-  const minsNow = now.getHours() * 60 + now.getMinutes() + (now.getSeconds() > 30 ? 1 : 0)
-  let m = Math.ceil((minsNow - seed) / route.every) * route.every + seed
-  return Array.from({ length: count }, (_, i) => {
-    const d = new Date(now)
-    d.setHours(0, m + i * route.every, 0, 0)
-    return d
-  })
-}
+// Hvilke kjøremønstre stopper ved hver holdeplass (etter navn)
+const AT = new Map()
+PATTERNS.forEach((p, pi) =>
+  p.quays.forEach((q, pos) => {
+    if (pos === p.quays.length - 1) return
+    const list = AT.get(q.station.name) ?? []
+    list.push([pi, pos])
+    AT.set(q.station.name, list)
+  }),
+)
 
-export function board(from, now, { to, count = 3 } = {}) {
+export function board(from, now, { to, count = 3, horizon = 180 } = {}) {
+  const nowMin = now.getHours() * 60 + now.getMinutes()
+  const day = dayIndex(now)
+  const prevDay = dayIndex(new Date(+now - 86400000))
+  const seen = new Map() // key → antall
   const out = []
-  const night = now.getHours() < 5
-  for (const route of ROUTES) {
-    if (route.cat === 'natt' && !night) continue
-    const i = route.stops.indexOf(from)
-    if (i < 0) continue
-    for (const step of [1, -1]) {
-      const end = step > 0 ? route.stops[route.stops.length - 1] : route.stops[0]
-      if (end === from) continue
-      if (to) {
-        const j = route.stops.indexOf(to)
-        if (j < 0 || (j - i) * step <= 0) continue
-      }
-      const dir = COORDS[from] && COORDS[end] ? compass(bearing(COORDS[from], COORDS[end])) : 'nord'
-      const key = `${route.id}|${end}`
-      const travel = to ? travelMinutes(route, from, to) : null
-      times(route, `${key}|${from}`, now, count).forEach((at, n) =>
-        out.push({
-          id: `${key}|${n}`,
-          key,
-          line: route.id,
-          route,
-          toward: end,
-          dir,
-          at,
-          travel,
-          arrive: travel ? new Date(+at + travel * 60000) : null,
-          platform: route.mode === 'boat' ? 'Kai' : PLATFORM[dir],
-          crowd: ((hash(key + n) % 70) + 10) / 100,
-        }),
-      )
+  const candidates = []
+
+  for (const [pi, pos] of AT.get(from) ?? []) {
+    const p = PATTERNS[pi]
+    let pos2 = -1
+    if (to) {
+      pos2 = p.quays.findIndex((q, k) => k > pos && q.station.name === to)
+      if (pos2 < 0) continue
     }
+    const here = p.quays[pos]
+    const end = p.quays[p.quays.length - 1].station
+    const dir = compass(bearing(here.station, end))
+    const push = (m) => {
+      if (m < nowMin || m > nowMin + horizon) return
+      candidates.push({ p, pos, pos2, here, end, dir, m })
+    }
+    p.times[day].forEach((s) => push(s + p.offs[pos]))
+    // Turer fra i går som går over midnatt
+    p.times[prevDay].forEach((s) => s + p.offs[pos] >= 1440 && push(s + p.offs[pos] - 1440))
   }
-  return out.sort((a, b) => a.at - b.at)
+
+  candidates.sort((a, b) => a.m - b.m)
+  for (const c of candidates) {
+    const line = c.p.route.id
+    const key = `${line}|${c.p.headsign}`
+    const n = seen.get(key) ?? 0
+    // Samme avgang kan komme fra flere kjøremønstre; hopp over duplikater
+    if (out.some((d) => d.key === key && +d.at === +dateAt(now, c.m))) continue
+    if (n >= count) continue
+    seen.set(key, n + 1)
+    const travel = c.pos2 >= 0 ? c.p.offs[c.pos2] - c.p.offs[c.pos] : null
+    out.push({
+      id: `${key}|${c.m}`,
+      key,
+      line,
+      route: c.p.route,
+      toward: c.p.headsign || c.end.name,
+      dir: c.dir,
+      at: dateAt(now, c.m),
+      travel,
+      arrive: travel !== null ? dateAt(now, c.m + travel) : null,
+      platform: c.p.route.mode === 'boat' ? 'Kai' : c.here.platform || '–',
+      crowd: ((hash(key + n) % 70) + 10) / 100,
+    })
+  }
+  return out
 }
 
-// Demoavviket: neste linje 6 fra UiS mot sentrum er innstilt
-export const DISRUPTED = { stop: 'UiS Tjodhallen', key: '6|Stavanger sentrum' }
+// Demoavviket: neste linje 6 fra UiS øst nordover mot Stavanger er innstilt
+export const DISRUPTED = { stop: 'UiS øst', line: '6', dir: 'nord' }
+
+export const isDisrupted = (d) => d.line === DISRUPTED.line && d.dir === DISRUPTED.dir
 
 export function cancelledDeparture(now) {
-  return board(DISRUPTED.stop, now, { count: 1 }).find((d) => d.key === DISRUPTED.key)
+  return board(DISRUPTED.stop, now, { count: 1, horizon: 600 }).find(isDisrupted)
 }
+
+// Hvor mange kjøremønstre som stopper ved holdeplassen; brukes til å rangere søkeforslag
+export const stopWeight = (name) => AT.get(name)?.length ?? 0

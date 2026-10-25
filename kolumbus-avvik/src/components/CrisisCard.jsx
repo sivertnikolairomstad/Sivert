@@ -60,7 +60,7 @@ function Card({ now, onClose, onChat, onPlan }) {
         </button>
       </div>
       <h2 id="crisis-title" className="mt-2 text-[17px] leading-snug font-semibold">
-        Linje {dep.line} kl. {clock(dep.at)} fra UiS Tjodhallen er innstilt
+        Linje {dep.line} kl. {clock(dep.at)} fra UiS øst er innstilt
       </h2>
       <p className="mt-1 text-[14px] leading-relaxed text-muted">
         Teknisk feil. Ekstrabuss er satt inn. 38 reisende er berørt.
@@ -108,7 +108,7 @@ function Card({ now, onClose, onChat, onPlan }) {
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="max-w-[90%] rounded-2xl rounded-bl-sm bg-surface-2 px-3.5 py-2.5">
               <p className="text-[12px] font-semibold text-accent">Trafikksentralen</p>
               <p className="text-[15px] leading-snug">
-                Takk for beskjed. Forsinkelsesattesten er sendt til deg. Ekstrabuss 6E går fra plattform A om ca. 6 minutter.
+                Takk for beskjed. Forsinkelsesattesten er sendt til deg. Ekstrabuss 6E går fra plattform {dep.platform} om ca. 6 minutter.
               </p>
             </motion.div>
             <div className="grid grid-cols-2 gap-2 pt-2">

@@ -51,11 +51,11 @@ export default function App() {
       // Trafikksentralen reagerer synlig etter noen sekunder
       extraTimer.current = setTimeout(() => {
         setExtraBus(new Date(Math.ceil(Date.now() / 60000) * 60000 + 6 * 60000))
-        toast({ title: 'Ekstrabuss 6E er satt inn', body: 'Går fra plattform A om 6 minutter.' })
+        toast({ title: 'Ekstrabuss 6E er satt inn', body: 'Går fra UiS øst, plattform B, om 6 minutter.' })
       }, 4500)
       setMessages((m) => [
         ...m,
-        msg({ from: 'system', text: 'Linje 6 fra UiS Tjodhallen er innstilt' }),
+        msg({ from: 'system', text: 'Linje 6 fra UiS øst mot Stavanger er innstilt' }),
         msg({ from: 'ai', text: 'Bussen du pleier å ta fra UiS er innstilt, beklager. Ekstrabuss er på vei. Si gjerne fra hvordan dette påvirker deg, så finner vi en løsning.' }),
       ])
     } else {

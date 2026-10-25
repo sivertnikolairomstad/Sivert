@@ -5,9 +5,17 @@ import { Button, Group, LineBadge, Row, SectionHeader } from './ui.jsx'
 import { CATEGORIES, ROUTES, routeById, nextDepartures } from '../routes.js'
 import { clock } from '../lib/time.js'
 
+// Stabil ikonkomponent per linje, så radene ikke monteres på nytt ved hver render
+const badges = new Map()
+const Badge = (id) => {
+  if (!badges.has(id)) badges.set(id, () => <LineBadge line={id} size="sm" />)
+  return badges.get(id)
+}
+
 // value: null = lukket, '' = linjeliste, id = én linje
 export default function LinesSheet({ value, onChange, now, onAsk }) {
   const [q, setQ] = useState('')
+  const [showSchool, setShowSchool] = useState(false)
   const lastRef = useRef(null)
   const route = value ? routeById(value) : null
   if (value !== null) lastRef.current = route
@@ -16,6 +24,7 @@ export default function LinesSheet({ value, onChange, now, onAsk }) {
   const groups = useMemo(() => {
     const t = q.trim().toLowerCase()
     const hit = ROUTES.filter((r) => !t || r.id.toLowerCase().includes(t) || r.stops.some((s) => s.toLowerCase().includes(t)))
+    // Skolebussene er mange; de legges sist
     return Object.entries(CATEGORIES)
       .map(([k, c]) => ({ ...c, key: k, routes: hit.filter((r) => r.cat === k) }))
       .filter((g) => g.routes.length)
@@ -33,14 +42,15 @@ export default function LinesSheet({ value, onChange, now, onAsk }) {
             <div className="min-w-0">
               <p className="text-[16px] font-semibold">{shown.name}</p>
               <p className="text-[13px] text-muted">
-                {CATEGORIES[shown.cat].label} · {shown.every < 60 ? `hvert ${shown.every}. min` : shown.every === 60 ? 'hver time' : `hver ${shown.every / 60}. time`}
+                {CATEGORIES[shown.cat].label} · {shown.stops.length} stopp
+                {shown.every ? ` · ${shown.every < 60 ? `hvert ${shown.every}. min` : shown.every < 90 ? 'omtrent hver time' : `omtrent hver ${Math.round(shown.every / 60)}. time`}` : ''}
               </p>
             </div>
           </div>
-          {shown.note && <p className="mx-4 mt-3 rounded-lg bg-surface-2 px-3 py-2 text-[14px]">{shown.note}</p>}
-
+          
           <SectionHeader title="Neste avganger" right={`fra ${shown.stops[0]}`} />
-          <div className="flex gap-2 px-4">
+          <div className="flex flex-wrap gap-2 px-4">
+            {!nextDepartures(shown, now).length && <span className="text-[14px] text-muted">Ingen flere avganger i dag.</span>}
             {nextDepartures(shown, now).map((d) => (
               <span key={+d} className="rounded-lg bg-surface-2 px-3 py-1.5 text-[15px] font-semibold tabular-nums">
                 {clock(d)}
@@ -78,9 +88,14 @@ export default function LinesSheet({ value, onChange, now, onAsk }) {
             <div key={g.key}>
               <SectionHeader title={g.label} right={`${g.routes.length}`} />
               <Group>
-                {g.routes.map((r) => (
-                  <Row key={r.id} icon={() => <LineBadge line={r.id} size="sm" />} title={r.name} onClick={() => onChange(r.id)} />
+                {(g.key === 'skole' && !showSchool && !q ? g.routes.slice(0, 3) : g.routes).map((r) => (
+                  <Row key={r.id} icon={Badge(r.id)} title={r.name} onClick={() => onChange(r.id)} />
                 ))}
+                {g.key === 'skole' && !showSchool && !q && g.routes.length > 3 && (
+                  <button type="button" onClick={() => setShowSchool(true)} className="w-full border-t border-line px-4 py-3 text-left text-[15px] text-accent">
+                    Vis alle {g.routes.length} skolebusser
+                  </button>
+                )}
               </Group>
             </div>
           ))}

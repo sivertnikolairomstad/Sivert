@@ -10,7 +10,7 @@ export const REPORT_TYPES = [
 
 // Svar fra trafikksentralen på en rapport
 export const OPERATOR_ANSWERS = {
-  full: 'Takk. Vi ser det samme på passasjertellingen og setter inn ekstrabuss 6E fra plattform A.',
+  full: 'Takk. Vi ser det samme på passasjertellingen og setter inn ekstrabuss 6E fra plattform B.',
   late: 'Takk. Bussen står i kø ved Ullandhaug. Vi har oppdatert tiden for alle på holdeplassen.',
   noshow: 'Beklager. Vi har kontaktet sjåføren og varslet alle som venter. Du får forsinkelsesattest automatisk.',
   safety: 'Takk for at du sier fra. Brøytemannskapet er varslet og kommer innen 20 minutter.',
