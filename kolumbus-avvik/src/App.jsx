@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
-import TopBar from './components/TopBar.jsx'
+import { MotionConfig, motion } from 'framer-motion'
+import { BatteryFull, Signal, Wifi } from 'lucide-react'
 import CrisisCard from './components/CrisisCard.jsx'
-import Toasts from './components/Toasts.jsx'
-import Planner, { initialFeed } from './tabs/Planner.jsx'
-import Support from './tabs/Support.jsx'
-import Social from './tabs/Social.jsx'
-import Theory from './tabs/Theory.jsx'
+import Toast from './components/Toast.jsx'
+import { Switch } from './components/ui.jsx'
+import Planner, { initialFeed } from './screens/Planner.jsx'
+import Support from './screens/Support.jsx'
+import Social from './screens/Social.jsx'
+import Theory from './screens/Theory.jsx'
 import { answer } from './data.js'
-import { useNow } from './lib/time.js'
+import { clock, useNow } from './lib/time.js'
 import { TABS } from './lib/tabs.js'
 
-
-let msgId = 0
-const msg = (m) => ({ id: ++msgId, at: Date.now(), ...m })
+let uid = 0
+const msg = (m) => ({ id: ++uid, ...m })
 
 export default function App() {
   const now = useNow()
@@ -21,22 +21,22 @@ export default function App() {
   const [disrupted, setDisrupted] = useState(false)
   const [crisisOpen, setCrisisOpen] = useState(false)
   const [extraBus, setExtraBus] = useState(null) // avgangstid for ekstrabussen når den er satt inn
-  const [toasts, setToasts] = useState([])
-  const [reports, setReports] = useState({}) // depId → { type, label, count, mine }
+  const [toastItem, setToastItem] = useState(null)
+  const [reports, setReports] = useState({})
   const [feed, setFeed] = useState(initialFeed)
   const [messages, setMessages] = useState(() => [
-    msg({ from: 'ai', text: 'Hei! Æ er Move-assistenten. Spør meg om hva som helst om reisen din – æ svarer med en gang, og setter deg over til en av oss på trafikksentralen hvis du vil det 💚' }),
+    msg({ from: 'ai', text: 'Hei! Jeg er Move-assistenten. Spør om hva som helst om reisen din. Vil du heller snakke med et menneske, setter jeg deg over til trafikksentralen.' }),
   ])
   const [typing, setTyping] = useState(false)
   const timers = useRef([])
   const extraTimer = useRef(null)
-  const later = (fn, ms) => timers.current.push(setTimeout(fn, ms))
-  useEffect(() => () => [...timers.current, extraTimer.current].forEach(clearTimeout), [])
+  const toastTimer = useRef(null)
+  useEffect(() => () => [...timers.current, extraTimer.current, toastTimer.current].forEach(clearTimeout), [])
 
   const toast = useCallback((t) => {
-    const id = ++msgId
-    setToasts((ts) => [...ts, { id, ...t }])
-    setTimeout(() => setToasts((ts) => ts.filter((x) => x.id !== id)), t.ms ?? 4200)
+    clearTimeout(toastTimer.current)
+    setToastItem({ id: ++uid, ...t })
+    toastTimer.current = setTimeout(() => setToastItem(null), 3500)
   }, [])
 
   const toggleDisruption = useCallback(() => {
@@ -46,18 +46,18 @@ export default function App() {
     setExtraBus(null)
     clearTimeout(extraTimer.current)
     if (next) {
-      // Operatøren handler synlig etter noen sekunder – ekstrabussen dukker opp for alle
+      // Trafikksentralen reagerer synlig etter noen sekunder
       extraTimer.current = setTimeout(() => {
         setExtraBus(new Date(Math.ceil(Date.now() / 60000) * 60000 + 6 * 60000))
-        toast({ tone: 'ok', title: 'Ekstrabuss 6E satt inn', body: 'Trafikksentralen svarte på avviket. Går fra plattform A.' })
+        toast({ title: 'Ekstrabuss 6E er satt inn', body: 'Går fra plattform A om 6 minutter.' })
       }, 4500)
       setMessages((m) => [
         ...m,
-        msg({ from: 'system', text: 'Avvik: Linje 6 fra UiS Tjodhallen er innstilt (teknisk feil)' }),
-        msg({ from: 'ai', text: 'Hei igjen! Æ ser at 6-eren du pleier å ta fra UiS er innstilt. Beklager så mye 😔 Ekstrabuss er på vei. Fortell meg gjerne hvordan det påvirker deg, så finner vi en løsning sammen.' }),
+        msg({ from: 'system', text: 'Linje 6 fra UiS Tjodhallen er innstilt' }),
+        msg({ from: 'ai', text: 'Bussen du pleier å ta fra UiS er innstilt, beklager. Ekstrabuss er på vei. Si gjerne fra hvordan dette påvirker deg, så finner vi en løsning.' }),
       ])
     } else {
-      setMessages((m) => [...m, msg({ from: 'system', text: 'Avviket er løst – trafikken går normalt igjen' })])
+      setMessages((m) => [...m, msg({ from: 'system', text: 'Avviket er løst' })])
     }
   }, [disrupted, toast])
 
@@ -66,125 +66,111 @@ export default function App() {
       if (!text.trim()) return
       setMessages((m) => [...m, msg({ from: 'me', text: text.trim() })])
       setTyping(true)
-      // «Med en gang»: kort skriveindikator så svaret oppleves som et svar, ikke en blink
-      later(() => {
-        setTyping(false)
-        setMessages((m) => [...m, msg(answer(text, disrupted))])
-      }, 650)
+      timers.current.push(
+        setTimeout(() => {
+          setTyping(false)
+          setMessages((m) => [...m, msg(answer(text, disrupted))])
+        }, 650),
+      )
     },
     [disrupted],
   )
 
-  const rateChat = (id, rating) => {
-    setMessages((m) => m.map((x) => (x.id === id ? { ...x, rating } : x)))
-    toast({
-      tone: rating === 'up' ? 'ok' : 'info',
-      title: rating === 'up' ? 'Takk for tilbakemeldingen!' : 'Takk – vi lærer av dette',
-      body: rating === 'up' ? 'Den hjelper oss å svare enda bedre.' : 'En fra trafikksentralen ser på samtalen.',
-    })
-  }
+  const rateChat = (id, rating) => setMessages((m) => m.map((x) => (x.id === id ? { ...x, rating } : x)))
 
-  const openChat = (seed) => {
+  const goChat = () => {
     setCrisisOpen(false)
     setTab('chat')
-    if (seed) sendChat(seed)
   }
 
-  // Snarveier for presentasjon: A = avvik, 1–4 = faner
+  // Snarveier for presentasjonen: A = avvik, 1–4 = faner
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.closest('input, textarea') || e.metaKey || e.ctrlKey || e.altKey) return
       if (e.key.toLowerCase() === 'a') toggleDisruption()
-      const i = Number(e.key) - 1
-      if (TABS[i]) setTab(TABS[i].id)
+      const t = TABS[Number(e.key) - 1]
+      if (t) setTab(t.id)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [toggleDisruption])
 
-  // Klammer: scrollTo returnerer en Promise i nyere Chromium, og React ville tolket den som cleanup
-  useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [tab])
-
   return (
     <MotionConfig reducedMotion="user">
-      <Backdrop alert={disrupted} />
-      <div className="relative min-h-dvh pb-28 sm:pb-12">
-        <TopBar now={now} tab={tab} onTab={setTab} disrupted={disrupted} onToggle={toggleDisruption} />
+      <div className="flex h-dvh items-center justify-center sm:p-6">
+        <div className="relative flex h-full w-full flex-col overflow-hidden bg-bg sm:h-[844px] sm:max-h-full sm:w-[390px] sm:rounded-[54px] sm:shadow-[0_0_0_11px_#1a1d1c,0_0_0_12px_#2c302e,0_40px_80px_-20px_rgba(0,0,0,0.9)]">
+          <StatusBar now={now} />
+          <AppBar disrupted={disrupted} onToggle={toggleDisruption} />
 
-        <AnimatePresence>
-          {crisisOpen && (
-            <CrisisCard
-              now={now}
-              onClose={() => setCrisisOpen(false)}
-              onChat={() => openChat()}
-              onPlan={() => {
-                setCrisisOpen(false)
-                setTab('plan')
-              }}
-            />
-          )}
-        </AnimatePresence>
+          <main className="relative min-h-0 flex-1">
+            {tab === 'plan' && (
+              <Planner
+                now={now}
+                disrupted={disrupted}
+                extraBus={extraBus}
+                toast={toast}
+                onShowCrisis={() => setCrisisOpen(true)}
+                onChat={goChat}
+                store={{ reports, setReports, feed, setFeed }}
+              />
+            )}
+            {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} disrupted={disrupted} />}
+            {tab === 'some' && <Social />}
+            {tab === 'teori' && <Theory onTab={setTab} />}
+          </main>
 
-        <main className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 sm:pt-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {tab === 'plan' && (
-                <Planner
-                  now={now}
-                  disrupted={disrupted}
-                  extraBus={extraBus}
-                  toast={toast}
-                  onChat={openChat}
-                  onShowCrisis={() => setCrisisOpen(true)}
-                  store={{ reports, setReports, feed, setFeed }}
-                />
-              )}
-              {tab === 'chat' && (
-                <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} disrupted={disrupted} />
-              )}
-              {tab === 'some' && <Social />}
-              {tab === 'teori' && <Theory onTab={setTab} />}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+          <TabBar tab={tab} onTab={setTab} badge={disrupted && tab !== 'chat'} />
 
-        <MobileNav tab={tab} onTab={setTab} unread={disrupted && tab !== 'chat'} />
-        {/* Under kriseoverlegget mens det er åpent, så varsler ikke dekker handlingsknappene */}
-        <Toasts toasts={toasts} behind={crisisOpen} />
+          <Toast toast={crisisOpen ? null : toastItem} />
+          <CrisisCard
+            open={crisisOpen}
+            now={now}
+            onClose={() => setCrisisOpen(false)}
+            onChat={goChat}
+            onPlan={() => {
+              setCrisisOpen(false)
+              setTab('plan')
+            }}
+          />
+        </div>
       </div>
     </MotionConfig>
   )
 }
 
-function Backdrop({ alert }) {
+function StatusBar({ now }) {
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-      <div className="absolute -top-40 -left-32 size-[34rem] rounded-full bg-emerald-500/20 blur-[120px]" />
-      <div className="absolute top-1/3 -right-40 size-[30rem] rounded-full bg-teal-400/10 blur-[120px]" />
-      <motion.div
-        className="absolute -top-24 right-1/4 size-[26rem] rounded-full bg-rose-500/25 blur-[120px]"
-        animate={{ opacity: alert ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
+    <div className="flex h-11 shrink-0 items-center justify-between px-7 pt-1 text-[15px] font-semibold tabular-nums sm:h-12 sm:pt-2" aria-hidden>
+      <span>{clock(now)}</span>
+      <span className="flex items-center gap-1.5">
+        <Signal className="size-4" />
+        <Wifi className="size-4" />
+        <BatteryFull className="size-5" />
+      </span>
     </div>
   )
 }
 
-function MobileNav({ tab, onTab, unread }) {
+function AppBar({ disrupted, onToggle }) {
   return (
-    <nav
-      aria-label="Faner"
-      className="fixed inset-x-3 bottom-3 z-30 rounded-3xl border border-white/10 bg-slate-900/80 p-1.5 shadow-2xl backdrop-blur-xl sm:hidden"
-    >
+    <header className="flex h-12 shrink-0 items-center gap-2.5 px-4">
+      <span className="grid size-8 place-items-center rounded-lg bg-accent" aria-hidden>
+        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="#062b1b" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 18V7l8 7 8-7v11" />
+        </svg>
+      </span>
+      <span className="text-[17px] font-semibold">Move Rogaland</span>
+      <label className="ml-auto flex items-center gap-2 text-[13px] text-muted">
+        <span>Simuler avvik</span>
+        <Switch on={disrupted} onToggle={onToggle} label="Simuler avvik" />
+      </label>
+    </header>
+  )
+}
+
+function TabBar({ tab, onTab, badge }) {
+  return (
+    <nav aria-label="Faner" className="shrink-0 border-t border-line bg-bg/90 pb-6 backdrop-blur sm:pb-7">
       <ul className="grid grid-cols-4">
         {TABS.map(({ id, label, icon: Icon }) => {
           const active = tab === id
@@ -194,18 +180,11 @@ function MobileNav({ tab, onTab, unread }) {
                 type="button"
                 onClick={() => onTab(id)}
                 aria-current={active ? 'page' : undefined}
-                className={`relative flex w-full flex-col items-center gap-1 rounded-2xl py-2 text-[11px] font-semibold transition-colors ${
-                  active ? 'text-slate-950' : 'text-slate-400'
-                }`}
+                className={`relative flex w-full flex-col items-center gap-0.5 pt-2 text-[10px] font-medium ${active ? 'text-accent' : 'text-faint'}`}
               >
-                {active && (
-                  <motion.span layoutId="mnav" className="absolute inset-0 rounded-2xl bg-emerald-400" transition={{ type: 'spring', damping: 30, stiffness: 400 }} />
-                )}
-                <Icon className="relative size-5" />
-                <span className="relative">{label}</span>
-                {id === 'chat' && unread && (
-                  <span className="absolute top-1.5 right-[calc(50%-16px)] size-2.5 rounded-full bg-rose-400 ring-2 ring-slate-900" />
-                )}
+                <Icon className="size-6" strokeWidth={active ? 2.3 : 1.8} />
+                {label}
+                {id === 'chat' && badge && <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1.5 left-[calc(50%+6px)] size-2.5 rounded-full bg-danger" />}
               </button>
             </li>
           )

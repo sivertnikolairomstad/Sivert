@@ -15,10 +15,10 @@ trafikksentralen løser avvik sammen, ikke en kanal som bare sender ut informasj
 | Fane | Toveis-funksjon |
 | --- | --- |
 | Toppbar | «Simuler avvik»-bryter. Krisekortet ber brukeren svare («Gi beskjed at jeg blir forsinket» / «Start direkte dialog med operatør») |
-| 1 · Reise & avvik | Sanntidsavganger UiS Tjodhallen → Stavanger sentrum. «Rapporter situasjon» oppdaterer linjen for alle, og trafikksentralen svarer |
-| 2 · Support & dialog | Chat med AI som svarer med en gang, overlevering til menneske, hurtigvalg, egne meldinger og tilbakemelding på svar |
-| 3 · SoMe-dialog | Gammel enveis-praksis og ny toveis-modell side om side, avspilt steg for steg (kontekstkollaps) |
-| 4 · Teoridashbord | Grunig & Hunt, Cornelissen, SCCT, Stakeholder Salience, UGT, POEM og crowdcasting |
+| 1 · Reise | Sanntidsavganger UiS Tjodhallen → Stavanger sentrum. «Rapporter situasjon» oppdaterer linjen for alle, og trafikksentralen svarer |
+| 2 · Hjelp | Chat med AI som svarer med en gang, overlevering til menneske, hurtigvalg, egne meldinger og tilbakemelding på svar |
+| 3 · SoMe | Enveis og toveis svar på samme klage, med utfallet side om side og avspilling steg for steg (kontekstkollaps) |
+| 4 · Teori | Grunig & Hunt, Cornelissen, SCCT, Stakeholder Salience, UGT, POEM og crowdcasting |
 
 **Snarveier under presentasjonen:** `A` slår avvik av/på, `1`–`4` bytter fane.
 
