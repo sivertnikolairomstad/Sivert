@@ -1,6 +1,7 @@
 // Avgangstavle for en holdeplass med ekte avgangstider fra GTFS-dataene.
 // Retningen (nord/øst/sør/vest) regnes ut fra holdeplassen til endeholdeplassen.
 import { PATTERNS, dayIndex, dateAt } from './routes.js'
+import { tripDelay } from './live.js'
 
 export const DIRECTIONS = ['nord', 'øst', 'sør', 'vest']
 
@@ -43,13 +44,16 @@ export function board(from, now, { to, count = 3, horizon = 180 } = {}) {
     const here = p.quays[pos]
     const end = p.quays[p.quays.length - 1].station
     const dir = compass(bearing(here.station, end))
-    const push = (m) => {
+    // m = forventet tid ved holdeplassen (rutetid + simulert forsinkelse)
+    const push = (start, shift) => {
+      const delay = tripDelay(pi, start)
+      const m = start + p.offs[pos] + delay - shift
       if (m < nowMin || m > nowMin + horizon) return
-      candidates.push({ p, pos, pos2, here, end, dir, m })
+      candidates.push({ p, pi, start, shift, delay, pos, pos2, here, end, dir, m })
     }
-    p.times[day].forEach((s) => push(s + p.offs[pos]))
+    p.times[day].forEach((s) => push(s, 0))
     // Turer fra i går som går over midnatt
-    p.times[prevDay].forEach((s) => s + p.offs[pos] >= 1440 && push(s + p.offs[pos] - 1440))
+    p.times[prevDay].forEach((s) => s + p.offs[pos] >= 1440 && push(s, 1440))
   }
 
   candidates.sort((a, b) => a.m - b.m)
@@ -70,6 +74,8 @@ export function board(from, now, { to, count = 3, horizon = 180 } = {}) {
       toward: c.p.headsign || c.end.name,
       dir: c.dir,
       at: dateAt(now, c.m),
+      delay: c.delay,
+      trip: { pi: c.pi, start: c.start - c.shift, pos: c.pos },
       travel,
       arrive: travel !== null ? dateAt(now, c.m + travel) : null,
       platform: c.p.route.mode === 'boat' ? 'Kai' : c.here.platform || '–',

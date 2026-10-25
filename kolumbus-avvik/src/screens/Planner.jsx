@@ -60,7 +60,7 @@ function Highlight({ name, query }) {
   )
 }
 
-export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, store }) {
+export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis, onChat, onLines, onTrack, store }) {
   const { reports, setReports, feed, setFeed } = store
   const [from, setFrom] = useState('UiS øst')
   const [to, setTo] = useState('')
@@ -75,7 +75,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
     if (disrupted && fromStop === DISRUPTED.stop) {
       const first = list.find(isDisrupted)
       if (first) first.cancelled = true
-      if (extraBus && first) list.push({ ...first, id: 'extra', key: `6E|${first.toward}`, line: '6E', at: extraBus, cancelled: false, extra: true, crowd: 0.05, arrive: first.travel ? new Date(+extraBus + first.travel * 60000) : null })
+      if (extraBus && first) list.push({ ...first, id: 'extra', key: `6E|${first.toward}`, line: '6E', at: extraBus, delay: 0, trip: { ...first.trip, start: first.trip.start + first.delay + (extraBus - first.at) / 60000, line: '6E' }, cancelled: false, extra: true, crowd: 0.05, arrive: first.travel ? new Date(+extraBus + first.travel * 60000) : null })
     }
     return list.sort((a, b) => a.at - b.at)
   }, [fromStop, toStop, now, disrupted, extraBus])
@@ -178,7 +178,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
         </p>
       ) : (
         <>
-          {nearest && <Nearest d={nearest} now={now} from={fromStop} to={toStop} />}
+          {nearest && <Nearest d={nearest} now={now} from={fromStop} to={toStop} onTrack={() => onTrack(nearest, fromStop)} />}
 
           {toStop ? (
             <>
@@ -188,7 +188,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
                   <ul>
                     <AnimatePresence initial={false}>
                       {rows.slice(0, 6).map((d) => (
-                        <DepartureRow key={d.id} d={d} now={now} report={reports[d.key]} showArrival />
+                        <DepartureRow key={d.id} d={d} now={now} report={reports[d.key]} showArrival onTrack={() => onTrack(d, fromStop)} />
                       ))}
                     </AnimatePresence>
                   </ul>
@@ -210,7 +210,7 @@ export default function Planner({ now, disrupted, extraBus, toast, onShowCrisis,
                   <ul>
                     <AnimatePresence initial={false}>
                       {g.rows.map((d) => (
-                        <DepartureRow key={d.id} d={d} now={now} report={reports[d.key]} />
+                        <DepartureRow key={d.id} d={d} now={now} report={reports[d.key]} onTrack={() => onTrack(d, fromStop)} />
                       ))}
                     </AnimatePresence>
                   </ul>
@@ -284,10 +284,10 @@ function Field({ label, value, onChange, onFocus, onBlur, dot, placeholder }) {
   )
 }
 
-function Nearest({ d, now, from, to }) {
+function Nearest({ d, now, from, to, onTrack }) {
   const mins = minutesUntil(d.at, now)
   return (
-    <motion.section layout aria-label="Nærmeste avgang" className="mx-4 mt-4 rounded-xl bg-surface p-4 shadow-[0_1px_2px_rgba(16,24,40,0.06)]">
+    <motion.button type="button" onClick={onTrack} layout aria-label={`Nærmeste avgang, linje ${d.line}. Trykk for å følge bussen`} className="mx-4 mt-4 block w-[calc(100%-2rem)] rounded-xl bg-surface p-4 text-left shadow-[0_1px_2px_rgba(16,24,40,0.06)] active:bg-surface-2">
       <p className="flex items-center gap-1.5 text-[13px] font-medium text-accent">
         <Navigation className="size-3.5" /> Nærmeste avgang fra {from}
       </p>
@@ -299,17 +299,18 @@ function Nearest({ d, now, from, to }) {
             Retning {d.dir} · {d.platform === 'Kai' ? 'Kai' : `Plattform ${d.platform}`}
             {to && d.arrive ? ` · fremme ${clock(d.arrive)}` : ''}
           </p>
+          <p className="mt-0.5 text-[13px] font-medium text-accent">Følg bussen på kartet</p>
         </div>
         <div className="text-right tabular-nums">
           <p className="text-[26px] leading-none font-bold">{mins === 0 ? 'Nå' : mins <= 30 ? mins : clock(d.at)}</p>
           {mins > 0 && mins <= 30 && <p className="text-[12px] text-muted">min</p>}
         </div>
       </div>
-    </motion.section>
+    </motion.button>
   )
 }
 
-function DepartureRow({ d, now, report, showArrival }) {
+function DepartureRow({ d, now, report, showArrival, onTrack }) {
   const mins = minutesUntil(d.at, now)
   return (
     <motion.li
@@ -317,8 +318,9 @@ function DepartureRow({ d, now, report, showArrival }) {
       initial={{ opacity: 0, backgroundColor: 'rgba(14,165,233,0.14)' }}
       animate={{ opacity: 1, backgroundColor: 'rgba(255,255,255,0)' }}
       transition={{ backgroundColor: { duration: 2 } }}
-      className="flex items-center gap-3 border-line px-4 py-3 [&+&]:border-t"
+      className="border-line [&+&]:border-t"
     >
+      <button type="button" disabled={d.cancelled} onClick={onTrack} aria-label={`Linje ${d.line} mot ${d.toward}. Trykk for å følge bussen`} className="flex w-full items-center gap-3 px-4 py-3 text-left active:bg-surface-2 disabled:cursor-default">
       <LineBadge line={d.line} state={d.cancelled ? 'cancelled' : d.extra ? 'extra' : 'ok'} />
       <div className="min-w-0 flex-1">
         <p className={`truncate text-[15px] font-medium ${d.cancelled ? 'text-faint' : ''}`}>{d.extra ? `${d.toward} (ekstrabuss)` : d.toward}</p>
@@ -326,6 +328,7 @@ function DepartureRow({ d, now, report, showArrival }) {
           {showArrival && d.arrive ? <span className="text-[12px] text-faint">Fremme {clock(d.arrive)} · {d.travel} min</span> : <span className="text-[12px] text-faint">{d.platform === 'Kai' ? 'Kai' : `Plattform ${d.platform}`}</span>}
           {d.cancelled ? <Tag tone="danger">Innstilt</Tag> : <CrowdMeter value={report?.type === 'full' ? 0.95 : d.crowd} />}
           {d.extra && <Tag tone="info">Ny</Tag>}
+          {!d.cancelled && d.delay > 0 && <Tag tone="warn">+{d.delay} min</Tag>}
           {report && (
             <Tag tone="warn">
               {report.label} · {report.count}
@@ -343,6 +346,7 @@ function DepartureRow({ d, now, report, showArrival }) {
           </>
         )}
       </div>
+      </button>
     </motion.li>
   )
 }

@@ -1,10 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MotionConfig, motion } from 'framer-motion'
 import { BatteryFull, Signal, Wifi } from 'lucide-react'
 import CrisisCard from './components/CrisisCard.jsx'
 import Toast from './components/Toast.jsx'
 import { Switch } from './components/ui.jsx'
 import Planner, { initialFeed } from './screens/Planner.jsx'
+import LiveMap from './screens/LiveMap.jsx'
+import TrackSheet from './components/TrackSheet.jsx'
+import { cancelledDeparture } from './board.js'
 import Support from './screens/Support.jsx'
 import News from './screens/News.jsx'
 import LinesSheet from './components/LinesSheet.jsx'
@@ -30,10 +33,21 @@ export default function App() {
   ])
   const [typing, setTyping] = useState(false)
   const [lines, setLines] = useState(null) // null = lukket, '' = liste, id = valgt linje
+  const [track, setTrack] = useState(null) // { dep, from } når du følger en buss
   const timers = useRef([])
   const extraTimer = useRef(null)
   const toastTimer = useRef(null)
   useEffect(() => () => [...timers.current, extraTimer.current, toastTimer.current].forEach(clearTimeout), [])
+
+  // Sanntid: den innstilte turen forsvinner fra kartet, ekstrabussen dukker opp
+  const minuteKey = Math.floor(+now / 60000)
+  const live = useMemo(() => {
+    if (!disrupted) return {}
+    const c = cancelledDeparture(new Date(minuteKey * 60000))
+    if (!c) return {}
+    const extra = extraBus ? [{ ...c.trip, start: c.trip.start + c.delay + (extraBus - c.at) / 60000, line: '6E' }] : []
+    return { cancelled: [c.trip], extra }
+  }, [disrupted, extraBus, minuteKey])
 
   const toast = useCallback((t) => {
     clearTimeout(toastTimer.current)
@@ -108,7 +122,7 @@ export default function App() {
             <AppBar disrupted={disrupted} onToggle={toggleDisruption} />
           </div>
 
-          <main className="relative min-h-0 flex-1">
+          <main className="relative isolate min-h-0 flex-1">
             {tab === 'plan' && (
               <Planner
                 now={now}
@@ -118,9 +132,11 @@ export default function App() {
                 onShowCrisis={() => setCrisisOpen(true)}
                 onChat={goChat}
                 onLines={() => setLines('')}
+                onTrack={(dep, from) => setTrack({ dep, from })}
                 store={{ reports, setReports, feed, setFeed }}
               />
             )}
+            {tab === 'kart' && <LiveMap now={now} live={live} onLine={setLines} />}
             {tab === 'news' && <News disrupted={disrupted} onAsk={goChat} onShowCrisis={() => setCrisisOpen(true)} />}
             {tab === 'chat' && <Support messages={messages} typing={typing} onSend={sendChat} onRate={rateChat} onRoute={setLines} disrupted={disrupted} />}
             {tab === 'teori' && <Theory onTab={setTab} />}
@@ -129,6 +145,7 @@ export default function App() {
           <TabBar tab={tab} onTab={setTab} badge={disrupted && tab !== 'news'} />
 
           <LinesSheet value={lines} onChange={setLines} now={now} onAsk={goChat} />
+          <TrackSheet dep={track?.dep} from={track?.from} now={now} live={live} onClose={() => setTrack(null)} toast={toast} />
           <Toast toast={crisisOpen ? null : toastItem} />
           <CrisisCard
             open={crisisOpen}
@@ -185,7 +202,7 @@ function Logo() {
 function TabBar({ tab, onTab, badge }) {
   return (
     <nav aria-label="Faner" className="shrink-0 border-t border-line bg-surface pb-6 sm:pb-7">
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {TABS.map(({ id, label, icon: Icon }) => {
           const active = tab === id
           return (
