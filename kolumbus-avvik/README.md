@@ -39,7 +39,7 @@ fra trafikksentralen. Retning (nord/øst/sør/vest) regnes ut fra holdeplassenes
 - `src/board.js` – avgangstavle per holdeplass
 - `src/live.js` – simulert sanntid: posisjon for alle busser og sporing av én tur
 - `src/components/MapView.jsx` – kartet (Leaflet, kartbilder fra OpenStreetMap/CARTO)
-- `src/directions.js` – veibeskrivelse: avstand, retning, riktig plattform og gangrute sving for sving (routing.openstreetmap.de), med luftlinje som reserve uten nett
+- `src/directions.js` – veibeskrivelse: avstand, retning, riktig plattform og gangrute sving for sving fra Valhalla (norske instruksjoner) med OSRM som reserve, begge fra FOSSGIS/OpenStreetMap; luftlinje og retning hvis ingen svarer
 - `src/assistant.js` – chatten
 
 **Snarveier under presentasjonen:** `A` slår avvik av/på, `1`–`5` bytter fane.

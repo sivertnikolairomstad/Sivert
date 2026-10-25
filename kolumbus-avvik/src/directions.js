@@ -99,31 +99,91 @@ function stepText(s, i, steps) {
 
 const cache = new Map()
 
-// Gangrute sving for sving. Gir null uten nett eller hvis tjenesten ikke svarer, og appen
-// faller da tilbake til luftlinje med retning.
+// Google/Valhalla-polyline med 6 desimaler → [[lat, lon], …]
+function decodePolyline6(str) {
+  const out = []
+  let i = 0
+  let lat = 0
+  let lon = 0
+  const next = () => {
+    let result = 0
+    let shift = 0
+    let b
+    do {
+      b = str.charCodeAt(i++) - 63
+      result |= (b & 0x1f) << shift
+      shift += 5
+    } while (b >= 0x20)
+    return result & 1 ? ~(result >> 1) : result >> 1
+  }
+  while (i < str.length) {
+    lat += next()
+    lon += next()
+    out.push([lat / 1e6, lon / 1e6])
+  }
+  return out
+}
+
+async function getJson(url, ms = 7000) {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), ms)
+  try {
+    const res = await fetch(url, { signal: ctrl.signal })
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    return await res.json()
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+// 1) Valhalla (FOSSGIS/OpenStreetMap) gir gangrute med instruksjoner på norsk
+async function valhalla(from, to) {
+  const body = {
+    locations: [
+      { lat: from.lat, lon: from.lon },
+      { lat: to.lat, lon: to.lon },
+    ],
+    costing: 'pedestrian',
+    directions_options: { language: 'nb-NO', units: 'kilometers' },
+  }
+  const json = await getJson(`https://valhalla1.openstreetmap.de/route?json=${encodeURIComponent(JSON.stringify(body))}`)
+  const leg = json.trip?.legs?.[0]
+  if (!leg) throw new Error('ingen rute')
+  const steps = leg.maneuvers.map((m, i, all) => ({
+    text: i === all.length - 1 ? 'Du er fremme ved holdeplassen' : m.instruction.replace(/\.$/, ''),
+    meters: Math.round(m.length * 1000),
+  }))
+  return { meters: Math.round(json.trip.summary.length * 1000), path: decodePolyline6(leg.shape), steps, source: 'Valhalla' }
+}
+
+// 2) OSRM (routing.openstreetmap.de) som reserve; instruksjonene lages på norsk her
+async function osrm(from, to) {
+  const json = await getJson(`https://routing.openstreetmap.de/routed-foot/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson&steps=true`)
+  const route = json.routes?.[0]
+  if (!route) throw new Error('ingen rute')
+  const steps = route.legs[0].steps
+  return {
+    meters: Math.round(route.distance),
+    path: route.geometry.coordinates.map(([lon, lat]) => [lat, lon]),
+    steps: steps.map((s, i) => ({ text: stepText(s, i, steps), meters: Math.round(s.distance) })).filter((s, i, a) => s.meters > 0 || i === a.length - 1),
+    source: 'OSRM',
+  }
+}
+
+// Gangrute sving for sving. Gir null hvis ingen av tjenestene svarer, og appen viser da
+// luftlinje med retning.
 export async function fetchWalkRoute(from, to) {
   const key = [from.lat, from.lon, to.lat, to.lon].map((x) => x.toFixed(5)).join(',')
   if (cache.has(key)) return cache.get(key)
-  const url = `https://routing.openstreetmap.de/routed-foot/route/v1/foot/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson&steps=true`
-  try {
-    const ctrl = new AbortController()
-    const timer = setTimeout(() => ctrl.abort(), 6000)
-    const res = await fetch(url, { signal: ctrl.signal })
-    clearTimeout(timer)
-    if (!res.ok) throw new Error(res.status)
-    const json = await res.json()
-    const route = json.routes?.[0]
-    if (!route) throw new Error('ingen rute')
-    const steps = route.legs[0].steps
-    const out = {
-      meters: Math.round(route.distance),
-      path: route.geometry.coordinates.map(([lon, lat]) => [lat, lon]),
-      steps: steps.map((s, i) => ({ text: stepText(s, i, steps), meters: Math.round(s.distance) })).filter((s, i, a) => s.meters > 0 || i === a.length - 1),
+  for (const service of [valhalla, osrm]) {
+    try {
+      const out = await service(from, to)
+      cache.set(key, out)
+      return out
+    } catch (e) {
+      console.warn(`Gangrute fra ${service.name} feilet:`, e.message)
     }
-    cache.set(key, out)
-    return out
-  } catch {
-    // Ikke mellomlagre feil, så den prøver igjen når nettet er tilbake
-    return null
   }
+  // Ikke mellomlagre feil, så den prøver igjen neste gang
+  return null
 }
