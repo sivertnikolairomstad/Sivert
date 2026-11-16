@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "/bds110/", "permanent": false }
+  ]
+}
