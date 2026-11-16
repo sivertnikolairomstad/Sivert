@@ -127,8 +127,6 @@ summary{font-weight:700;cursor:pointer}
 .husk{margin:0;padding-left:20px;display:grid;gap:6px}
 .lcard{border-left:4px solid var(--brass);padding:10px 14px;background:var(--surface2);border-radius:0 10px 10px 0}
 .lcard b{font-family:var(--display);font-size:1.05rem;display:block}
-.tbar{height:10px;background:var(--line);border-radius:10px;overflow:hidden}
-.tbar span{display:block;height:100%;background:var(--brass);width:100%}
 .mboard{display:grid;grid-template-columns:1fr 1.7fr;gap:14px;align-items:start}
 .mcol{display:grid;gap:10px}
 .mcol .opt{min-height:64px;align-items:center}
@@ -137,6 +135,18 @@ summary{font-weight:700;cursor:pointer}
 .lives{color:var(--bad);letter-spacing:4px;font-size:1.25rem}
 .big{font-family:var(--display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
 @media (max-width:640px){.mboard{grid-template-columns:1fr}.mterms{grid-template-columns:1fr 1fr}}
+.book h4{font-family:var(--display);font-size:1rem;margin:14px 0 4px}
+.book h4:first-child{margin-top:0}
+.book p{margin:6px 0;max-width:72ch}
+.book ul{margin:6px 0;padding-left:20px;max-width:72ch}
+.book li{margin:4px 0}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;font-size:.92rem;min-width:100%}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surface2);font-weight:700}
+input[type=search]{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:11px 14px}
+details.mod{background:var(--surface)}
+details.mod>summary{font-family:var(--display);font-size:1.1rem}
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .note{font-size:.86rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;max-width:70ch}
@@ -801,6 +811,330 @@ const TASKS=[
   '<b>Mer troverdig:</b> Full transparens, tallfestet dokumentasjon og ekstern verifisering. Publiser sporbare miljøregnskaper med både fremskritt og utfordringer, forankre arbeidet i FNs Global Compact og OECDs retningslinjer, og sikre samsvar mellom ord og handling (atferd i CI-mixen).']}
 ];
 
+/* ============================== FAGBOK (hele kompendiet) ============================== */
+const tb=r=>'<div class="tw"><table><tr>'+r[0].map(c=>'<th>'+c+'</th>').join('')+'</tr>'+r.slice(1).map(x=>'<tr>'+x.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('')+'</table></div>';
+const ul=a=>'<ul>'+a.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+const BOOK={
+m0:[
+ ['Praktiske rammer for eksamen',ul(['BDS110 – Digital kommunikasjon i serviceorganisasjoner (UiS).','Skriftlig, individuell, digital skoleeksamen på 4 timer (kl. 09.00–13.00), 30. november 2026.','Ingen hjelpemidler. Karakteren teller 1/1.','Oppgavesettet har 6 spørsmål. Du besvarer 3, og hver teller 1/3.'])],
+ ['Foreleserens sjekkliste',ul(['Les teksten nøye og svar på alle delspørsmålene i de tre oppgavene du velger.','Beregn tiden: ca. 65 minutter per oppgave, pluss tid til planlegging og gjennomlesing.','Strukturer besvarelsen: innledning, hoveddel med deloverskrifter, drøfting og avslutning.','Forklar kort i innledningen hvorfor du løser oppgaven slik du gjør.','Definer sentrale begreper presist før du bruker dem.','Vis selvstendighet: kombiner teorier fra ulike deler av pensum og reflekter selv.'])],
+ ['Hva vektlegges',ul(['God struktur og oversiktlig fremstilling.','Relevante teorier og begreper fra pensum og forelesninger.','Integrering av stoff fra ulike deler av pensum.','Selvstendig refleksjon.','Unngå synsing: alle påstander og anbefalinger skal begrunnes faglig og knyttes til eksempler fra serviceorganisasjoner.'])],
+ ['Karakterbeskrivelser',tb([['Karakter','Hva som kreves i BDS110'],['A – Fremragende','Høyt kunnskapsnivå og særdeles god forståelse. Teorier og begreper presenteres, drøftes og eksemplifiseres presist, faglig sikkert og reflektert.'],['B – Meget god','God forståelse og innsikt. Teorier presenteres klart og drøftes og eksemplifiseres på en akseptabel måte.'],['C – God','Tilfredsstillende innsikt på de fleste områder. Presentasjon, drøfting og eksempler er i hovedsak klare.'],['D – Nokså god','Innsikt i deler av emnet, men upresise formuleringer, faglig usikkerhet og mangler i forståelsen.'],['E – Tilstrekkelig','Begrenset kunnskap og manglende oversikt. Store hull og begreper som er mangelfullt eller feil gjengitt.'],['F – Ikke bestått','Svært begrenset innsikt.']])],
+ ['Oppskrift på sterk drøfting','<p>En sterk besvarelse viser sammenhengen mellom kontekst og fase, interessentenes reaksjoner, strategivalg og kanalvalg. Bygg hvert poeng slik:</p>'+ul(['<b>Situasjon og fase:</b> Hva skjer, hvem berøres, og hva er usikkert?','<b>Teoretisk begrunnet valg:</b> Hvilken tilnærming, strategi og hvilke kanaler passer? Begrunn med modeller fra pensum.','<b>Vurdering:</b> Hvorfor kan valget virke, under hvilke betingelser, og hvilke alternativer, begrensninger og risikoer finnes?'])],
+ ['Emnets oppbygning: HVA, HVEM, HVORDAN',ul(['<b>HVA:</b> begreper og teoretisk rammeverk. Organisasjonskommunikasjon i digital kontekst, medier og kanaler, plattformer, KI og kommunikasjonsmodeller (dialog mot informasjon).','<b>HVEM:</b> interessentene. Interne, eksterne, primære og sekundære, sett i lys av relasjoner, kanalvalg, kundeopplevelse, mangfold, makt og virtuelle team.','<b>HVORDAN:</b> strategi og praksis. Kommunikasjonsstrategi, endrings- og krisekommunikasjon, identitet og omdømme, retorikk og storytelling, interkulturell kommunikasjon og etikk.'])]],
+m1:[
+ ['Hva er organisasjonskommunikasjon?','<p>«En rekke prosesser gjennom hvilke organisasjoner skaper, forhandler og håndterer mening» (Cheney & Christensen, 2001). Kommunikasjon er altså mer enn enveis overføring av budskap. Det handler om meningsskaping, relasjon og organisering. Dette er forskjellen på overføringsperspektivet og delingsperspektivet.</p>'],
+ ['To syn på organisasjonskommunikasjon',ul(['<b>Kommunikasjon i organisasjonen:</b> organisasjonen er en beholder eller struktur som informasjon flyter i.','<b>Kommunikasjon er organisasjonen:</b> organisasjonen blir til og formes gjennom kommunikasjon. Kommunikasjon er selve byggesteinen.'])],
+ ['PR-tradisjonens perspektiver',ul(['Kommunikasjon håndterer relasjonene mellom organisasjonen og omverdenen.','Kommunikasjon er en ledelsesfunksjon og en integrert del av strategiarbeidet: planlegging, utføring og evaluering.','Den kan være asymmetrisk (organisasjonen påvirker eller overtaler) eller symmetrisk (likeverdig dialog).'])],
+ ['Digitisering, digitalisering og digital transformasjon',ul(['<b>Digitisering:</b> analog informasjon gjøres digital, for eksempel papirskjemaer som skannes.','<b>Digitalisering:</b> digital teknologi brukes til å endre og effektivisere arbeidsprosesser og samhandling.','<b>Digital transformasjon:</b> dyptgripende omstilling der teknologi endrer forretningsmodell, kultur og verdiskaping.'])+'<p>Digitalisering påvirker organisasjoner på makronivå (samfunn og bransje), mesonivå (organisasjonen) og mikronivå (den enkelte og teamet).</p>'],
+ ['Nye former for arbeid','<p>Fjernsamarbeid, distribuerte team, gig-arbeid og digitale nomader. Digital kompetanse blir viktigere. Dette er kjennetegn ved internett- og nettverkssamfunnet.</p>'],
+ ['Teknologiakseptansemodellen (TAM)','<p>Forklarer om ansatte og kunder tar i bruk ny teknologi. To faktorer avgjør: <b>opplevd nytte</b> (hjelper dette meg?) og <b>opplevd brukervennlighet</b> (er det lett å bruke?). Eksempel: resepsjonister som ser nytten av et nytt bookingsystem, men ikke bruker det fordi det er tungvint.</p>'],
+ ['Datamediert kommunikasjon (CMC)',ul(['<b>Synkron CMC:</b> kommunikasjon i sanntid, som videomøter og live chat.','<b>Asynkron CMC:</b> tidsforskjøvet kommunikasjon, som e-post, intranett og diskusjonsfora.'])],
+ ['Kritisk bruk av IKT og KI','<p>Digital teknologi kan være både <b>kanal</b> og <b>kommunikativ aktør</b>. Generativ KI, chatboter og automatisert kundeservice gir effektivisering og personalisering, men reiser spørsmål om ansvar, tillit og behovet for menneskelig skjønn.</p>']],
+m2:[
+ ['van Riels modell for virksomhetskommunikasjon','<p>Misjon og visjon, strategi, identitet og image er et felles utgangspunkt som styrer og samordner tre områder: <b>ledelseskommunikasjon</b>, <b>organisasjonskommunikasjon</b> og <b>markedskommunikasjon</b>. Områdene påvirker hverandre gjensidig.</p>'],
+ ['Historisk utvikling (Cornelissen, 2023)',ul(['<b>1900–1970-tallet:</b> publicity, promotering og informasjonsspredning. Kommunikasjon som taktisk støtte.','<b>1980–2000-tallet:</b> posisjonering.','<b>2000-tallet til i dag:</b> stakeholder engagement. Kommunikasjon som strategisk verktøy, med nøkkelbegrepene advocacy (talsmannskap), interactivity, transparency og authenticity.'])],
+ ['Engasjement som kjerneprinsipp','<p>Engasjement er mer enn å dele meninger. Organisasjonen må være transparent, engasjere på ulike plattformer og handle autentisk. Når det er sammenheng mellom det man sier og gjør, kan interessentene bli talsmenn for virksomheten.</p>'],
+ ['Integrert virksomhetskommunikasjon','<p>Drivere for integrasjon er markeds- og miljøbaserte, kommunikasjonsbaserte og organisatoriske. Kommunikasjonen bygger på samspillet mellom <b>eide, betalte og fortjente medier</b> (POEM): egne kanaler, annonsering og omtale andre gir deg.</p>'],
+ ['Tradisjonelle og nye medieomgivelser',tb([['Dimensjon','Tradisjonelle','Nye'],['Tilnærming','Broadcasting: interessentene er publikum som mottar kontrollerte budskap','Crowd-casting: interessentene produserer og sprer innhold selv'],['Modell','En-til-mange','Mange-til-en og mange-til-mange'],['Prinsipp','Corporate positioning: planlagt og kontrollert overføring','Content generation: spontan og fri spredning av innhold'],['Metaforer','Medium og kanaler','Plattformer og arenaer'],['Spilleregler','Faste og kontrollerte','Uoversiktlige og fremvoksende'],['Terskel for å publisere','Dyr og høy','Billig og lav']])]],
+m3:[
+ ['Endrede spilleregler','<p>Sosiale medier flytter virksomhetskommunikasjon fra <b>kommando og kontroll</b> til <b>kommunikasjon og fellesskap</b>. Nye utfordringer: tap av kontroll over informasjonsflyten, maktskifte til sluttbrukeren, flytende grenser mellom jobb og fritid og mellom privat og offentlig, og behov for aktiv lytting.</p>'],
+ ['Klassifisering av sosiale medier',tb([['','Lav sosial tilstedeværelse/medierikhet','Medium','Høy'],['Høy selvpresentasjon','Blogger','Sosiale nettverkssider (Facebook)','Virtuelle sosiale verdener (Second Life)'],['Lav selvpresentasjon','Samarbeidsprosjekter (Wikipedia)','Innholdsfellesskap (YouTube)','Virtuelle spillverdener (World of Warcraft)']])],
+ ['Sentrale teorier',ul(['<b>Medierikhetsteori:</b> kanalvalget bør passe budskapets tvetydighet. Rike medier (ansikt til ansikt, video) gir rask tilbakemelding og mange signaler. Magre medier (skriftlige dokumenter, e-post) passer til entydig informasjon.','<b>Usikkerhetsreduksjon (URT):</b> vi søker informasjon, som gjesteanmeldelser, for å redusere usikkerhet før vi velger.','<b>Social Information Processing (SIP):</b> relasjoner utvikles på nett over tid gjennom språklige og tidsmessige signaler, selv uten fysiske ledetråder.','<b>Uses and Gratifications:</b> brukere er aktive og velger medier for å dekke behov som informasjon, sosial kontakt, underholdning og selvrealisering.'])],
+ ['Hvordan sosiale medier påvirker oss',ul(['<b>Selektiv eksponering:</b> vi oppsøker innhold som bekrefter det vi allerede mener.','<b>Crescendo-effekt:</b> kritikk eskalerer raskt og bygger seg opp til en storm.','<b>Overvåkning og personvern:</b> etiske og juridiske utfordringer ved datainnsamling og sporing.','<b>Problematisk bruk:</b> internettavhengighet, FOMO (frykt for å gå glipp av noe) og phubbing (å overse dem man er sammen med til fordel for mobilen).','<b>Sosial kapital:</b> digitale nettverk skaper tillit, tilhørighet og ressurser.'])],
+ ['Servicevirksomheters bruk',ul(['Sosiale samhandlingsløsninger internt (Enterprise 2.0), omdømmehåndtering og rekruttering.','Plattformer og apper som en del av tjenesten og kundeopplevelsen.','Lytting og analyse: review mining (analyse av anmeldelser), sentimentanalyse (positiv og negativ stemning) og topic modeling (hovedtemaer i store tekstmengder).','Algoritmer og KI i produksjon, distribusjon, personalisering og interaksjon.'])],
+ ['Styrke relasjoner: PARC','<p>Virkemidler er personalisering, toveiskommunikasjon, storytelling, virtuelle fellesskap og integrasjon av digitale og tradisjonelle medier. PARC-prinsippene sier at kommunikasjonen bør være <b>Participatory</b> (deltakende), <b>Authentic</b> (autentisk), <b>Resourceful</b> (ressursfull) og <b>Credible</b> (troverdig).</p>']],
+m4:[
+ ['Ukonvensjonell datamediert kommunikasjon','<p>Gjesteforelesning med Dr. Hong Li. Temaet er måter å bruke datamediert kommunikasjon på utover vanlige tekst- og videomeldinger, og hvordan slike former påvirker kommunikasjon over lange avstander.</p>'],
+ ['Flexi Card Game','<p>Et praktisk og kreativt designverktøy for å utforske digital kommunikasjon.</p>'],
+ ['Hva som er viktig i slike verktøy','<p>Verktøyene bør fremme <b>nærhet</b> og <b>emosjonell kommunikasjon</b>. I organisasjoner kan ukonvensjonelle former brukes til å styrke samhold og samhandling, for eksempel i team som sitter på ulike steder.</p>']],
+m5:[
+ ['Grunnprinsipp','<p>«En digital kommunikasjonsstrategi begynner ikke med Instagram.» Strategi handler om begrunnede valg. Det overordnede målet er at virksomhetens <b>omdømme</b> skal være i tråd med <b>visjonen</b>. Gapet mellom de to er det strategiske problemet.</p>'],
+ ['De sju stegene i strategisk kommunikasjonsplanlegging',ul(['<b>Steg 1 – Strategisk intensjon:</b> hva er det overordnede grepet?','<b>Steg 2 – Kommunikasjonsmål:</b> hva vil vi oppnå?','<b>Steg 3 – Målgrupper:</b> hvem må vi nå, og hvem er viktigst?','<b>Steg 4 – Tematiske budskap:</b> hva skal vi kommunisere?','<b>Steg 5 – Budskapsstil:</b> hvordan skal vi si det?','<b>Steg 6 – Mediestrategi:</b> hvor skal kommunikasjonen foregå?','<b>Steg 7 – Budsjett og evaluering:</b> hvordan vet vi om det virker, og hva må justeres?'])],
+ ['Strategiprosesser',ul(['<b>Rasjonell:</b> analytisk og planlagt steg for steg.','<b>Visjonær:</b> styrt av en sterk, samlende fremtidsvisjon.','<b>Inkrementell:</b> gradvis utprøving, læring og tilpasning.'])],
+ ['Budskapsstiler',ul(['<b>Funksjonelle budskap:</b> konkrete egenskaper, fakta, pris og nytte.','<b>Symbolske budskap:</b> verdier, følelser, livsstil og identitet.','<b>Bransjeorienterte budskap:</b> posisjonering mot konkurrenter og standarder i bransjen.'])]],
+m6:[
+ ['Typer interessenter','<p><b>Interne</b> og <b>eksterne</b>. <b>Primære</b> er nødvendige for drift og overlevelse, som gjester, ansatte og eiere. <b>Sekundære</b> påvirker eller påvirkes indirekte.</p>'],
+ ['Interessentmodellen','<p>Organisasjonen står i sentrum med gjensidige relasjoner til myndigheter, investorer, politiske grupper, kunder, lokalsamfunn, ansatte, bransjeorganisasjoner og leverandører. Pilene går begge veier.</p>'],
+ ['Stakeholder Salience Model (Mitchell, Agle & Wood)','<p>Vurderer hvor fremtredende en interessent er ut fra <b>makt</b>, <b>legitimitet</b> og <b>hast</b>.</p>'+tb([['Type','Har','Betydning'],['Definitive','Makt, legitimitet og hast','Høyeste prioritet, umiddelbart'],['Dominant','Makt og legitimitet','Viktig, men det haster ikke'],['Dangerous','Makt og hast','Kan være truende'],['Dependent','Legitimitet og hast','Avhengig av andre for å få makt'],['Dormant','Kun makt','Sovende'],['Discretionary','Kun legitimitet','Opp til virksomheten'],['Demanding','Kun hast','Støyende, men uten makt eller legitimitet'],['Non-stakeholder','Ingen','Ikke interessent']])],
+ ['Makt-interesse-modellen',tb([['','Lav interesse','Høy interesse'],['Høy makt','Keep satisfied: hold fornøyd','Key players: involver tett'],['Lav makt','Minimal effort: overvåk','Keep informed: hold løpende informert']])],
+ ['Strategier og utvikling','<p>Tre kommunikasjonsstrategier: <b>informasjon</b> (enveis), <b>overtalelse</b> (asymmetrisk påvirkning) og <b>dialog</b> (symmetrisk samhandling). Utviklingen går fra ensidig ledelse (management) til gjensidig samarbeid (collaboration), og fra passiv bevissthet til aktivt engasjement.</p>']],
+m7:[
+ ['CI-mix (Corporate Identity-mix)','<p>Virksomhetens kultur og historie legger grunnlaget for strategien, som kommer til uttrykk gjennom CI-mixen. Den utgjør virksomhetens personlighet:</p>'+ul(['<b>Atferd (Behaviour):</b> hvordan ansatte og ledere opptrer i praksis.','<b>Kommunikasjon (Communications):</b> planlagte budskap og dialog.','<b>Symbolisme (Symbolism):</b> visuell identitet, logo, design, klær og lokaler.'])+'<p>CI-mixen former virksomhetsomdømmet, som påvirker organisatoriske og finansielle resultater, salg, miljø og HRM (rekruttering og tilknytning).</p>'],
+ ['Tre identitetsstrukturer',ul(['<b>Monolittisk:</b> ett felles navn og én visuell stil i hele organisasjonen.','<b>Støttet (endorsed):</b> underenheter har egne navn, men støttes synlig av morselskapets navn og omdømme.','<b>Merkevarebasert (branded):</b> frittstående merkevarer uten synlig kobling til morselskapet.'])],
+ ['VCI-modellen og gap-analyse','<p>Omdømme bygges ved samsvar mellom tre elementer:</p>'+ul(['<b>Vision:</b> hva ledelsen ønsker å oppnå.','<b>Culture:</b> hvordan de ansatte tenker, føler og handler.','<b>Image:</b> hvordan eksterne interessenter oppfatter virksomheten.'])+'<p>Kommunikasjonens oppgave er å avdekke og lukke gapene: <b>Image-Vision Gap</b>, <b>Vision-Culture Gap</b> og <b>Image-Culture Gap</b>.</p>']],
+m8:[
+ ['Hvorfor internkommunikasjon','<p>Målet er informerte, involverte og inkluderte medarbeidere, og sterkere tilhørighet og engasjement. Internkommunikasjon har fire funksjoner: <b>sosial</b>, <b>ekspressiv</b>, <b>informasjon</b> og <b>kontroll</b>.</p>'],
+ ['Internkommunikasjonshjulet','<p>Viser hvordan IK knytter sammen ledelse, administrasjon, personalpolitikk, bedriftskultur, profilering, markedsføring, ekstern informasjon og pressekontakt. Det skjer gjennom verdier og praksiser som åpenhet, lojalitet, ytringsfrihet, motivasjon, likeverdig dialog, formelle og uformelle kontakter, fagforeninger, opplæring, IKT, rutiner og lederstil.</p>'],
+ ['Sentrale spenninger',ul(['Kommunikasjon <b>oppover og nedover</b>.','<b>Informere</b> (enveis) mot <b>engasjere</b> (toveis).','<b>Formell</b> og <b>uformell</b> kommunikasjon («ryktebørsen»).','<b>Ledelseskommunikasjon</b> (personlig, fra ledere) mot <b>CICS</b>, bedriftens informasjons- og kommunikasjonssystemer som intranett og nyhetsbrev.','<b>Medarbeiderstemme</b> (employee voice) mot <b>organisatorisk taushet</b>. Hva det blir avhenger av psykologisk trygghet.'])],
+ ['Digital internkommunikasjon','<p>Sosiale medier for bedrifter (Enterprise Social Media) kan gi kunnskapsdeling og samhold på tvers av lokasjoner og skift. Utfordringene er informasjonsoverbelastning, utydelige grenser og ulik digital kompetanse. Hvordan det fungerer påvirkes av teknologi, ledelse, språk og kulturelle kommunikasjonsnormer.</p>']],
+m9:[
+ ['Retorikk og de tre appellformene','<p>Formålet er overbevisning, identifikasjon og meningsskaping.</p>'+ul(['<b>Etos:</b> avsenders troverdighet, karakter og ekspertise.','<b>Patos:</b> appell til følelser, verdier og engasjement.','<b>Logos:</b> appell til fornuft, fakta, tall og logikk.'])+'<p>Ordvalg, metaforer, kontraster og fortellinger fremhever visse sider ved en sak og former forståelsen av ansvar og handlingsalternativer.</p>'],
+ ['Digital retorikk og storytelling','<p>Digital retorikk er <b>multimodal</b> (tekst, bilde, lyd og video) og <b>situert</b> i en digital kontekst. Storytelling bygger felles identitet internt og emosjonell tilknytning eksternt. Kritisk blikk: hva støtter dokumentasjonen, og hvilke perspektiver fremheves eller utelates?</p>'],
+ ['Mediehåndtering',ul(['Forstå journalistiske arbeidsmetoder: nyhetskriterier, tidspress og kilder.','Mediene har en <b>forsterkende</b> effekt på omdømmet.','<b>Agenda-setting:</b> mediene styrer hvilke saker offentligheten oppfatter som viktige.','<b>Framing (innramming):</b> vinklingen avgjør hvordan publikum tolker årsak og ansvar.','Teknikker: pressemeldinger, pressekonferanser og intervjutrening. Sosiale medier har endret landskapet og maktbalansen for tradisjonelle medier.'])]],
+m10:[
+ ['Hva er issues management?','<p>Å identifisere <b>issues</b> (utfordrende saker eller forventningsgap mellom organisasjonen og interessentene), analysere hvordan de utvikler seg, og håndtere dem før de eskalerer til krise. En issue utvikler seg gradvis: latent, aktiv, intens, krise.</p>'],
+ ['Analyseverktøy',ul(['<b>DESTEP:</b> omgivelsesanalyse av demografiske, økonomiske, sosiale, teknologiske, økologiske og politiske forhold.','<b>SWOT:</b> styrker, svakheter, muligheter og trusler.','Medieskanning og sentimentanalyse.'])],
+ ['Issue Life-Cycle','<p><b>Emergence</b> (saken oppstår og er latent) → <b>Debate</b> (offentlig debatt, saken er aktiv) → <b>Codification</b> (lovgivning og regulering utformes) → <b>Enforcement</b> (nye regler håndheves). Jo senere du går inn, jo mindre handlingsrom har du.</p>'],
+ ['Position-Importance Matrix',tb([['','Minst viktig','Mest viktig'],['Motstander','Problematic','Antagonistic (høyest risiko)'],['Støttespiller','Low priority','Supporter']])],
+ ['Fire responsstrategier',ul(['<b>Buffer:</b> ligge lavt og skjerme virksomheten for å unngå oppmerksomhet.','<b>Brobygging (bridging):</b> møte bekymringene gjennom dialog, samarbeid og tilpasning av praksis.','<b>Påvirkning (advocacy):</b> forsøke å endre omgivelsenes forventninger gjennom kampanjer og lobbyvirksomhet.','<b>Tankelederskap (thought leadership):</b> ta en tidlig og tydelig lederposisjon og sette standarden.'])+'<p>Buffer kan fungere for en latent sak. Når saken er intens og interessentene krever svar, svekker taushet tilliten. Da er brobygging avgjørende. Etterpå evalueres effekten på omdømme og på politikk og regulering.</p>']],
+m11:[
+ ['Grunnbegreper',ul(['<b>Omdømmekapital:</b> opparbeidet tillit som fungerer som buffer når krisen kommer.','Utvikling: risiko → issue → krise.','<b>Før krisen:</b> forberedelse og kriseplan. <b>Under:</b> rask handling, empati og fakta. <b>Etter:</b> evaluering, læring og gjenoppbygging.','<b>Håndtere informasjon:</b> hva har skjedd, og hva skal folk gjøre? <b>Håndtere mening:</b> hvordan fortolkes krisen og ansvaret?','Timing og sosiale medier: raske oppdateringer er mulig, men rykter sprer seg også raskt.'])],
+ ['Krisetypologi',tb([['','Utilsiktet','Tilsiktet'],['Ekstern','Faux pas: uheldig feiltrinn eller uttalelse som vekker reaksjoner utenfra','Aggresjon: sabotasje, dataangrep, boikott, terror'],['Intern','Uhell: teknisk svikt, menneskelig feil','Overtredelser: bevisst lovbrudd, juks, uetisk ledelse']])],
+ ['Valg av responsstrategi','<p>Valget bygger på <b>tillagt ansvar</b>, <b>omdømme</b> og <b>tidligere krisehistorikk</b>. Oppfattes organisasjonen som offer, utsatt for uhell eller intensjonelt ansvarlig? Fem strategier, fra lite til mye ansvar:</p>'+ul(['<b>Benekte (denial):</b> avvise at krisen finnes eller at man har skyld.','<b>Distansere (diminish):</b> redusere alvoret eller skylde på eksterne faktorer.','<b>Styrke posisjon (bolstering):</b> minne om tidligere gode gjerninger og verdier.','<b>Offer (victimage):</b> fremstille organisasjonen som et offer.','<b>Aksept (rebuild/apology):</b> ta fullt ansvar, be uforbeholdent om unnskyldning og tilby kompensasjon.'])]],
+m12:[
+ ['Typer endring',ul(['<b>Omfang:</b> videreførende (additive, små justeringer) mot nyskapende (substitutive, gjennomgripende).','<b>Drivkrefter:</b> internt drevet (nytt lederskap, nye systemer) mot eksternt drevet (teknologi, kundebehov, rammebetingelser).','<b>Initiativ:</b> toppstyrt mot medarbeiderdrevet.','<b>Kategori:</b> tekniske, strukturelle, kulturelle eller kompetanserelaterte endringer.'])+'<p>Additive endringer krever mest praktisk informasjon og opplæring. Substitutive krever lederforankring, emosjonell støtte, meningsskaping og bred involvering.</p>'],
+ ['Lewins endringsmodell',ul(['<b>Oppvarming (unfreezing):</b> skape erkjennelse av at endringen er nødvendig («brennende plattform») og utfordre status quo.','<b>Endring (changing):</b> håndtere usikkerhet, forklare nye roller, lytte og holde fremdriften synlig.','<b>Nedfrysing (refreezing):</b> forankre nye vaner, feire suksesser og vise at ny praksis fungerer.'])],
+ ['Kotters åtte steg',ul(['<b>Steg 1–2:</b> skape forståelse for nødvendighet og etablere en ledende koalisjon.','<b>Steg 3–4:</b> utvikle visjon og strategi og kommunisere endringsvisjonen.','<b>Steg 5–6:</b> legge til rette for handling og skape kortsiktige gevinster.','<b>Steg 7–8:</b> videreføre endringen og forankre nye arbeidsmåter i kulturen.'])+'<p>Gjennomgående hensyn: åpenhet og forutsigbarhet, god timing, konsistente budskap og balanse mellom fakta og følelser.</p>'],
+ ['Motstand mot endring','<p>Årsaker: egeninteresse (frykt for tap av goder, status, vakter eller jobb), usikkerhet om egen kompetanse og fremtid, negative erfaringer, og ulike vurderinger mellom ledelse og ansatte. Møt motstand med kommunikasjon og opplæring, og med deltakelse og involvering. Kritiske røster er tidlige varslere og en sikkerhetsventil som avdekker blinde flekker.</p>'],
+ ['Cornelissens fem budskapsstrategier',tb([['Strategi','Hva','Effektivitet'],['Spray & Pray','Svært mye informasjon uten prioritering','Lav'],['Tell & Sell','Forklare og overbevise om en ferdig beslutning','Moderat'],['Underscore & Explore','Tydelige hovedpoenger og dialog og involvering','Høyest'],['Identify & Reply','Identifisere bekymringer og svare på dem','Moderat'],['Withhold & Uphold','Holde tilbake informasjon','Lav (skaper rykter)']])+'<p>Dette er en omvendt U-kurve: for mye og for lite informasjon virker dårligst.</p>'],
+ ['Matrisen for effektivitet og enighet',tb([['','Lavt behov for enighet','Høyt behov for enighet'],['Høyt behov for effektivitet','Need to know: bare det nødvendige, raskt','Quid pro quo: målrettet, gjensidig utveksling'],['Lavt behov for effektivitet','Equal dissemination: lik informasjon til alle','Equal participation: bred involvering']])+'<p>Å informere sparer tid og gir kontroll, men gir lavt eierskap. Å involvere gir forståelse, engasjement og bedre løsninger, men er tidkrevende og kan gi endringstretthet.</p>'],
+ ['Clampitts Iceberg-modell',ul(['<b>Under vannlinjen (usynlig grunnarbeid):</b> kontekstuell analyse, publikumsanalyse og strategi.','<b>Over vannlinjen (synlig taktikk):</b> talspersoner, budskap, kanaler, valg av tidspunkt og sikkerhetsventiler (arenaer for tilbakemelding).'])+'<p>Eksamensmerknad fra foreleser: Spray & Pray og de andre budskapsstrategiene er kommunikasjonsstrategier. De er ikke nivåene i Iceberg-modellen.</p>'],
+ ['Kanalvalg i ulike faser','<p>Tidlig (Kotter steg 1–4) er tvetydigheten høy. Da trengs rike kanaler som allmøter og workshops, kombinert med Underscore & Explore. Senere (steg 5–8) kombineres dialog i team med magre, skriftlige kanaler som intranett og manualer for rutiner og deling av kortsiktige gevinster.</p>']],
+m13:[
+ ['Grunnbegreper','<p><b>CSR</b> (Corporate Social Responsibility) er virksomhetens ansvar for sin totale påvirkning på mennesker, miljø og samfunn. <b>Corporate citizenship</b> betyr bedriftsborgerskap. <b>Trippel bunnlinje</b> deler ansvaret i tre: <b>Profits</b> (økonomi), <b>People</b> (sosiale hensyn) og <b>Planet</b> (miljø). Internasjonale standarder er FNs Global Compact og OECDs retningslinjer.</p>'],
+ ['Tilnærminger og avveininger','<p>Fem tilnærminger til CSR: defensiv, veldedig, promoterende, strategisk og transformerende. Hensynene kan komme i konflikt. Eksempel: kutt i plast og matsvinn (Planet) krever investeringer (Profits), og bemanningskutt for å spare inn gir arbeidspress (People). Virksomheter bør kommunisere åpent og nyansert om slike avveininger.</p>'],
+ ['Grønnvasking','<p>Når virksomheter kommuniserer grønnere eller mer ansvarlig enn det faktiske handlingsmønsteret tilsier. For å vurdere om kommunikasjonen er misvisende trengs uavhengig og etterprøvbar dokumentasjon: utslipp, energi- og vannforbruk, matsvinn, innkjøp og tredjepartssertifiseringer som Miljøfyrtårn og Svanemerket.</p>'],
+ ['Tre strategier for CSR-kommunikasjon',ul(['<b>Informasjon:</b> enveis rapportering om tiltak og resultater.','<b>Respons:</b> toveis. Virksomheten innhenter synspunkter og justerer, men beholder beslutningsmakten.','<b>Involvering:</b> reell medvirkning. Virksomheten og interessentene utvikler løsninger sammen.'])],
+ ['Troverdig kommunikasjon','<p>Full transparens, tallfestet dokumentasjon og ekstern verifisering. Publiser sporbare miljøregnskap med både fremskritt og utfordringer, og sørg for samsvar mellom ord og handling (atferd i CI-mixen). Samfunnsansvar som brukes som tom PR uten oppfølging slår tilbake som uautentisk.</p>']]
+};
+
+/* ============================== FLERE SPØRSMÅL ============================== */
+const XQ={
+m0:[
+ ['Hvilken eksamensform har BDS110?','Skriftlig, individuell, digital skoleeksamen på 4 timer','Hjemmeeksamen over tre dager','Muntlig eksamen i gruppe','Mappevurdering','Eksamen er skriftlig, individuell og digital, og varer i 4 timer.'],
+ ['Hva bør du gjøre med sentrale begreper i besvarelsen?','Definere dem presist før du bruker dem','Anta at sensor kjenner dem','Bare bruke de engelske navnene','Samle dem i en liste til slutt','Foreleser ber deg om ikke å ta begreper for gitt.'],
+ ['Hva menes med å vise selvstendighet?','Å kombinere teorier fra ulike deler av pensum og reflektere selv','Å unngå pensum og bruke egne meninger','Å skrive uten fast struktur','Å bruke bare én modell','Selvstendighet handler om å kombinere og reflektere.'],
+ ['Hva er det tredje leddet i et godt drøftingspoeng?','Vurdering av betingelser, alternativer, begrensninger og risikoer','En ny definisjon','Et sitat fra pensum','En gjengivelse av oppgaveteksten','Nyanseringen er det som løfter en besvarelse.'],
+ ['Hva kjennetegner en D-besvarelse?','Innsikt i deler av emnet, men upresise formuleringer og faglig usikkerhet','Presis og reflektert drøfting','Jevnt god innsikt på de fleste områder','Svært begrenset innsikt','D er en akseptabel prestasjon med vesentlige mangler.'],
+ ['Hva bør du passe på når du leser oppgaveteksten?','At du svarer på alle delspørsmålene i de tre oppgavene du velger','At du velger de korteste oppgavene','At du svarer på alle seks','At du bare svarer på drøftingsdelen','Les nøye og svar på alle kulepunktene.']],
+m1:[
+ ['Hotellkjeden går fra bemannede resepsjoner til en appbasert forretningsmodell der hele gjestereisen er digital. Hva er dette?','Digital transformasjon','Digitisering','Digitalisering','Asynkron CMC','Forretningsmodell, kultur og verdiskaping endres.'],
+ ['Renholderne får en app som fordeler rom fortløpende i stedet for papirlister. Hva er dette?','Digitalisering','Digitisering','Digital transformasjon','Gig-arbeid','Teknologi endrer og effektiviserer en arbeidsprosess.'],
+ ['En gjest sender e-post kl. 23 og får svar neste morgen. Hvilken type CMC?','Asynkron','Synkron','Rik','Symmetrisk','Kommunikasjonen er tidsforskjøvet.'],
+ ['Hvem definerte organisasjonskommunikasjon som prosesser der organisasjoner skaper, forhandler og håndterer mening?','Cheney og Christensen','Kotter','Mitchell, Agle og Wood','Clampitt','Cheney & Christensen (2001).'],
+ ['Hvilket syn sier at organisasjonen blir til gjennom kommunikasjon?','Kommunikasjon er organisasjonen','Kommunikasjon i organisasjonen','Overføringsperspektivet','Asymmetrisk kommunikasjon','Kommunikasjon er selve byggesteinen.'],
+ ['Hvordan ser PR-tradisjonen på kommunikasjon?','Som en ledelsesfunksjon som er integrert i strategiarbeidet','Som ren markedsføring','Som en støttefunksjon uten planlegging','Som noe som alltid er enveis','Planlegging, utføring og evaluering, og relasjoner til omverdenen.'],
+ ['Hva gir generativ KI serviceorganisasjoner, og hva krever det?','Effektivisering og personalisering, men spørsmål om ansvar, tillit og menneskelig skjønn må avklares','Full automatisering uten behov for mennesker','Lavere krav til digital kompetanse','Ingen endring i kundeservicen','KI gir muligheter, men må brukes kritisk.']],
+m2:[
+ ['Hva kjennetegner tradisjonelle medieomgivelser?','En-til-mange, kontrollert posisjonering og høy terskel for å publisere','Mange-til-mange og lav terskel','Uoversiktlige spilleregler','Spontan innholdsgenerering','Dette er broadcasting-siden.'],
+ ['Hva menes med fortjente medier?','Omtale andre gir deg, som anmeldelser, delinger og presseoppslag','Annonser du betaler for','Egne nettsider og nyhetsbrev','Sponsede innlegg','Fortjent omtale kan ikke kjøpes.'],
+ ['Hotellets egen nettside og app er eksempler på hva?','Eide medier','Betalte medier','Fortjente medier','Crowd-casting','Kanaler virksomheten selv kontrollerer.'],
+ ['Hva kreves for at interessenter skal bli talsmenn for virksomheten?','Sammenheng mellom det virksomheten sier og det den gjør','Flest mulig kampanjer','Rabatter','At kritikk fjernes','Autentisitet og transparens gir talsmenn.'],
+ ['Hvilken periode kjennetegnes av posisjonering?','1980–2000-tallet','1900–1970-tallet','2000-tallet til i dag','Tiden før 1900','Cornelissen (2023, s. 14).'],
+ ['Hvilken kommunikasjonsmodell preger nye medieomgivelser?','Mange-til-en og mange-til-mange','En-til-mange','En-til-en','Enveis fra ledelsen','Alle kan være avsendere.'],
+ ['Hva er det underliggende prinsippet i tradisjonelle medieomgivelser?','Planlagt og kontrollert overføring av virksomhetens budskap','Spontan spredning av innhold','At interessentene produserer innholdet','At alle kanaler er gratis','Corporate positioning står mot content generation.']],
+m3:[
+ ['Hvilken teori forklarer at relasjoner kan utvikles på nett over tid uten fysiske ledetråder?','Social Information Processing Theory','Medierikhetsteori','Agenda-setting','Teknologiakseptansemodellen','SIP: språklige og tidsmessige signaler erstatter de fysiske.'],
+ ['En gjest velger TikTok for underholdning og TripAdvisor for informasjon. Hvilken teori forklarer det?','Uses and Gratifications','Usikkerhetsreduksjon','Social Information Processing','Framing','Brukere velger aktivt medier etter behov.'],
+ ['Hvorfor kan kritikk mot et hotell forsterkes i ekkokamre?','Folk oppsøker innhold som bekrefter det de allerede mener','Fordi rike medier gir rask tilbakemelding','Fordi gjester ignorerer mobilen','Fordi terskelen for å publisere er høy','Dette er selektiv eksponering.'],
+ ['Hvor plasseres YouTube i klassifiseringen av sosiale medier?','Innholdsfellesskap: medium tilstedeværelse og lav selvpresentasjon','Blogger','Virtuelle sosiale verdener','Samarbeidsprosjekter','Content communities.'],
+ ['Hvor plasseres blogger i klassifiseringen?','Lav sosial tilstedeværelse og høy selvpresentasjon','Høy tilstedeværelse og høy selvpresentasjon','Lav tilstedeværelse og lav selvpresentasjon','Medium tilstedeværelse og lav selvpresentasjon','Blogger er tekstbaserte, men personlige.'],
+ ['Hva brukes topic modeling til?','Å finne hovedtemaene i store tekstmengder, som tusenvis av anmeldelser','Å måle positiv og negativ stemning','Å svare gjester automatisk','Å planlegge kampanjer','Sentimentanalyse måler stemning, topic modeling finner temaer.'],
+ ['Skiftplanen for neste uke skal ut til alle. Hvilken kanal passer ifølge medierikhetsteorien?','En mager, skriftlig kanal, fordi informasjonen er entydig','Et allmøte','Et videomøte med alle','Samtaler én og én','Magre medier egner seg til entydig informasjon.'],
+ ['En resepsjonist sjekker mobilen mens en gjest står ved skranken. Hva kalles det?','Phubbing','FOMO','Crescendo-effekt','Selektiv eksponering','Å overse dem man er sammen med til fordel for mobilen.']],
+m4:[
+ ['Hva er ukonvensjonell CMC?','Bruk av datamediert kommunikasjon på andre måter enn vanlige tekst- og videomeldinger','All kommunikasjon uten datamaskin','Kommunikasjon som bare foregår på e-post','Kommunikasjon ansikt til ansikt','Slik defineres det i gjesteforelesningen.'],
+ ['Hvem holdt gjesteforelesningen om ukonvensjonell CMC?','Dr. Hong Li','Cornelissen','Clampitt','Kotter','Gjesteforelesning med Dr. Hong Li.'],
+ ['Et hotell med ansatte i tre byer vil styrke samholdet digitalt. Hva peker gjesteforelesningen på?','Verktøy som fremmer nærhet og følelser, ikke bare utveksling av informasjon','Flere e-poster fra ledelsen','Strengere rapportering','Færre kanaler','Nærhet og emosjonell kommunikasjon er nøkkelen.']],
+m5:[
+ ['Hvilket steg svarer på spørsmålet «Hva skal vi kommunisere?»','Steg 4: tematiske budskap','Steg 2: kommunikasjonsmål','Steg 6: mediestrategi','Steg 5: budskapsstil','Tematiske budskap er innholdet.'],
+ ['Hvilket steg svarer på «Hvem må vi nå?»','Steg 3: målgrupper','Steg 1: strategisk intensjon','Steg 4: tematiske budskap','Steg 7: budsjett og evaluering','Identifisere og prioritere målgrupper.'],
+ ['Strategien styres av en sterk fremtidsvisjon fra gründeren. Hvilken tilnærming?','Visjonær','Rasjonell','Inkrementell','Funksjonell','En samlende visjon styrer.'],
+ ['Strategien lages analytisk, steg for steg. Hvilken tilnærming?','Rasjonell','Visjonær','Inkrementell','Symbolsk','Analytisk og planlagt.'],
+ ['«Kåret til byens beste konferansehotell tre år på rad.» Hvilken budskapsstil?','Bransjeorientert','Funksjonell','Symbolsk','Visjonær','Posisjonerer mot konkurrenter og bransjestandarder.'],
+ ['Hva er det strategiske problemet en kommunikasjonsstrategi skal løse?','Gapet mellom visjon og omdømme','For få følgere','For lavt budsjett','For mange kanaler','Omdømmet skal være i tråd med visjonen.'],
+ ['Hva kommer rett før mediestrategien?','Å utvikle budskapsstil','Å forberede budsjett','Å prioritere målgrupper','Å formulere strategisk intensjon','Steg 5 kommer før steg 6.']],
+m6:[
+ ['En aktivistgruppe med mange følgere truer med boikott nå, men kravet har lite legitimitet. Hvilken type interessent?','Dangerous','Dependent','Discretionary','Dormant','Makt og hast uten legitimitet.'],
+ ['En stor eier har makt og legitimitet, men ingenting haster. Hvilken type?','Dominant','Definitive','Demanding','Dormant','Makt og legitimitet.'],
+ ['En veldedig organisasjon har et legitimt ønske om støtte, men verken makt eller hastverk. Hvilken type?','Discretionary','Dependent','Dangerous','Demanding','Kun legitimitet.'],
+ ['Hvem er primære interessenter for et hotell?','De som er nødvendige for drift og overlevelse, som gjester, ansatte og eiere','Alle som nevner hotellet på nett','Bare myndighetene','Bare konkurrentene','Sekundære påvirker eller påvirkes indirekte.'],
+ ['Fagforeningen har høy makt og høy interesse i en omorganisering. Hva gjør du?','Involverer dem tett som nøkkelaktører','Holder dem fornøyd','Holder dem informert','Bruker minimal innsats','Høy makt og høy interesse er key players.'],
+ ['Hvilken av de tre kommunikasjonsstrategiene er symmetrisk?','Dialog','Informasjon','Overtalelse','Ingen av dem','Dialog er symmetrisk samhandling.'],
+ ['En interessent med lav makt og lav interesse bør møtes med hva?','Minimal innsats og overvåking','Tett involvering','Løpende informasjon','Egne møter','Minimal effort.'],
+ ['En sovende interessent har hvilken egenskap?','Kun makt','Kun hast','Kun legitimitet','Makt og hast','Dormant betyr sovende.']],
+m7:[
+ ['Gjestene opplever hotellet som slitt, mens ledelsen vil være et luksushotell. Hvilket gap?','Image-Vision Gap','Vision-Culture Gap','Image-Culture Gap','Ingen gap','Eksternes oppfatning mot ledelsens mål.'],
+ ['De ansatte er stolte og serviceinnstilte, men anmeldelsene beskriver hotellet som upersonlig. Hvilket gap?','Image-Culture Gap','Vision-Culture Gap','Image-Vision Gap','Ingen gap','Eksternes oppfatning mot de ansattes holdninger og atferd.'],
+ ['Alle hotellene i kjeden heter det samme og ser like ut. Hvilken identitetsstruktur?','Monolittisk','Støttet','Merkevarebasert','Symbolsk','Ett navn og én visuell stil.'],
+ ['Et konsern eier tre hotellmerker uten at gjestene ser koblingen. Hvilken struktur?','Merkevarebasert','Monolittisk','Støttet','Kulturell','Frittstående merkevarer.'],
+ ['Hvordan resepsjonisten faktisk møter gjesten hører til hvilken del av CI-mixen?','Atferd','Symbolisme','Kommunikasjon','Image','Behaviour.'],
+ ['Hva utgjør CI-mixen til sammen?','Virksomhetens personlighet','Virksomhetens budsjett','Markedsplanen','Kriseplanen','Corporate personality.'],
+ ['Hvem representerer «Culture» i VCI-modellen?','De ansatte','Ledelsen','Eksterne interessenter','Mediene','Vision er ledelsen, Culture de ansatte, Image de eksterne.']],
+m8:[
+ ['En ukentlig prat mellom avdelingsleder og teamet er et eksempel på hva?','Ledelseskommunikasjon','CICS','Ryktebørsen','Ekstern informasjon','Personlig kommunikasjon fra ledere.'],
+ ['Hva er fordelen med sosiale medier internt på et hotell med skiftarbeid?','Kunnskapsdeling og samhold på tvers av lokasjoner og skift','Mindre informasjon','At ledere slipper å kommunisere','At rykter forsvinner','Enterprise Social Media.'],
+ ['Hva påvirker hvordan sosiale medier fungerer internt?','Teknologi, ledelse, språk og kulturelle kommunikasjonsnormer','Bare teknologien','Bare antall ansatte','Bare budsjettet','Fire forhold påvirker bruken.'],
+ ['Hva kalles det når ansatte kommer med ideer og sier fra om problemer?','Medarbeiderstemme','Organisatorisk taushet','Kontrollfunksjon','Profilering','Employee voice.'],
+ ['Hva skal internkommunikasjon styrke i tillegg til å informere?','Tilhørighet og engasjement','Ledelsens kontroll alene','Konkurranse mellom avdelinger','Hierarkiet','Informerte, involverte og inkluderte medarbeidere.'],
+ ['Hvilken spenning handler om allmøter mot prat på pauserommet?','Formell mot uformell kommunikasjon','Oppover mot nedover','Informere mot engasjere','Stemme mot taushet','Ryktebørsen er den uformelle siden.'],
+ ['Hvilke områder knytter internkommunikasjonshjulet sammen?','Ledelse, administrasjon, personalpolitikk, bedriftskultur, profilering, markedsføring, ekstern informasjon og pressekontakt','Bare ledelse og HR','Bare de interne kanalene','Bare markedsføring','Hjulet viser at IK henger sammen med alt annet.']],
+m9:[
+ ['«Tenk på småbarnsfamilien som mistet ferien sin.» Hvilken appellform?','Patos','Etos','Logos','Framing','Appell til følelser.'],
+ ['Hva menes med at digital retorikk er multimodal?','Den kombinerer tekst, bilde, lyd og video','Den bruker flere språk','Den har flere avsendere','Den er alltid lang','Flere uttrykksformer virker sammen.'],
+ ['Hva gjør storytelling internt i en organisasjon?','Bygger felles identitet','Erstatter opplæring','Skjuler konflikter','Reduserer antall møter','Eksternt gir det emosjonell tilknytning.'],
+ ['Hva bør du vurdere med et kritisk blikk på retorikk?','Hva som støtter dokumentasjonen, og hvilke perspektiver som fremheves eller utelates','Bare om teksten er lang nok','Om det brukes bilder','Om avsenderen er kjent','Appellformer og virkemidler må vurderes samlet.'],
+ ['Lokalavisen skriver om matsvinn hver dag i en uke, og gjestene begynner å spørre om det. Hva illustrerer det?','Agenda-setting','Framing','Etos','Buffer','Mediene styrer hva vi oppfatter som viktig.'],
+ ['Hvordan har sosiale medier endret mediehåndteringen?','De har endret landskapet og maktbalansen for tradisjonelle medier','De har gjort pressemeldinger unødvendige','De har fjernet journalistikken','De har ikke endret noe','Flere kan sette dagsorden.'],
+ ['Hvilke teknikker brukes i mediehåndtering?','Pressemeldinger, pressekonferanser og intervjutrening','Sentimentanalyse og topic modeling','DESTEP og SWOT','Allmøter og workshops','Du må også forstå journalistenes arbeidsmetoder.']],
+m10:[
+ ['Hva er en issue ofte et uttrykk for?','Et forventningsgap mellom organisasjonen og interessentene','En teknisk feil','Et lovbrudd','En pressemelding','Interessentene forventer noe annet enn det organisasjonen gjør.'],
+ ['I hvilken fase utformes lover og reguleringer?','Codification','Emergence','Debate','Enforcement','Tredje fase i livssyklusen.'],
+ ['En interessent støtter dere og er svært viktig. Hva kalles den i Position-Importance-matrisen?','Supporter','Antagonistic','Problematic','Low priority','Støttespiller og viktig.'],
+ ['En motstander som er lite viktig, kalles hva?','Problematic','Antagonistic','Supporter','Low priority','Motstander, men minst viktig.'],
+ ['Hotellet lar være å kommentere en liten, latent sak. Hvilken strategi?','Buffer','Brobygging','Påvirkning','Tankelederskap','Å ligge lavt.'],
+ ['Hva brukes SWOT til?','Å kartlegge styrker, svakheter, muligheter og trusler','Å måle stemning','Å rangere interessenter','Å velge kanal','Brukes sammen med DESTEP.'],
+ ['Hvorfor er issues management ekstra viktig for serviceorganisasjoner i dag?','Sosiale medier øker farten og synligheten rundt utfordrende saker','Fordi kriser ikke lenger skjer','Fordi mediene har mistet interessen','Fordi regulering er blitt sjeldnere','Saker eskalerer raskere enn før.'],
+ ['Hva bør evalueres etter at en issue er håndtert?','Effekten på omdømmet og på utviklingen av politikk og regulering','Antall pressemeldinger','Antall møter','Bare kostnaden','Innramming og evaluering avslutter arbeidet.']],
+m11:[
+ ['Hotellet er utsatt for sabotasje fra en tidligere ansatt. Hvilken responsstrategi kan forsvares?','Offer, fordi hotellet er rammet av andres handling','Aksept med full skyld','Benekte at noe har skjedd','Distansere','Tillagt ansvar er lavt ved aggresjon.'],
+ ['«Dette var en liten feil som ikke rammet mange.» Hvilken strategi?','Distansere','Benekte','Aksept','Offer','Alvoret reduseres.'],
+ ['Hva er omdømmekapital?','Opparbeidet tillit som fungerer som buffer når en krise inntreffer','Merkevarens verdi i kroner','Kommunikasjonsbudsjettet','Antall følgere','Tillit du har bygget før krisen.'],
+ ['Hva hører til fasen før en krise?','Forberedelse og kriseplan','Rask handling og empati','Evaluering og læring','Gjenoppbygging','Hver fase har sitt kommunikasjonsbehov.'],
+ ['Hva er muligheten og utfordringen med sosiale medier i en krise?','Raske oppdateringer, men også rask ryktespredning','Full kontroll over budskapet','At ingen leser dem','At de erstatter kriseplanen','Timing er avgjørende.'],
+ ['Hvilke to dimensjoner brukes i krisetypologien?','Intern eller ekstern, og utilsiktet eller tilsiktet','Liten eller stor, og rask eller langsom','Makt og interesse','Posisjon og viktighet','Det gir fire krisetyper.'],
+ ['Hvilken responsstrategi innebærer mest ansvar?','Aksept','Benekte','Distansere','Styrke posisjon','Skalaen går fra benekte til aksept.'],
+ ['Hotellet har hatt tre lignende hendelser før. Hva betyr det for responsen?','Krisehistorikken øker tillagt ansvar, så hotellet må ta mer ansvar','Ingenting','At hotellet kan benekte','At hotellet bør tie','Tidligere krisehistorikk påvirker strategivalget.']],
+m12:[
+ ['Hva kjennetegner Withhold & Uphold?','Informasjon holdes tilbake til det er absolutt nødvendig','Mye informasjon til alle','Dialog og involvering','Svar på bekymringer','Lav effektivitet, og det skaper rykter.'],
+ ['Ledelsen samler inn de ansattes spørsmål og svarer på dem i et nyhetsbrev. Hvilken strategi?','Identify & Reply','Tell & Sell','Spray & Pray','Underscore & Explore','Bekymringer identifiseres og besvares.'],
+ ['Det haster, og enighet er ikke viktig. Hvilken strategi i matrisen?','Need to know','Quid pro quo','Equal participation','Equal dissemination','Høyt behov for effektivitet, lavt behov for enighet.'],
+ ['Enighet er avgjørende, og dere har god tid. Hvilken strategi?','Equal participation','Need to know','Quid pro quo','Equal dissemination','Lavt behov for effektivitet, høyt behov for enighet.'],
+ ['En ny lov tvinger hotellet til å endre rutiner. Hvilken drivkraft?','Eksternt drevet','Internt drevet','Medarbeiderdrevet','Kulturell','Rammebetingelsene endres utenfra.'],
+ ['Kokkene foreslår selv en ny bestillingsrutine som innføres. Hvilket initiativ?','Medarbeiderdrevet','Toppstyrt','Eksternt drevet','Nyskapende','Ideen kommer fra de ansatte.'],
+ ['Hva handler Kotters steg 5–6 om?','Å legge til rette for handling og skape kortsiktige gevinster','Visjon og strategi','Nødvendighet og koalisjon','Forankring i kulturen','Hindringer fjernes og fremgang synliggjøres.'],
+ ['Hva er gjennomgående hensyn i endringskommunikasjon?','Åpenhet og forutsigbarhet, god timing, konsistente budskap og balanse mellom fakta og følelser','Hemmelighold og fart','Flest mulig kanaler','Bare skriftlig informasjon','Endringsledelse er en overtalelsesprosess.'],
+ ['Hva er kommunikasjonens oppgave i oppvarmingsfasen hos Lewin?','Å skape erkjennelse av at endringen er nødvendig','Å feire suksesser','Å oppdatere rutinene','Å avslutte prosjektet','«Brennende plattform».'],
+ ['Hvilke kategorier av endring nevnes?','Tekniske, strukturelle, kulturelle og kompetanserelaterte','Små og store','Raske og langsomme','Lokale og globale','Fjerde måte å dele inn endringer på.']],
+m13:[
+ ['Hva er grønnvasking?','Å fremstille seg som mer miljøvennlig eller ansvarlig enn praksisen tilsier','Å vaske tekstiler miljøvennlig','Å rapportere utslipp','Å samarbeide med miljøorganisasjoner','Avstand mellom ord og handling.'],
+ ['Hotellet publiserer årlige tall for matsvinn på nettsiden. Hvilken CSR-strategi?','Informasjon','Respons','Involvering','Buffer','Enveis rapportering.'],
+ ['Hotellet spør naboene om støy og justerer åpningstidene, men bestemmer selv. Hvilken strategi?','Respons','Informasjon','Involvering','Tankelederskap','Toveis, men virksomheten beholder makten.'],
+ ['Hotellet og kommunen utvikler sammen et opplegg for arbeidstrening. Hvilken strategi?','Involvering','Informasjon','Respons','Påvirkning','Løsningen utvikles i fellesskap.'],
+ ['Hva står «People» for i trippel bunnlinje?','Sosiale hensyn og arbeidsvilkår','Antall gjester','Eiernes utbytte','Miljøhensyn','People er den sosiale dimensjonen.'],
+ ['Hva skjer når samfunnsansvar brukes som tom PR uten oppfølging?','Det slår tilbake og oppleves som uautentisk','Omdømmet styrkes','Ingenting','Kritikken stilner','Tillit krever resultater og oppfølging over tid.'],
+ ['Hvilke tredjepartssertifiseringer nevnes som dokumentasjon?','Miljøfyrtårn og Svanemerket','ISO 9001 og TÜV','Michelin og Forbes','Debio og Nyt Norge','Nevnt i caset om Green Hotels.'],
+ ['Hva er corporate citizenship?','Virksomheten som ansvarlig samfunnsaktør, for eksempel gjennom samarbeid med lokalsamfunnet','Et lojalitetsprogram','En selskapsform','En markedsføringskanal','Bedriftsborgerskap.']]
+};
+M.forEach(m=>m.qs.push(...(XQ[m.id]||[])));
+
+/* ============================== FLERE CASER ============================== */
+CASES.push(
+{id:'c5',tema:'Internkommunikasjon',title:'Appen ingen bruker',
+ intro:'Fjordkjeden har innført samhandlingsappen Tavla for 600 ansatte på åtte hoteller. Etter to måneder bruker bare en tredel den, og nattevaktene sier at de aldri får med seg beskjeder.',
+ models:'TAM, CICS, medarbeiderstemme, medierikhet',
+ steps:[
+ {t:'Hvorfor brukes ikke appen? Hva gjør du først?',o:[
+  ['Spør ansatte på ulike skift hva de har nytte av, og hvor appen er tungvint',10,'TAM: bruk avhenger av opplevd nytte og opplevd brukervennlighet. Du må vite hvilken av dem som svikter.'],
+  ['Bestiller flere funksjoner fra leverandøren',-5,'Mer kompleksitet uten å kjenne problemet kan gjøre brukervennligheten dårligere.'],
+  ['Sender påminnelse om at appen er obligatorisk',-8,'Kontroll løser ikke årsaken. Folk logger inn, men bruker den ikke.']]},
+ {t:'Kartleggingen viser at folk drukner i varsler fra alle åtte hoteller.',o:[
+  ['Rydder i kanalene per hotell og avdeling, med klare regler for hva som postes hvor',10,'Informasjonsoverbelastning og utydelige grenser er kjente utfordringer ved sosiale medier internt.'],
+  ['Ber alle slå av varslene',-4,'Da går også de viktige beskjedene tapt.'],
+  ['Poster oftere, slik at ingen går glipp av noe',-8,'Dette er Spray & Pray: mye informasjon uten prioritering.']]},
+ {t:'En renholder skriver i appen at de nye rutinene gir for dårlig tid per rom. Avdelingslederen vil slette innlegget.',o:[
+  ['Takker for innspillet, svarer åpent og tar det med til ledergruppen',10,'Medarbeiderstemme krever psykologisk trygghet. Kritiske innspill er tidlige varslere.'],
+  ['Lar innlegget stå ubesvart',-5,'Taushet fra ledelsen leses som at det ikke nytter å si fra.'],
+  ['Sletter innlegget og tar det på tomannshånd',-10,'Du skaper organisatorisk taushet. Neste gang sier ingen fra.']]},
+ {t:'Direktøren vil bruke appen til å kunngjøre at to av hotellene skal slås sammen.',o:[
+  ['Foreslår allmøter på de to hotellene først, og bruker appen til oppfølging og spørsmål og svar',10,'Tvetydige og følelsesladde budskap krever rike kanaler og personlig ledelseskommunikasjon. Systemene (CICS) støtter etterpå.'],
+  ['Poster kunngjøringen i appen til alle samtidig',-8,'En mager kanal til et budskap som skaper stor usikkerhet.'],
+  ['Lar nyheten spre seg av seg selv',-12,'Da overtar ryktebørsen, og ledelsen mister troverdighet.']]},
+ {t:'Hvordan blir appen en naturlig del av hverdagen?',o:[
+  ['Lar ansatte dele tips og gode historier på tvers av hotellene, og sørger for at ledere deltar og svarer',8,'Kunnskapsdeling og samhold på tvers av lokasjoner og skift. Den sosiale og den ekspressive funksjonen får plass.'],
+  ['Kårer månedens mest aktive bruker med bonus',-2,'Du belønner aktivitet, ikke nytte, og de med lav digital kompetanse faller utenfor.'],
+  ['Bruker den bare til beskjeder ovenfra',-4,'Du informerer uten å engasjere. Balansen mellom oppover og nedover mangler.']]}
+ ]},
+{id:'c6',tema:'Identitet og omdømme',title:'Familiehotellet blir kjedehotell',
+ intro:'Fjordkjeden har kjøpt det tradisjonsrike Strandheim Hotell. Stamgjestene frykter at sjelen forsvinner, og de ansatte er usikre på hva de nå skal stå for.',
+ models:'CI-mix, VCI-modellen, identitetsstrukturer, storytelling',
+ steps:[
+ {t:'Hvilken identitetsstruktur anbefaler du for Strandheim?',o:[
+  ['Støttet identitet: «Strandheim – en del av Fjordkjeden»',10,'Hotellet beholder sitt lokale omdømme og får samtidig synlig støtte fra kjedens navn.'],
+  ['Merkevarebasert identitet: eierskapet nevnes ikke',-3,'Hotellet får ingen drahjelp fra kjeden, og skjult eierskap svekker transparensen.'],
+  ['Monolittisk identitet: hotellet bytter navn til Fjordkjeden Strand med en gang',-6,'Dere kaster omdømmekapitalen Strandheim har bygget opp over mange år.']]},
+ {t:'Kjeden vil bytte uniformer, logo og lobbyinnredning den første uken.',o:[
+  ['Begynner med atferd og kommunikasjon, og tar det visuelle gradvis',8,'CI-mixen består av atferd, kommunikasjon og symbolisme. Nye symboler uten endret atferd oppleves som tomme.'],
+  ['Endrer ingenting, verken nå eller senere',-3,'Da blir hotellet aldri en del av kjeden, og gapet mellom visjon og praksis består.'],
+  ['Bytter alt visuelt med en gang',-5,'Symbolismen løper foran kulturen og bekrefter frykten for at sjelen forsvinner.']]},
+ {t:'Ledelsens visjon er «personlig vertskap i moderne ramme». De ansatte mener kjeden bare bryr seg om tall.',o:[
+  ['Dette er et Vision-Culture Gap. Jeg involverer de ansatte i å beskrive hva personlig vertskap betyr i praksis',10,'Gapet ligger mellom ledelsens visjon og de ansattes kultur, og lukkes best med involvering.'],
+  ['Dette er et Image-Vision Gap. Jeg starter en reklamekampanje',-6,'Problemet er internt. En kampanje øker bare avstanden mellom det dere sier og gjør.'],
+  ['Det er ikke noe gap. Jeg sender visjonen på e-post til alle',-8,'En e-post endrer ikke hvordan ansatte tenker, føler og handler.']]},
+ {t:'Stamgjester skriver på Facebook at «Strandheim er solgt til et sjelløst konsern».',o:[
+  ['Svarer åpent om hva som består og hva som endres, og lar ansatte med lang fartstid fortelle hotellets historie',10,'Storytelling skaper emosjonell tilknytning, og kjente ansatte har høy etos. Dere påvirker hvordan saken rammes inn.'],
+  ['Legger ut en pressemelding om synergier og vekst',-5,'Logos uten patos, og et budskap til feil målgruppe.'],
+  ['Svarer ikke',-8,'Andre definerer fortellingen om Strandheim.']]},
+ {t:'Et halvt år er gått. Hvordan sjekker du om omdømmet holder?',o:[
+  ['Sammenligner anmeldelser og gjesteundersøkelser med de ansattes opplevelse og ledelsens mål',8,'Dette er gap-analyse med VCI-modellen: image, kultur og visjon.'],
+  ['Ser på omsetningen',-4,'Omdømme påvirker resultatene, men tallene sier ikke hvor et gap ligger.'],
+  ['Antar at alt er bra siden ingen klager',-6,'Fravær av klager kan like gjerne bety at gjestene har gått til konkurrenten.']]}
+ ]},
+{id:'c7',tema:'Kommunikasjonsstrategi',title:'Lanseringen av Fjordgløtt Spa',
+ intro:'Hotellet åpner spa-avdeling om tre måneder. Markedssjefen vil «bare kjøre på med Instagram». Du skal lage kommunikasjonsstrategien.',
+ models:'De sju stegene, budskapsstiler, eide, betalte og fortjente medier, interessentanalyse',
+ steps:[
+ {t:'Hvor begynner du?',o:[
+  ['Med strategisk intensjon og mål: hvilket gap mellom visjon og omdømme skal spaet bidra til å lukke?',10,'Strategi handler om begrunnede valg. Steg 1 og 2 kommer før alt annet.'],
+  ['Med budsjettet',-3,'Budsjett og evaluering er steg 7.'],
+  ['Med å opprette en Instagram-konto for spaet',-8,'En kommunikasjonsstrategi begynner ikke med Instagram. Kanal velges i steg 6.']]},
+ {t:'Hvem skal dere nå?',o:[
+  ['Kartlegger interessentene og prioriterer: lokale stamgjester og bedriftskunder først, naboene holdes informert',8,'Steg 3 er å identifisere og prioritere målgrupper, for eksempel etter makt og interesse.'],
+  ['Dem som allerede følger hotellet',-3,'Enkelt, men dere når ikke nye grupper spaet er ment for.'],
+  ['Alle i hele landet',-6,'Uten prioritering treffer budskapet ingen.']]},
+ {t:'Hvilken budskapsstil velger du overfor helgegjester som vil koble av?',o:[
+  ['Symbolsk: ro, velvære og fjordutsikt',8,'Symbolske budskap bygger på verdier, følelser og livsstil.'],
+  ['Funksjonell: åpningstider, pris og antall badstuer',2,'Nyttig som supplement, men det treffer ikke hvorfor de kommer.'],
+  ['Bransjeorientert: «større enn spaet til konkurrenten»',-3,'Sammenligning med konkurrenter betyr lite for denne målgruppen.']]},
+ {t:'Hvordan legger du opp mediestrategien?',o:[
+  ['Kombinerer egne kanaler, betalt annonsering mot målgruppene og legger til rette for at gjester deler og anmelder',10,'Samspillet mellom eide, betalte og fortjente medier, tilpasset et landskap der gjestene selv lager innhold.'],
+  ['Bruker bare betalte annonser',-4,'Rekkevidde uten troverdigheten som fortjent omtale gir.'],
+  ['Venter på at folk oppdager spaet selv',-6,'Uten egen innsats overlater dere alt til tilfeldighetene.']]},
+ {t:'Åpningshelgen er over. Hva nå?',o:[
+  ['Måler mot kommunikasjonsmålene, lytter til anmeldelsene og justerer',8,'Steg 7: hvordan vet vi om det virker? Evaluering brukes til å justere strategien.'],
+  ['Teller likes og sier seg fornøyd',-4,'Aktivitet er ikke det samme som måloppnåelse.'],
+  ['Går videre uten evaluering',-6,'Da vet dere ikke hva som virket.']]}
+ ]},
+{id:'c8',tema:'Krisekommunikasjon',title:'Dataangrepet',
+ intro:'Natt til fredag blir bookingsystemet til Fjordkjeden kryptert av et løsepengevirus. Kortopplysninger og passdata for 12 000 gjester kan være på avveie.',
+ models:'Krisetypologi, responsstrategier, interessentprioritering, etos',
+ steps:[
+ {t:'Hva slags krise er dette?',o:[
+  ['Aggresjon: ekstern og tilsiktet. Kjeden er angrepet, men har ansvar for gjestenes data',10,'Krisetypen sier noe om tillagt ansvar, og det styrer responsstrategien.'],
+  ['Uhell: intern og utilsiktet',-3,'Noen utenfor har angrepet med vilje. Det er ikke teknisk svikt.'],
+  ['Overtredelse: intern og tilsiktet',-5,'Det ville krevd bevisst lovbrudd fra kjeden selv.']]},
+ {t:'Hva sier dere først, og til hvem?',o:[
+  ['Varsler berørte gjester og Datatilsynet raskt med det dere vet, hva gjestene bør gjøre, og når neste oppdatering kommer',10,'Gjestene og tilsynet har makt, legitimitet og hast. Under krisen gjelder rask handling, empati og fakta.'],
+  ['Venter til omfanget er helt kartlagt',-10,'I mellomtiden kan gjestene tape penger, og andre forteller historien.'],
+  ['Går ut med at ingen gjestedata er berørt',-12,'Å benekte uten grunnlag ødelegger troverdigheten når sannheten kommer.']]},
+ {t:'Hvordan omtaler dere ansvaret i den første uttalelsen?',o:[
+  ['Sier at kjeden er utsatt for et kriminelt angrep, og tar ansvar for å hjelpe gjestene, for eksempel med sperring av kort',10,'Kjeden er offer for angrepet, men viser ansvar for oppfølgingen.'],
+  ['Minner om prisene kjeden har vunnet for service',-4,'Å styrke posisjonen hjelper ikke gjester som frykter for kortet sitt.'],
+  ['Legger skylden på IT-leverandøren',-8,'Gjestene ga dataene til dere. Å distansere seg oppleves som ansvarsfraskrivelse.']]},
+ {t:'Det viser seg at en sikkerhetsoppdatering har stått uinstallert i åtte måneder.',o:[
+  ['Sier det åpent, beklager og forklarer hva som endres',10,'Tillagt ansvar har økt. Da må strategien flytte seg mot aksept, og åpenhet hindrer at andre avslører det.'],
+  ['Omtaler det som en teknisk detalj',-6,'Å redusere alvoret når ansvaret faktisk har økt, slår tilbake.'],
+  ['Holder det internt',-12,'Lekker det, ser krisen ut som en overtredelse.']]},
+ {t:'Hvem snakker utad?',o:[
+  ['Konsernsjefen, med sikkerhetssjefen til å svare på det faglige',8,'Én tydelig talsperson med høy etos gir konsistente budskap.'],
+  ['En pressemelding uten navn',-5,'Ingen avsender, ingen troverdighet og ingen empati.'],
+  ['Hver hotelldirektør svarer for sitt hotell',-6,'Åtte versjoner av samme sak gir motstridende informasjon.']]},
+ {t:'Systemene er oppe igjen. Hva gjør dere?',o:[
+  ['Evaluerer, oppdaterer kriseplanen og legger frem en åpen rapport om tiltakene',8,'Etter krisen: evaluering, læring og gjenoppbygging av omdømmekapital.'],
+  ['Kjører rabattkampanje uten å nevne saken',-4,'Rabatter gjenoppretter ikke tillit til at dataene er trygge.'],
+  ['Sier ikke mer om saken',-5,'Gjestene får aldri vite om det er trygt å booke igjen.']]}
+ ]});
+const CMODS={c1:['m12','m3'],c2:['m10','m13'],c3:['m11','m6','m9'],c4:['m3','m2'],c5:['m8','m1','m3'],c6:['m7','m9'],c7:['m5','m6','m2'],c8:['m11','m6']};
+const GMOD={'Stakeholder Salience':'m6','Makt-interesse-matrisen':'m6','Issue Life-Cycle':'m10','Responsstrategier for issues':'m10','Position-Importance Matrix':'m10','DESTEP':'m10','Responsstrategier i krise':'m11','Krisetypologi':'m11','Budskapsstrategier ved endring':'m12','Matrisen for effektivitet og enighet':'m12','Lewins endringsmodell':'m12','Iceberg: taktikk over vannlinjen':'m12','Kotters åtte steg':'m12','CI-mix':'m7','VCI-modellen':'m7','Identitetsstrukturer':'m7','Retoriske appellformer':'m9','Trippel bunnlinje':'m13','Tilnærminger til CSR':'m13','PARC-prinsippene':'m3','Klassifisering av sosiale medier':'m3','Teorier om sosiale medier':'m3','TAM':'m1','Stakeholder engagement':'m2','van Riels kommunikasjonsområder':'m2','Funksjoner for internkommunikasjon':'m8','Strategiprosesser':'m5','Budskapsstiler':'m5','Stegene i kommunikasjonsplanlegging':'m5'};
+Object.assign(GROUPS,{
+'Kotters åtte steg':['Skape forståelse for nødvendighet','Etablere en ledende koalisjon','Kommunisere endringsvisjonen','Skape kortsiktige gevinster','Forankre nye arbeidsmåter i kulturen'],
+'Klassifisering av sosiale medier':['Blogger','Sosiale nettverkssider','Virtuelle sosiale verdener','Samarbeidsprosjekter','Innholdsfellesskap','Virtuelle spillverdener'],
+'Teorier om sosiale medier':['Medierikhetsteori','Usikkerhetsreduksjon (URT)','Social Information Processing','Uses and Gratifications'],
+'van Riels kommunikasjonsområder':['Ledelseskommunikasjon','Markedskommunikasjon'],
+'Stegene i kommunikasjonsplanlegging':['Strategisk intensjon','Definere kommunikasjonsmål','Identifisere og prioritere målgrupper','Utvikle mediestrategi','Forberede budsjett og evaluering']});
+GROUPS['Stakeholder engagement']=['Interactivity','Transparency'];
+
 /* ================================ MOTOR ================================ */
 const LS='bds110-omdomme-v1';
 let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};
@@ -817,20 +1151,21 @@ let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add(
 function addXp(n){if(n<=0)return;const b=rank().i;S.xp+=n;save();renderTop();if(rank().i>b)toast('Forfremmet til '+rank().name)}
 let V={name:'home'},timer=null;
 function go(v){if(timer){clearInterval(timer);timer=null}V=v;render();window.scrollTo(0,0)}
-function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,gamehub:vGameHub,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
+function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,book:vBook,gamehub:vGameHub,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
 
 /* ---------- Hjem ---------- */
 function totals(){const st=M.reduce((s,m)=>s+((S.quiz[m.id]||{}).stars||0),0);const cs=CASES.filter(c=>S.cases[c.id]!=null).length;return{st,cs}}
 function vHome(){const t=totals();
  app.innerHTML=`<section class="hero"><span class="eyebrow">BDS110 · Digital kommunikasjon i serviceorganisasjoner</span>
  <h1>Redd omdømmet. Bestå eksamen.</h1>
- <p class="lead">Du er ny kommunikasjonsansvarlig i hotellbransjen. Tren begreper og modeller, løs caser fra resepsjonen, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
+ <p class="lead">Du er ny kommunikasjonsansvarlig i hotellbransjen. Les fagboka, test deg med flervalg, løs caser fra hotellbransjen, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
  <section class="grid g2">
   <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Lær og quiz</h2><small>Les korte leksjoner med huskeregler, og test deg med flervalg og begrepskort fra ${M.length} moduler.</small><span class="go">Åpne nøkkeltavlen →</span></button>
   <button class="card mode" data-act="casehub"><span class="eyebrow">Modus 2</span><h2>Case-simulator</h2><small>Endring, issue, krise og storm i sosiale medier. Valgene dine flytter gjestescoren.</small><span class="go">Velg case →</span></button>
   <button class="card mode" data-act="bossintro"><span class="eyebrow">Modus 3</span><h2>Eksamens-bossfight</h2><small>Seks oppgaver trekkes. Velg tre, skriv svar og få dem sjekket mot mønsterbesvarelsene.</small><span class="go">Møt sensor →</span></button>
-  <button class="card mode" data-act="gamehub"><span class="eyebrow">Modus 4</span><h2>Minispill</h2><small>Nøkkelrush og Modellrush: to raske spill på tid som pugger begreper og modeller for deg.</small><span class="go">Spill →</span></button>
+  <button class="card mode" data-act="gamehub"><span class="eyebrow">Modus 4</span><h2>Minispill</h2><small>Begrepspar og Modellsortering: to rolige spill uten tidspress som pugger begreper og modeller for deg.</small><span class="go">Spill →</span></button>
  </section>
+ <section class="card"><h2>Fagboka</h2><p class="small">Hele pensum samlet: alle modulene, begrepene og modellene forklart, med tabeller og huskeregler. Du kan søke i den.</p><div class="row"><button class="btn" data-act="book">Åpne fagboka</button></div></section>
  <section class="card"><h3>Din fremgang</h3><div class="stats">
   <div class="stat"><b>${t.st} / ${M.length*3}</b><span>stjerner i quiz</span></div>
   <div class="stat"><b>${t.cs} / ${CASES.length}</b><span>caser løst</span></div>
@@ -842,24 +1177,37 @@ function vHome(){const t=totals();
 
 /* ---------- Quiz ---------- */
 const allTerms=()=>M.flatMap(m=>m.terms.map(t=>({t:t[0],d:t[1],m:m.id})));
-function buildPool(mods){const AT=allTerms(),pool=[];
+function expBox(ids,text){return`<details class="exp" open><summary>Forklaring av begreper og modeller</summary><div class="book">${relSecs(ids,text,2)}</div></details>`}
+function relSecs(ids,text,max){const words=[...new Set((text.toLowerCase().match(/[a-zæøå&-]{5,}/g)||[]))];
+ const all=ids.flatMap(id=>BOOK[id].map(s=>({s,sc:words.filter(w=>(s[0]+' '+s[1]).toLowerCase().includes(w)).length})));
+ const top=all.filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,max);
+ return(top.length?top:all.slice(0,max)).map(x=>`<h4>${x.s[0]}</h4>${x.s[1]}`).join('')}
+function buildPool(mods){const AT=allTerms(),pool=[],mk=(m,q,right,wrong,why,extra)=>{const opts=shuffle([right,...wrong]);pool.push({mod:m,q,opts,c:opts.indexOf(right),why,...extra})};
+ const others=g=>shuffle(Object.keys(GROUPS).filter(x=>x!==g));
  mods.forEach(m=>{
-  m.qs.forEach(q=>{const opts=shuffle(q.slice(1,5));pool.push({mod:m,q:q[0],opts,c:opts.indexOf(q[1]),why:q[5]})});
+  m.qs.forEach(q=>mk(m,q[0],q[1],q.slice(2,5),q[5],{h:1}));
   m.terms.forEach(([t,d])=>{const same=shuffle(m.terms.filter(x=>x[0]!==t)),oth=shuffle(AT.filter(x=>x.m!==m.id));
    const dis=same.slice(0,3).map(x=>({t:x[0],d:x[1]}));while(dis.length<3)dis.push(oth.pop());
-   if(Math.random()<.5){const opts=shuffle([t,...dis.map(x=>x.t)]);pool.push({mod:m,q:'Hvilket begrep passer til beskrivelsen?',quote:d,opts,c:opts.indexOf(t),why:t+': '+d})}
-   else{const opts=shuffle([d,...dis.map(x=>x.d)]);pool.push({mod:m,q:'Hva beskriver «'+t+'» best?',opts,c:opts.indexOf(d),why:t+': '+d})}})});
+   mk(m,'Hvilket begrep passer til beskrivelsen?',t,dis.map(x=>x.t),t+': '+d,{quote:d});
+   mk(m,'Hva beskriver «'+t+'» best?',d,dis.map(x=>x.d),t+': '+d)});
+  Object.keys(GROUPS).filter(g=>GMOD[g]===m.id).forEach(g=>{const it=GROUPS[g],why=g+' består av: '+it.join(', ')+'.',out=()=>others(g).slice(0,3).map(o=>shuffle(GROUPS[o])[0]);
+   it.forEach(x=>{mk(m,'Hvilken modell eller inndeling hører «'+x+'» til?',g,others(g).slice(0,3),why);
+    mk(m,'Hvilket av disse hører til '+g+'?',x,out(),why)});
+   if(it.length>=3)mk(m,'Hvilket av disse hører IKKE til '+g+'?',out()[0],shuffle(it).slice(0,3),why)})});
  return shuffle(pool)}
+function drawRound(mods,n){const p=buildPool(mods),h=p.filter(q=>q.h),g=p.filter(q=>!q.h),k=Math.min(h.length,Math.ceil(n*.6));
+ return shuffle([...h.slice(0,k),...g.slice(0,n-k)])}
+const bankSize=()=>buildPool(M).length;
 function vQuizHub(){
  app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
- <section class="hero"><span class="eyebrow">Modus 1</span><h1>Nøkkeltavlen</h1><p class="lead">Hvert rom er en modul. Start med «Lær» for å lese stoffet, og ta så quizen. Spørsmål du bommer på kommer tilbake til du kan dem. 60 % riktig på første forsøk gir én stjerne, 80 % gir to, og alt riktig gir tre.</p>
- <div class="row"><button class="btn" data-act="quiz" data-id="mix">Blandet runde fra alle moduler</button></div></section>
+ <section class="hero"><span class="eyebrow">Modus 1</span><h1>Nøkkeltavlen</h1><p class="lead">Hvert rom er en modul. Start med «Lær» for å lese stoffet, og ta så quizen. Hvert spørsmål har fire svar, og ett er riktig. Spørsmål du bommer på kommer tilbake til du kan dem. 60 % riktig på første forsøk gir én stjerne, 80 % gir to, og alt riktig gir tre.</p>
+ <div class="row"><button class="btn" data-act="quiz" data-id="mix">Ta en test: 20 tilfeldige spørsmål fra hele faget</button></div><p class="small">Spørsmålsbanken har ${bankSize()} spørsmål. Hver test trekker nye spørsmål, og de fire svaralternativene stokkes hver gang, så du kan ikke lære deg plasseringen.</p></section>
  <section class="grid g2">${M.map(m=>{const s=S.quiz[m.id]||{};return`<article class="card key"><div class="tag" aria-hidden="true">${m.nr}</div><div class="key-body">
   <h3>${esc(m.name)}</h3><span class="small">${esc(m.pensum)}</span>
   <div class="row">${starStr(s.stars||0)}<span class="small">${s.best!=null?'Beste: '+s.best+' %':'Ikke spilt'}</span></div>
   <div class="row"><button class="btn sm" data-act="learn" data-id="${m.id}">Lær</button><button class="btn ghost sm" data-act="quiz" data-id="${m.id}">Quiz</button><button class="btn ghost sm" data-act="flash" data-id="${m.id}">Kort (${m.terms.length})</button></div></div></article>`}).join('')}</section>`}
-function startQuiz(id){const mix=id==='mix',pool=buildPool(mix?M:[M.find(m=>m.id===id)]);
- go({name:'quiz',id,title:mix?'Blandet runde':M.find(m=>m.id===id).name,round:pool.slice(0,mix?15:10),n0:Math.min(pool.length,mix?15:10),i:0,picked:null,hint:null,right:0,streak:0,xp:0,missed:[]})}
+function startQuiz(id){const mix=id==='mix',pool=drawRound(mix?M:[M.find(m=>m.id===id)],mix?20:10);
+ go({name:'quiz',id,title:mix?'Test fra hele faget':M.find(m=>m.id===id).name,round:pool,n0:pool.length,i:0,picked:null,hint:null,right:0,streak:0,xp:0,missed:[]})}
 function vQuiz(){const q=V.round[V.i],done=V.picked!=null;
  app.innerHTML=`<button class="back" data-act="quizhub">← Avslutt runden</button>
  <div class="qmeta"><span>${esc(V.title)}${V.id==='mix'?' · '+esc(q.mod.name):''}</span><span>${q.retry?'Repetisjon · ':''}Spørsmål ${V.i+1} av ${V.round.length} · ${V.right} riktige${V.streak>=3?' · '+V.streak+' på rad':''}</span></div>
@@ -867,6 +1215,7 @@ function vQuiz(){const q=V.round[V.i],done=V.picked!=null;
  <section class="card"><h2>${esc(q.q)}</h2>${q.quote?'<p class="quote">'+esc(q.quote)+'</p>':''}
  <div class="opts">${q.opts.map((o,i)=>!done&&V.hint&&V.hint.includes(i)?'':`<button class="opt ${done?(i===q.c?'right':i===V.picked?'wrong':''):''}" data-act="pick" data-i="${i}" ${done?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
  ${done?`<div class="fb ${V.picked===q.c?'ok':'no'}"><b class="${V.picked===q.c?'ok':'no'}">${V.picked===q.c?'Riktig.':'Ikke helt.'}</b> ${esc(q.why)}</div>
+ ${expBox([q.mod.id],q.q+' '+q.opts[q.c]+' '+q.why+' '+(q.quote||''))}
  <div class="row"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small">Enter går videre</span></div>`:`<div class="row">${V.hint?'':'<button class="btn ghost sm" data-act="hint">Hint: fjern to svar</button>'}<span class="small">Tastene 1–4 velger svar</span></div>`}</section>`;
  if(done)$('nextbtn').focus()}
 function pick(i){if(V.name!=='quiz'||V.picked!=null||(V.hint&&V.hint.includes(i)))return;const q=V.round[V.i];V.picked=i;
@@ -911,6 +1260,7 @@ function vCase(){const st=V.c.steps[V.i],ord=V.order[V.i],done=V.picked!=null,ch
  <section class="card">${V.i===0&&!done?`<p class="small">${esc(V.c.intro)}</p>`:''}<h2 class="scene">${esc(st.t)}</h2>
  <div class="opts">${ord.map((oi,k)=>{const o=st.o[oi];return`<button class="opt ${done?(oi===bestI?'right':oi===V.picked?'wrong':''):''}" data-act="cpick" data-i="${oi}" ${done?'disabled':''}><kbd>${'ABCD'[k]}</kbd><span>${esc(o[0])}</span></button>`}).join('')}</div>
  ${done?`<div class="fb ${ch[1]>0?'ok':'no'}"><b class="${ch[1]>0?'ok':'no'}">${V.picked===bestI?'Sterkt valg.':ch[1]>0?'Greit, men det finnes et bedre valg.':'Dette kostet omdømme.'}</b> ${esc(ch[2])}${V.picked!==bestI?`<br><br><b>Beste valg:</b> ${esc(st.o[bestI][2])}`:''}</div>
+ ${expBox(CMODS[V.c.id],st.o[bestI][2]+' '+st.o[bestI][0])}
  <div class="row"><button class="btn" data-act="cnext" id="nextbtn">${V.i+1<V.c.steps.length?'Neste situasjon':'Se utfallet'}</button></div>`:''}</section>`;
  if(done)$('nextbtn').focus()}
 function cpick(i){if(V.picked!=null)return;const o=V.c.steps[V.i].o[i];V.picked=i;V.rep=Math.max(0,Math.min(100,V.rep+o[1]));
@@ -952,7 +1302,6 @@ function bIntro(){
  <li><span class="y">70</span><span>poeng for faglige nøkkelpunkter fra mønsterbesvarelsen til oppgaven</span></li>
  <li><span class="y">30</span><span>poeng for sensorkriteriene: struktur, definisjoner, drøfting, eksempler, pensumbruk og dybde</span></li></ul>
  <p class="note">Sjekken er automatisk og leter etter fagbegreper og drøftingssignaler i teksten din. Den kan ikke vurdere kvaliteten på resonnementet slik en sensor gjør, så les alltid mønsterbesvarelsen etterpå og sammenlign selv.</p>
- <p class="small">På eksamen har du ca. 65 minutter per oppgave. Klokken her teller opp, slik at du kan øve på tidsbruk.</p>
  <div class="row"><button class="btn" data-act="bossdraw">Trekk seks oppgaver</button>${S.boss?`<span class="small">Beste resultat: ${S.boss.grade} (${S.boss.score} poeng)</span>`:''}</div></section>`}
 function bPick(){
  app.innerHTML=`<button class="back" data-act="bossintro">← Tilbake</button>
@@ -961,7 +1310,7 @@ function bPick(){
  <div class="row"><button class="btn" data-act="bossstart" ${V.chosen.length===3?'':'disabled'}>Start eksamen</button><button class="btn ghost" data-act="bossdraw">Trekk nye oppgaver</button></div>`}
 const fmt=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return(h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(x).padStart(2,'0')};
 function bWrite(){const t=TASKS.find(x=>x.id===V.chosen[V.cur]);
- app.innerHTML=`<div class="qmeta"><span>Eksamens-bossfight</span><span>Tid brukt: <b id="clock">0:00</b> av 4:00:00</span></div>
+ app.innerHTML=`<div class="qmeta"><span>Eksamens-bossfight</span><span>Ingen tidsfrist</span></div>
  <div class="bosshp"><div class="qmeta"><b>Sensor</b><span id="hptxt"></span></div><div class="hpbar" role="img" aria-label="Sensors liv"><span id="hp"></span></div></div>
  <div class="tabs" role="tablist">${V.chosen.map((id,i)=>`<button class="tab" role="tab" data-act="bosstab" data-i="${i}" aria-selected="${i===V.cur}">Oppgave ${i+1}: ${esc(TASKS.find(x=>x.id===id).title)}</button>`).join('')}</div>
  <section class="card"><span class="pill">${esc(t.src)}</span><h2>${esc(t.title)}</h2>${taskHtml(t)}
@@ -971,8 +1320,7 @@ function bWrite(){const t=TASKS.find(x=>x.id===V.chosen[V.cur]);
  <div class="row"><button class="btn" data-act="bosssubmit">Lever alle tre</button><button class="btn ghost" data-act="bossquit">Avbryt</button></div>
  <div id="confirm"></div>`;
  const ta=$('ans-'+V.cur);ta.addEventListener('input',()=>{V.ans[t.id]=ta.value;S.drafts[t.id]=ta.value;save();bossLive()});
- bossLive();tick();if(!timer)timer=setInterval(tick,1000)}
-function tick(){const c=$('clock');if(c)c.textContent=fmt(Math.floor((Date.now()-V.start)/1000))}
+ bossLive()}
 function bossLive(){const sc=V.chosen.map(id=>scoreAnswer(TASKS.find(x=>x.id===id),V.ans[id]));const avg=Math.round(sc.reduce((s,x)=>s+x.score,0)/3),hp=100-avg;
  $('hp').style.width=hp+'%';$('hptxt').textContent=hp+' % liv igjen';$('wc').textContent=sc[V.cur].w+' ord i denne oppgaven'}
 function bossSubmit(){const res=V.chosen.map(id=>{const t=TASKS.find(x=>x.id===id);return{t,text:V.ans[id]||'',...scoreAnswer(t,V.ans[id])}});
@@ -980,7 +1328,7 @@ function bossSubmit(){const res=V.chosen.map(id=>{const t=TASKS.find(x=>x.id===i
  addXp(score*5);if(!S.boss||score>S.boss.score)S.boss={score,grade:g};V.chosen.forEach(id=>delete S.drafts[id]);save();
  go({name:'boss',stage:'result',res,score,g,secs})}
 function bResult(){const won=V.score>=60;
- app.innerHTML=`<section class="card"><span class="eyebrow">Sensuren har falt</span><div class="row"><span class="grade">${V.g}</span><div><h1>${won?'Sensor er beseiret':'Sensor står fortsatt'}</h1><p class="small">${V.score} av 100 poeng · tid brukt ${fmt(V.secs)} · +${V.score*5} XP</p></div></div>
+ app.innerHTML=`<section class="card"><span class="eyebrow">Sensuren har falt</span><div class="row"><span class="grade">${V.g}</span><div><h1>${won?'Sensor er beseiret':'Sensor står fortsatt'}</h1><p class="small">${V.score} av 100 poeng · +${V.score*5} XP</p></div></div>
  <p class="note">Karakteren bygger på en automatisk sjekk av nøkkelpunkter. Bruk listene under til å se hva du glemte, og sammenlign drøftingen din med mønsterbesvarelsen.</p>
  <div class="row"><button class="btn" data-act="bossdraw">Ny bossfight</button><button class="btn ghost" data-act="home">Til forsiden</button></div></section>
  ${V.res.map((r,i)=>`<section class="card"><div class="qmeta"><span class="pill">Oppgave ${i+1} · ${esc(r.t.src)}</span><span>${r.w} ord</span></div>
@@ -992,61 +1340,77 @@ function bResult(){const won=V.score>=60;
  ${r.text.trim()?`<details><summary>Ditt svar</summary><p style="white-space:pre-wrap">${esc(r.text)}</p></details>`:''}</section>`).join('')}`}
 
 /* ---------- Lær ---------- */
-function startLearn(id){const m=M.find(x=>x.id===id),pages=[];for(let i=0;i<m.terms.length;i+=4)pages.push(m.terms.slice(i,i+4));go({name:'learn',m,pages,p:0})}
+function startLearn(id){const m=M.find(x=>x.id===id),pages=[null];for(let i=0;i<m.terms.length;i+=4)pages.push(m.terms.slice(i,i+4));go({name:'learn',m,pages,p:0})}
 function vLearn(){const m=V.m,last=V.p===V.pages.length-1;
  app.innerHTML=`<button class="back" data-act="quizhub">← Til nøkkeltavlen</button>
  <div class="qmeta"><span>Leksjon · Rom ${m.nr}</span><span>Side ${V.p+1} av ${V.pages.length}</span></div>
  <div class="prog"><span style="width:${(V.p+1)/V.pages.length*100}%"></span></div>
  <section class="hero"><h1>${esc(m.name)}</h1><p class="small">Pensum: ${esc(m.pensum)}</p></section>
- ${V.p===0?`<section class="card"><h3>Huskeregler</h3><ul class="husk">${HUSK[m.id].map(h=>'<li>'+esc(h)+'</li>').join('')}</ul></section>`:''}
- <section class="card"><h3>Begreper du må kunne</h3>${V.pages[V.p].map(t=>`<div class="lcard"><b>${esc(t[0])}</b>${esc(t[1])}</div>`).join('')}</section>
+ ${V.p===0?`<section class="card"><h3>Huskeregler</h3><ul class="husk">${HUSK[m.id].map(h=>'<li>'+esc(h)+'</li>').join('')}</ul></section>
+ <section class="card book">${BOOK[m.id].map(s=>`<h4>${s[0]}</h4>${s[1]}`).join('')}</section>`
+ :`<section class="card"><h3>Begreper du må kunne</h3>${V.pages[V.p].map(t=>`<div class="lcard"><b>${esc(t[0])}</b>${esc(t[1])}</div>`).join('')}</section>`}
  <div class="row">${V.p>0?'<button class="btn ghost" data-act="lprev">Forrige</button>':''}${last?`<button class="btn" data-act="ldone">Test deg selv i quizen</button><button class="btn ghost" data-act="flash" data-id="${m.id}">Øv med begrepskort</button>`:'<button class="btn" data-act="lnext">Neste side</button>'}</div>`}
+
+/* ---------- Fagbok ---------- */
+function bookMods(q){q=(q||'').trim().toLowerCase();
+ const out=M.map(m=>{const secs=BOOK[m.id].filter(s=>!q||(m.name+' '+s[0]+' '+s[1]).toLowerCase().includes(q)),terms=m.terms.filter(t=>!q||(m.name+' '+t[0]+' '+t[1]).toLowerCase().includes(q));
+  if(!secs.length&&!terms.length)return'';
+  return`<details class="mod" ${q?'open':''}><summary>Rom ${m.nr} · ${esc(m.name)}</summary><div class="book"><p class="small">Pensum: ${esc(m.pensum)}</p>
+  ${q?'':`<h4>Huskeregler</h4><ul>${HUSK[m.id].map(h=>'<li>'+esc(h)+'</li>').join('')}</ul>`}
+  ${secs.map(s=>`<h4>${s[0]}</h4>${s[1]}`).join('')}
+  ${terms.length?`<h4>Begreper</h4>${terms.map(t=>`<div class="lcard"><b>${esc(t[0])}</b>${esc(t[1])}</div>`).join('')}`:''}
+  <div class="row" style="margin-top:12px"><button class="btn sm" data-act="quiz" data-id="${m.id}">Test deg i denne modulen</button></div></div></details>`}).join('');
+ return out||'<p class="small">Ingen treff. Prøv et annet ord, for eksempel «Kotter» eller «omdømme».</p>'}
+function vBook(){
+ app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
+ <section class="hero"><span class="eyebrow">Hele pensum</span><h1>Fagboka</h1><p class="lead">Alt fra kompendiet, modul for modul. Trykk på en modul for å åpne den, eller søk etter et begrep eller en modell.</p>
+ <label class="small" for="bq">Søk i fagboka</label><input type="search" id="bq" placeholder="For eksempel Iceberg, salience eller grønnvasking" autocomplete="off"></section>
+ <section class="grid" id="bres">${bookMods('')}</section>`;
+ $('bq').addEventListener('input',e=>{$('bres').innerHTML=bookMods(e.target.value)})}
 
 /* ---------- Minispill ---------- */
 function vGameHub(){
  app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
- <section class="hero"><span class="eyebrow">Modus 4</span><h1>Minispill</h1><p class="lead">To raske spill på tid. Bra når du er lei av å lese, og du lærer begrepene mens du jakter rekord.</p></section>
+ <section class="hero"><span class="eyebrow">Modus 4</span><h1>Minispill</h1><p class="lead">To rolige spill uten klokke. Ta den tiden du trenger, og lær begrepene mens du jakter rekord.</p></section>
  <section class="grid g2">
- <article class="card"><span class="pill">60 sekunder</span><h2>Nøkkelrush</h2><p class="small">Koble begrep og forklaring så fort du kan. Tre riktige på rad øker poengene. Feil kobling koster tre sekunder.</p>
- <div class="row"><span class="big">${S.hi.match||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="match">Start Nøkkelrush</button></div></article>
- <article class="card"><span class="pill">Tre liv</span><h2>Modellrush</h2><p class="small">Et begrep dukker opp. Trykk på modellen det hører til før tiden renner ut. Tempoet øker for hvert riktige svar.</p>
- <div class="row"><span class="big">${S.hi.sort||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="sort">Start Modellrush</button></div></article>
+ <article class="card"><span class="pill">12 par</span><h2>Begrepspar</h2><p class="small">Koble begrep og forklaring. Tre riktige på rad øker poengene, og feil kobling koster fem poeng.</p>
+ <div class="row"><span class="big">${S.hi.match||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="match">Start Begrepspar</button></div></article>
+ <article class="card"><span class="pill">Tre liv</span><h2>Modellsortering</h2><p class="small">Et begrep dukker opp. Velg modellen det hører til. Bommer du, ser du hvilke begreper som hører sammen.</p>
+ <div class="row"><span class="big">${S.hi.sort||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="sort">Start Modellsortering</button></div></article>
  </section>`}
 function gameHead(title,right){return`<button class="back" data-act="gamehub">← Avslutt spillet</button>
- <div class="qmeta"><span>${title}</span><span>${right}</span></div><div class="tbar"><span id="gbar"></span></div>`}
+ <div class="qmeta"><span>${title}</span><span>${right}</span></div>`}
 function deal(){if(V.deck.length<4)V.deck=shuffle(allTerms());const four=V.deck.splice(0,4);V.L=four.slice();V.R=shuffle(four);V.goneL=[];V.goneR=[];V.sl=null;V.sr=null}
-function startMatch(){go({name:'match',deck:shuffle(allTerms()),L:[],R:[],goneL:[],goneR:[],score:0,combo:0,pairs:0,end:Date.now()+60000,dur:60000});deal();render();timer=setInterval(gameTick,150)}
+function startMatch(){go({name:'match',deck:shuffle(allTerms()),L:[],R:[],goneL:[],goneR:[],score:0,combo:0,pairs:0});deal();render()}
 function vMatch(){
- app.innerHTML=gameHead('Nøkkelrush',`<span class="big">${V.score}</span> poeng · <b id="gsec"></b> sek${V.combo>=3?' · '+V.combo+' på rad':''}`)+
- `<section class="mboard"><div class="mcol mterms">${V.L.map((x,i)=>`<button class="opt ${V.goneL.includes(i)?'gone':''} ${V.sl===i?'sel':''} ${V.bad&&V.bad[0]===i?'wrong':''}" data-act="ml" data-i="${i}"><span>${esc(x.t)}</span></button>`).join('')}</div>
+ app.innerHTML=gameHead('Begrepspar',`<span class="big">${V.score}</span> poeng · par ${Math.min(V.pairs+1,12)} av 12${V.combo>=3?' · '+V.combo+' på rad':''}`)+
+ `<div class="prog"><span style="width:${V.pairs/12*100}%"></span></div>
+ <section class="mboard"><div class="mcol mterms">${V.L.map((x,i)=>`<button class="opt ${V.goneL.includes(i)?'gone':''} ${V.sl===i?'sel':''} ${V.bad&&V.bad[0]===i?'wrong':''}" data-act="ml" data-i="${i}"><span>${esc(x.t)}</span></button>`).join('')}</div>
  <div class="mcol">${V.R.map((x,i)=>`<button class="opt ${V.goneR.includes(i)?'gone':''} ${V.sr===i?'sel':''} ${V.bad&&V.bad[1]===i?'wrong':''}" data-act="mr" data-i="${i}"><span>${esc(x.d)}</span></button>`).join('')}</div></section>
- <p class="small">Trykk på et begrep og deretter på forklaringen som hører til.</p>`;gameTick()}
+ <p class="small">Trykk på et begrep og deretter på forklaringen som hører til.</p>`}
 function matchSel(side,i){V.bad=null;V[side]=V[side]===i?null:i;
- if(V.sl!=null&&V.sr!=null){if(V.L[V.sl].t===V.R[V.sr].t){V.combo++;V.pairs++;V.score+=10*(1+Math.floor(V.combo/3));V.goneL.push(V.sl);V.goneR.push(V.sr);V.sl=V.sr=null;if(V.goneL.length===4)deal()}
-  else{V.combo=0;V.end-=3000;V.bad=[V.sl,V.sr];V.sl=V.sr=null}}
+ if(V.sl!=null&&V.sr!=null){if(V.L[V.sl].t===V.R[V.sr].t){V.combo++;V.pairs++;V.score+=10*(1+Math.floor(V.combo/3));V.goneL.push(V.sl);V.goneR.push(V.sr);V.sl=V.sr=null;
+   if(V.pairs>=12){gameEnd();return}if(V.goneL.length===4)deal()}
+  else{V.combo=0;V.score=Math.max(0,V.score-5);V.bad=[V.sl,V.sr];V.sl=V.sr=null}}
  render()}
-const GK=Object.keys(GROUPS);
-function sortNext(){const g=GK[Math.floor(Math.random()*GK.length)],it=GROUPS[g][Math.floor(Math.random()*GROUPS[g].length)];
- V.cur={g,it,opts:shuffle([g,...shuffle(GK.filter(x=>x!==g)).slice(0,3)])};V.fb=null;V.dur=Math.max(4000,9000-V.n*250);V.end=Date.now()+V.dur;render()}
-function startSort(){go({name:'sort',lives:3,score:0,streak:0,n:0,cur:{g:'',it:'',opts:[]},fb:null,end:null,dur:1});sortNext();timer=setInterval(gameTick,150)}
+function sortNext(){const GK=Object.keys(GROUPS),g=GK[Math.floor(Math.random()*GK.length)],it=GROUPS[g][Math.floor(Math.random()*GROUPS[g].length)];
+ V.cur={g,it,opts:shuffle([g,...shuffle(GK.filter(x=>x!==g)).slice(0,3)])};V.fb=null;render()}
+function startSort(){go({name:'sort',lives:3,score:0,streak:0,n:0,cur:{g:'',it:'',opts:[]},fb:null});sortNext()}
 function vSort(){const c=V.cur,f=V.fb;
- app.innerHTML=gameHead('Modellrush',`<span class="big">${V.score}</span> poeng · <span class="lives" aria-label="${V.lives} liv igjen">${'♥'.repeat(V.lives)}</span>`)+
+ app.innerHTML=gameHead('Modellsortering',`<span class="big">${V.score}</span> poeng · <span class="lives" aria-label="${V.lives} liv igjen">${'♥'.repeat(V.lives)}</span>${V.streak>=3?' · '+V.streak+' på rad':''}`)+
  `<section class="card"><span class="eyebrow">Hvilken modell hører dette til?</span><div class="item">${esc(c.it)}</div>
  <div class="opts">${c.opts.map((o,i)=>`<button class="opt ${f?(o===c.g?'right':i===f.i?'wrong':''):''}" data-act="spick" data-i="${i}" ${f?'disabled':''}><span>${esc(o)}</span></button>`).join('')}</div>
- ${f?`<div class="fb no"><b class="no">${f.i==null?'Tiden gikk ut.':'Feil.'}</b> «${esc(c.it)}» hører til ${esc(c.g)}, sammen med ${esc(GROUPS[c.g].filter(x=>x!==c.it).join(', '))}.</div>
+ ${f?`<div class="fb no"><b class="no">Feil.</b> «${esc(c.it)}» hører til ${esc(c.g)}, sammen med ${esc(GROUPS[c.g].filter(x=>x!==c.it).join(', '))}.</div>
+ ${expBox([GMOD[c.g]],c.g+' '+c.it)}
  <div class="row"><button class="btn" data-act="snext" id="nextbtn">${V.lives>0?'Fortsett':'Se resultat'}</button></div>`:''}</section>`;
- if(f)$('nextbtn').focus();gameTick()}
+ if(f)$('nextbtn').focus()}
 function sortPick(i){if(V.fb)return;const c=V.cur;
- if(i!=null&&c.opts[i]===c.g){V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
- else{V.lives--;V.streak=0;V.end=null;V.fb={i};render()}}
-function gameTick(){const b=$('gbar');if(!b)return;
- if(!V.end){b.style.width='0%';return}
- const rem=V.end-Date.now();b.style.width=Math.max(0,rem/V.dur*100)+'%';const s=$('gsec');if(s)s.textContent=Math.max(0,Math.ceil(rem/1000));
- if(rem<=0){if(V.name==='match')gameEnd();else sortPick(null)}}
+ if(c.opts[i]===c.g){V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
+ else{V.lives--;V.streak=0;V.fb={i};render()}}
 function gameEnd(){const g=V.name,score=V.score,old=S.hi[g]||0,xp=Math.round(score/4);if(score>old){S.hi[g]=score;save()}addXp(xp);
  go({name:'gameend',g,score,old,xp,info:g==='match'?V.pairs+' riktige koblinger':V.n+' riktige svar'})}
 function vGameEnd(){const rec=V.score>V.old;
- app.innerHTML=`<section class="card"><span class="eyebrow">${V.g==='match'?'Nøkkelrush':'Modellrush'}</span><div class="row"><span class="grade">${V.score}</span><div><h1>${rec?'Ny rekord':'Runden er over'}</h1><p class="small">${V.info} · ${rec?'forrige rekord '+V.old:'rekord '+V.old} · +${V.xp} XP</p></div></div>
+ app.innerHTML=`<section class="card"><span class="eyebrow">${V.g==='match'?'Begrepspar':'Modellsortering'}</span><div class="row"><span class="grade">${V.score}</span><div><h1>${rec?'Ny rekord':'Runden er over'}</h1><p class="small">${V.info} · ${rec?'forrige rekord '+V.old:'rekord '+V.old} · +${V.xp} XP</p></div></div>
  <div class="row"><button class="btn" data-act="${V.g}">Spill igjen</button><button class="btn ghost" data-act="gamehub">Bytt spill</button><button class="btn ghost" data-act="home">Til forsiden</button></div></section>`}
 
 /* ---------- Hendelser ---------- */
@@ -1056,7 +1420,7 @@ const A={
  hint:()=>{const q=V.round[V.i];V.hint=shuffle(q.opts.map((_,i)=>i).filter(i=>i!==q.c)).slice(0,2);render()},
  learn:d=>startLearn(d.id),lnext:()=>{V.p++;render();window.scrollTo(0,0)},lprev:()=>{V.p--;render();window.scrollTo(0,0)},
  ldone:()=>{addXp(10);startQuiz(V.m.id)},
- gamehub:()=>go({name:'gamehub'}),match:startMatch,sort:startSort,
+ gamehub:()=>go({name:'gamehub'}),book:()=>go({name:'book'}),match:startMatch,sort:startSort,
  ml:d=>matchSel('sl',+d.i),mr:d=>matchSel('sr',+d.i),spick:d=>sortPick(+d.i),
  snext:()=>{if(V.lives>0)sortNext();else gameEnd()},
  flash:d=>startFlash(d.id),fopen:()=>{V.open=true;render()},
