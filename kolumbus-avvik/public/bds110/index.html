@@ -122,6 +122,21 @@ textarea{width:100%;min-height:340px;font:inherit;line-height:1.6;color:var(--in
 .check .y{color:var(--good);font-weight:800} .check .n{color:var(--bad);font-weight:800}
 details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;background:var(--surface2)}
 summary{font-weight:700;cursor:pointer}
+.opt.sel{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
+.opt.gone{visibility:hidden}
+.husk{margin:0;padding-left:20px;display:grid;gap:6px}
+.lcard{border-left:4px solid var(--brass);padding:10px 14px;background:var(--surface2);border-radius:0 10px 10px 0}
+.lcard b{font-family:var(--display);font-size:1.05rem;display:block}
+.tbar{height:10px;background:var(--line);border-radius:10px;overflow:hidden}
+.tbar span{display:block;height:100%;background:var(--brass);width:100%}
+.mboard{display:grid;grid-template-columns:1fr 1.7fr;gap:14px;align-items:start}
+.mcol{display:grid;gap:10px}
+.mcol .opt{min-height:64px;align-items:center}
+.mterms .opt{font-weight:700;justify-content:center;text-align:center}
+.item{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,6vw,2.6rem);text-align:center;padding:18px 0}
+.lives{color:var(--bad);letter-spacing:4px;font-size:1.25rem}
+.big{font-family:var(--display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.mboard{grid-template-columns:1fr}.mterms{grid-template-columns:1fr 1fr}}
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .note{font-size:.86rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;max-width:70ch}
@@ -420,6 +435,48 @@ const M=[
   ['Et hotell vil kutte plast og matsvinn, men det krever dyre investeringer. Hvilke hensyn står mot hverandre?','Planet mot profits','People mot planet','Image mot vision','Etos mot patos','Kutt i bemanning for å spare inn ville i tillegg rammet people.'],
   ['Hvorfor bør virksomheter kommunisere åpent om avveiningene?','Fordi de som fremstiller seg som feilfrie mister troverdighet og risikerer anklager om grønnvasking','Fordi loven krever det i alle tilfeller','Fordi det gir flere følgere','Fordi kunder ikke bryr seg','Nyansert kommunikasjon bygger tillit.']]}
 ];
+
+/* ============================== HUSKEREGLER ============================== */
+const HUSK={
+m0:['3 av 6 oppgaver, ca. 65 minutter på hver.','Drøfting: situasjon og fase, så teoretisk begrunnet valg, så vurdering.','Emnet er delt i HVA, HVEM og HVORDAN.'],
+m1:['Digitisering endrer formatet. Digitalisering endrer prosessen. Digital transformasjon endrer hele forretningsmodellen.','TAM = opplevd nytte + opplevd brukervennlighet.','Synkron = samtidig. Asynkron = når det passer.'],
+m2:['van Riel: ledelse, organisasjon og marked.','Broadcasting = én til mange. Crowd-casting = mange til mange.','Engasjement har fire nøkkelord: advocacy, interactivity, transparency, authenticity.','POEM = betalte (paid), eide (owned) og fortjente (earned) medier.'],
+m3:['Medierikhet: tvetydig budskap krever rik kanal, entydig budskap klarer seg med mager kanal.','PARC = Participatory, Authentic, Resourceful, Credible.','URT: vi leser anmeldelser for å bli tryggere på valget.','Crescendo = kritikk som vokser til storm.'],
+m4:['Flexi Card Game er et designverktøy.','Stikkord: nærhet og følelser over avstand.'],
+m5:['7 steg: intensjon, mål, målgrupper, budskap, stil, medier, budsjett og evaluering.','Kanalen velges først i steg 6. Derfor begynner ikke strategien med Instagram.','Målet er at omdømmet skal samsvare med visjonen.'],
+m6:['Salience = makt + legitimitet + hast. Har du alle tre, er du definitive.','Bare én: dormant (makt), discretionary (legitimitet), demanding (hast).','To av tre: dominant (makt + legitimitet), dangerous (makt + hast), dependent (legitimitet + hast).','Høy makt og høy interesse = key players.'],
+m7:['CI-mix = atferd, kommunikasjon og symbolisme.','VCI: Vision er ledelsen, Culture er de ansatte, Image er de eksterne.','Monolittisk = ett navn. Støttet = eget navn pluss morselskapet. Merkevarebasert = ingen synlig kobling.'],
+m8:['Tre I-er: informerte, involverte og inkluderte medarbeidere.','Fire funksjoner: sosial, ekspressiv, informasjon og kontroll.','Medarbeiderstemme krever psykologisk trygghet. Uten den blir det taushet.'],
+m9:['Etos = avsenderen. Patos = følelsene. Logos = faktaene.','Agenda-setting handler om HVA vi snakker om. Framing handler om HVORDAN vi forstår det.'],
+m10:['Livssyklus: Emergence, Debate, Codification, Enforcement.','Fire svar: buffer (ligg lavt), brobygging (dialog), påvirkning (lobby), tankelederskap (gå foran).','En issue kommer gradvis. En krise kommer plutselig.','DESTEP = Demographic, Economic, Social, Technological, Ecological, Political.'],
+m11:['Krisetyper: ekstern eller intern, utilsiktet eller tilsiktet. Det gir faux pas, aggresjon, uhell og overtredelser.','Respons fra lite til mye ansvar: benekte, distansere, styrke posisjon, offer, aksept.','Under krisen: rask handling, empati og fakta.','Jo mer ansvar, jo mer aksept.'],
+m12:['Lewin: oppvarming, endring, nedfrysing.','Kotter i par: 1–2 hvorfor og hvem, 3–4 visjon, 5–6 handling og gevinster, 7–8 forankring.','Omvendt U: Underscore & Explore i midten virker best. Ytterpunktene Spray & Pray og Withhold & Uphold virker dårligst.','Iceberg: under vannlinjen ligger analyse og strategi, over ligger taktikken. Budskapsstrategiene er ikke nivåer i Iceberg.'],
+m13:['Trippel bunnlinje = tre P-er: profits, people, planet.','CSR-kommunikasjon: informasjon (enveis), respons (toveis), involvering (sammen).','Grønnvasking = ord uten handling.']};
+const GROUPS={
+'Stakeholder Salience':['Definitive','Dominant','Dangerous','Dependent','Dormant','Discretionary','Demanding'],
+'Makt-interesse-matrisen':['Key players','Keep satisfied','Keep informed','Minimal effort'],
+'Issue Life-Cycle':['Emergence','Debate','Codification','Enforcement'],
+'Responsstrategier for issues':['Buffer','Brobygging','Påvirkning','Tankelederskap'],
+'Responsstrategier i krise':['Benekte','Distansere','Styrke posisjon','Offer','Aksept'],
+'Krisetypologi':['Faux pas','Uhell','Aggresjon','Overtredelser'],
+'Budskapsstrategier ved endring':['Spray & Pray','Tell & Sell','Underscore & Explore','Identify & Reply','Withhold & Uphold'],
+'Matrisen for effektivitet og enighet':['Need to know','Quid pro quo','Equal dissemination','Equal participation'],
+'Lewins endringsmodell':['Unfreezing','Changing','Refreezing'],
+'Iceberg: taktikk over vannlinjen':['Talspersoner','Kanaler','Valg av tidspunkt','Sikkerhetsventiler'],
+'CI-mix':['Behaviour','Communications','Symbolism'],
+'VCI-modellen':['Vision','Culture','Image'],
+'Identitetsstrukturer':['Monolittisk','Støttet','Merkevarebasert'],
+'Retoriske appellformer':['Etos','Patos','Logos'],
+'Trippel bunnlinje':['Profits','People','Planet'],
+'PARC-prinsippene':['Participatory','Authentic','Resourceful','Credible'],
+'TAM':['Opplevd nytte','Opplevd brukervennlighet'],
+'DESTEP':['Demographic','Economic','Technological','Ecological','Political'],
+'Stakeholder engagement':['Advocacy','Interactivity','Transparency','Authenticity'],
+'Funksjoner for internkommunikasjon':['Sosial funksjon','Ekspressiv funksjon','Informasjonsfunksjon','Kontrollfunksjon'],
+'Tilnærminger til CSR':['Defensiv','Veldedig','Promoterende','Transformerende'],
+'Position-Importance Matrix':['Antagonistic','Problematic','Supporter','Low priority'],
+'Strategiprosesser':['Rasjonell','Visjonær','Inkrementell'],
+'Budskapsstiler':['Funksjonelle budskap','Symbolske budskap','Bransjeorienterte budskap']};
 
 /* ============================== CASE-SIMULATOR ============================== */
 // steps: {t: situasjon, o: [[valg, delta, tilbakemelding], ...]}
@@ -746,7 +803,7 @@ const TASKS=[
 
 /* ================================ MOTOR ================================ */
 const LS='bds110-omdomme-v1';
-let S={xp:0,quiz:{},cases:{},boss:null,drafts:{}};
+let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};
 try{const r=JSON.parse(localStorage.getItem(LS));if(r)S=Object.assign(S,r)}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 const RANKS=[[0,'Resepsjonsvikar'],[150,'Kommunikasjonsmedarbeider'],[400,'Kommunikasjonsrådgiver'],[800,'Seniorrådgiver'],[1400,'Kommunikasjonssjef'],[2200,'Kommunikasjonsdirektør'],[3200,'Omdømmelegende']];
@@ -760,7 +817,7 @@ let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add(
 function addXp(n){if(n<=0)return;const b=rank().i;S.xp+=n;save();renderTop();if(rank().i>b)toast('Forfremmet til '+rank().name)}
 let V={name:'home'},timer=null;
 function go(v){if(timer){clearInterval(timer);timer=null}V=v;render();window.scrollTo(0,0)}
-function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss})[V.name]()}
+function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,gamehub:vGameHub,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
 
 /* ---------- Hjem ---------- */
 function totals(){const st=M.reduce((s,m)=>s+((S.quiz[m.id]||{}).stars||0),0);const cs=CASES.filter(c=>S.cases[c.id]!=null).length;return{st,cs}}
@@ -768,15 +825,17 @@ function vHome(){const t=totals();
  app.innerHTML=`<section class="hero"><span class="eyebrow">BDS110 · Digital kommunikasjon i serviceorganisasjoner</span>
  <h1>Redd omdømmet. Bestå eksamen.</h1>
  <p class="lead">Du er ny kommunikasjonsansvarlig i hotellbransjen. Tren begreper og modeller, løs caser fra resepsjonen, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
- <section class="grid g3">
-  <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Begreps- og modellquiz</h2><small>Flervalg, definisjonstrening og begrepskort fra ${M.length} moduler. Samle tre stjerner per rom.</small><span class="go">Åpne nøkkeltavlen →</span></button>
+ <section class="grid g2">
+  <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Lær og quiz</h2><small>Les korte leksjoner med huskeregler, og test deg med flervalg og begrepskort fra ${M.length} moduler.</small><span class="go">Åpne nøkkeltavlen →</span></button>
   <button class="card mode" data-act="casehub"><span class="eyebrow">Modus 2</span><h2>Case-simulator</h2><small>Endring, issue, krise og storm i sosiale medier. Valgene dine flytter gjestescoren.</small><span class="go">Velg case →</span></button>
   <button class="card mode" data-act="bossintro"><span class="eyebrow">Modus 3</span><h2>Eksamens-bossfight</h2><small>Seks oppgaver trekkes. Velg tre, skriv svar og få dem sjekket mot mønsterbesvarelsene.</small><span class="go">Møt sensor →</span></button>
+  <button class="card mode" data-act="gamehub"><span class="eyebrow">Modus 4</span><h2>Minispill</h2><small>Nøkkelrush og Modellrush: to raske spill på tid som pugger begreper og modeller for deg.</small><span class="go">Spill →</span></button>
  </section>
  <section class="card"><h3>Din fremgang</h3><div class="stats">
   <div class="stat"><b>${t.st} / ${M.length*3}</b><span>stjerner i quiz</span></div>
   <div class="stat"><b>${t.cs} / ${CASES.length}</b><span>caser løst</span></div>
   <div class="stat"><b>${S.boss?S.boss.grade:'–'}</b><span>beste karakter mot sensor</span></div>
+  <div class="stat"><b>${(S.hi.match||0)+(S.hi.sort||0)}</b><span>rekordpoeng i minispill</span></div>
   <div class="stat"><b>${S.xp}</b><span>XP</span></div></div>
   <p class="small">Fremgangen lagres i denne nettleseren. Eksamen er 30. november 2026, kl. 09.00–13.00.</p>
   <div class="row"><button class="btn ghost sm" data-act="reset">Nullstill fremgang</button></div></section>`}
@@ -793,34 +852,35 @@ function buildPool(mods){const AT=allTerms(),pool=[];
  return shuffle(pool)}
 function vQuizHub(){
  app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
- <section class="hero"><span class="eyebrow">Modus 1</span><h1>Nøkkeltavlen</h1><p class="lead">Hvert rom er en modul. En runde har opptil 10 spørsmål. 60 % gir én stjerne, 80 % gir to, og alt riktig gir tre.</p>
+ <section class="hero"><span class="eyebrow">Modus 1</span><h1>Nøkkeltavlen</h1><p class="lead">Hvert rom er en modul. Start med «Lær» for å lese stoffet, og ta så quizen. Spørsmål du bommer på kommer tilbake til du kan dem. 60 % riktig på første forsøk gir én stjerne, 80 % gir to, og alt riktig gir tre.</p>
  <div class="row"><button class="btn" data-act="quiz" data-id="mix">Blandet runde fra alle moduler</button></div></section>
  <section class="grid g2">${M.map(m=>{const s=S.quiz[m.id]||{};return`<article class="card key"><div class="tag" aria-hidden="true">${m.nr}</div><div class="key-body">
   <h3>${esc(m.name)}</h3><span class="small">${esc(m.pensum)}</span>
   <div class="row">${starStr(s.stars||0)}<span class="small">${s.best!=null?'Beste: '+s.best+' %':'Ikke spilt'}</span></div>
-  <div class="row"><button class="btn sm" data-act="quiz" data-id="${m.id}">Quiz</button><button class="btn ghost sm" data-act="flash" data-id="${m.id}">Begrepskort (${m.terms.length})</button></div></div></article>`}).join('')}</section>`}
+  <div class="row"><button class="btn sm" data-act="learn" data-id="${m.id}">Lær</button><button class="btn ghost sm" data-act="quiz" data-id="${m.id}">Quiz</button><button class="btn ghost sm" data-act="flash" data-id="${m.id}">Kort (${m.terms.length})</button></div></div></article>`}).join('')}</section>`}
 function startQuiz(id){const mix=id==='mix',pool=buildPool(mix?M:[M.find(m=>m.id===id)]);
- go({name:'quiz',id,title:mix?'Blandet runde':M.find(m=>m.id===id).name,round:pool.slice(0,mix?15:10),i:0,picked:null,right:0,streak:0,xp:0,missed:[]})}
+ go({name:'quiz',id,title:mix?'Blandet runde':M.find(m=>m.id===id).name,round:pool.slice(0,mix?15:10),n0:Math.min(pool.length,mix?15:10),i:0,picked:null,hint:null,right:0,streak:0,xp:0,missed:[]})}
 function vQuiz(){const q=V.round[V.i],done=V.picked!=null;
  app.innerHTML=`<button class="back" data-act="quizhub">← Avslutt runden</button>
- <div class="qmeta"><span>${esc(V.title)}${V.id==='mix'?' · '+esc(q.mod.name):''}</span><span>Spørsmål ${V.i+1} av ${V.round.length} · ${V.right} riktige${V.streak>=3?' · '+V.streak+' på rad':''}</span></div>
+ <div class="qmeta"><span>${esc(V.title)}${V.id==='mix'?' · '+esc(q.mod.name):''}</span><span>${q.retry?'Repetisjon · ':''}Spørsmål ${V.i+1} av ${V.round.length} · ${V.right} riktige${V.streak>=3?' · '+V.streak+' på rad':''}</span></div>
  <div class="prog"><span style="width:${(V.i+(done?1:0))/V.round.length*100}%"></span></div>
  <section class="card"><h2>${esc(q.q)}</h2>${q.quote?'<p class="quote">'+esc(q.quote)+'</p>':''}
- <div class="opts">${q.opts.map((o,i)=>`<button class="opt ${done?(i===q.c?'right':i===V.picked?'wrong':''):''}" data-act="pick" data-i="${i}" ${done?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
+ <div class="opts">${q.opts.map((o,i)=>!done&&V.hint&&V.hint.includes(i)?'':`<button class="opt ${done?(i===q.c?'right':i===V.picked?'wrong':''):''}" data-act="pick" data-i="${i}" ${done?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
  ${done?`<div class="fb ${V.picked===q.c?'ok':'no'}"><b class="${V.picked===q.c?'ok':'no'}">${V.picked===q.c?'Riktig.':'Ikke helt.'}</b> ${esc(q.why)}</div>
- <div class="row"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small">Enter går videre</span></div>`:'<span class="small">Tastene 1–4 velger svar</span>'}</section>`;
+ <div class="row"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small">Enter går videre</span></div>`:`<div class="row">${V.hint?'':'<button class="btn ghost sm" data-act="hint">Hint: fjern to svar</button>'}<span class="small">Tastene 1–4 velger svar</span></div>`}</section>`;
  if(done)$('nextbtn').focus()}
-function pick(i){if(V.name!=='quiz'||V.picked!=null)return;const q=V.round[V.i];V.picked=i;
- if(i===q.c){V.right++;V.streak++;const g=10+(V.streak>=3?5:0);V.xp+=g;addXp(g)}else{V.streak=0;V.missed.push(q)}render()}
-function nextQ(){if(V.i+1<V.round.length){V.i++;V.picked=null;render();window.scrollTo(0,0)}else{
- const pct=Math.round(V.right/V.round.length*100),stars=pct===100?3:pct>=80?2:pct>=60?1:0;
+function pick(i){if(V.name!=='quiz'||V.picked!=null||(V.hint&&V.hint.includes(i)))return;const q=V.round[V.i];V.picked=i;
+ if(i===q.c){if(!q.retry)V.right++;V.streak++;const g=q.retry?4:V.hint?5:10+(V.streak>=3?5:0);V.xp+=g;addXp(g)}
+ else{V.streak=0;if(!q.retry)V.missed.push(q);const opts=shuffle(q.opts);V.round.push({...q,opts,c:opts.indexOf(q.opts[q.c]),retry:true})}render()}
+function nextQ(){if(V.i+1<V.round.length){V.i++;V.picked=null;V.hint=null;render();window.scrollTo(0,0)}else{
+ const pct=Math.round(V.right/V.n0*100),stars=pct===100?3:pct>=80?2:pct>=60?1:0;
  if(V.id!=='mix'){const o=S.quiz[V.id]||{};S.quiz[V.id]={best:Math.max(o.best||0,pct),stars:Math.max(o.stars||0,stars)};save()}
- go({name:'quizend',id:V.id,title:V.title,pct,stars,right:V.right,n:V.round.length,xp:V.xp,missed:V.missed})}}
+ go({name:'quizend',id:V.id,title:V.title,pct,stars,right:V.right,n:V.n0,xp:V.xp,missed:V.missed})}}
 function vQuizEnd(){
- app.innerHTML=`<section class="card"><span class="eyebrow">${esc(V.title)}</span><h1>${V.right} av ${V.n} riktige</h1>
+ app.innerHTML=`<section class="card"><span class="eyebrow">${esc(V.title)}</span><h1>${V.right} av ${V.n} riktige på første forsøk</h1>
  <div class="row">${starStr(V.stars)}<span>${V.pct} % · +${V.xp} XP</span></div>
- <p class="lead">${V.stars===3?'Feilfritt. Dette rommet er ditt.':V.stars===2?'Solid. Ta en runde til for den siste stjernen.':V.stars===1?'Godkjent. Gå gjennom det du bommet på under.':'Under 60 %. Prøv begrepskortene først, og ta runden på nytt.'}</p>
- <div class="row"><button class="btn" data-act="quiz" data-id="${V.id}">Ny runde</button>${V.id!=='mix'?`<button class="btn ghost" data-act="flash" data-id="${V.id}">Begrepskort</button>`:''}<button class="btn ghost" data-act="quizhub">Til nøkkeltavlen</button></div></section>
+ <p class="lead">${V.stars===3?'Feilfritt. Dette rommet er ditt.':V.stars===2?'Solid. Ta en runde til for den siste stjernen.':V.stars===1?'Godkjent. Gå gjennom det du bommet på under.':'Under 60 %. Les leksjonen først, og ta runden på nytt.'}</p>
+ <div class="row"><button class="btn" data-act="quiz" data-id="${V.id}">Ny runde</button>${V.id!=='mix'?`<button class="btn ghost" data-act="learn" data-id="${V.id}">Les leksjonen</button>`:''}<button class="btn ghost" data-act="quizhub">Til nøkkeltavlen</button></div></section>
  ${V.missed.length?`<section class="card"><h3>Dette bør du repetere</h3><ul class="check">${V.missed.map(q=>`<li><span class="n">✗</span><span><b>${esc(q.quote||q.q)}</b><br>${esc(q.why)}</span></li>`).join('')}</ul></section>`:''}`}
 
 /* ---------- Begrepskort ---------- */
@@ -931,10 +991,74 @@ function bResult(){const won=V.score>=60;
  <details><summary>Mønsterbesvarelse</summary><div class="model"><ul>${r.t.m.map(x=>'<li>'+x+'</li>').join('')}</ul></div></details>
  ${r.text.trim()?`<details><summary>Ditt svar</summary><p style="white-space:pre-wrap">${esc(r.text)}</p></details>`:''}</section>`).join('')}`}
 
+/* ---------- Lær ---------- */
+function startLearn(id){const m=M.find(x=>x.id===id),pages=[];for(let i=0;i<m.terms.length;i+=4)pages.push(m.terms.slice(i,i+4));go({name:'learn',m,pages,p:0})}
+function vLearn(){const m=V.m,last=V.p===V.pages.length-1;
+ app.innerHTML=`<button class="back" data-act="quizhub">← Til nøkkeltavlen</button>
+ <div class="qmeta"><span>Leksjon · Rom ${m.nr}</span><span>Side ${V.p+1} av ${V.pages.length}</span></div>
+ <div class="prog"><span style="width:${(V.p+1)/V.pages.length*100}%"></span></div>
+ <section class="hero"><h1>${esc(m.name)}</h1><p class="small">Pensum: ${esc(m.pensum)}</p></section>
+ ${V.p===0?`<section class="card"><h3>Huskeregler</h3><ul class="husk">${HUSK[m.id].map(h=>'<li>'+esc(h)+'</li>').join('')}</ul></section>`:''}
+ <section class="card"><h3>Begreper du må kunne</h3>${V.pages[V.p].map(t=>`<div class="lcard"><b>${esc(t[0])}</b>${esc(t[1])}</div>`).join('')}</section>
+ <div class="row">${V.p>0?'<button class="btn ghost" data-act="lprev">Forrige</button>':''}${last?`<button class="btn" data-act="ldone">Test deg selv i quizen</button><button class="btn ghost" data-act="flash" data-id="${m.id}">Øv med begrepskort</button>`:'<button class="btn" data-act="lnext">Neste side</button>'}</div>`}
+
+/* ---------- Minispill ---------- */
+function vGameHub(){
+ app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
+ <section class="hero"><span class="eyebrow">Modus 4</span><h1>Minispill</h1><p class="lead">To raske spill på tid. Bra når du er lei av å lese, og du lærer begrepene mens du jakter rekord.</p></section>
+ <section class="grid g2">
+ <article class="card"><span class="pill">60 sekunder</span><h2>Nøkkelrush</h2><p class="small">Koble begrep og forklaring så fort du kan. Tre riktige på rad øker poengene. Feil kobling koster tre sekunder.</p>
+ <div class="row"><span class="big">${S.hi.match||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="match">Start Nøkkelrush</button></div></article>
+ <article class="card"><span class="pill">Tre liv</span><h2>Modellrush</h2><p class="small">Et begrep dukker opp. Trykk på modellen det hører til før tiden renner ut. Tempoet øker for hvert riktige svar.</p>
+ <div class="row"><span class="big">${S.hi.sort||0}</span><span class="small">rekord</span></div><div class="row"><button class="btn" data-act="sort">Start Modellrush</button></div></article>
+ </section>`}
+function gameHead(title,right){return`<button class="back" data-act="gamehub">← Avslutt spillet</button>
+ <div class="qmeta"><span>${title}</span><span>${right}</span></div><div class="tbar"><span id="gbar"></span></div>`}
+function deal(){if(V.deck.length<4)V.deck=shuffle(allTerms());const four=V.deck.splice(0,4);V.L=four.slice();V.R=shuffle(four);V.goneL=[];V.goneR=[];V.sl=null;V.sr=null}
+function startMatch(){go({name:'match',deck:shuffle(allTerms()),L:[],R:[],goneL:[],goneR:[],score:0,combo:0,pairs:0,end:Date.now()+60000,dur:60000});deal();render();timer=setInterval(gameTick,150)}
+function vMatch(){
+ app.innerHTML=gameHead('Nøkkelrush',`<span class="big">${V.score}</span> poeng · <b id="gsec"></b> sek${V.combo>=3?' · '+V.combo+' på rad':''}`)+
+ `<section class="mboard"><div class="mcol mterms">${V.L.map((x,i)=>`<button class="opt ${V.goneL.includes(i)?'gone':''} ${V.sl===i?'sel':''} ${V.bad&&V.bad[0]===i?'wrong':''}" data-act="ml" data-i="${i}"><span>${esc(x.t)}</span></button>`).join('')}</div>
+ <div class="mcol">${V.R.map((x,i)=>`<button class="opt ${V.goneR.includes(i)?'gone':''} ${V.sr===i?'sel':''} ${V.bad&&V.bad[1]===i?'wrong':''}" data-act="mr" data-i="${i}"><span>${esc(x.d)}</span></button>`).join('')}</div></section>
+ <p class="small">Trykk på et begrep og deretter på forklaringen som hører til.</p>`;gameTick()}
+function matchSel(side,i){V.bad=null;V[side]=V[side]===i?null:i;
+ if(V.sl!=null&&V.sr!=null){if(V.L[V.sl].t===V.R[V.sr].t){V.combo++;V.pairs++;V.score+=10*(1+Math.floor(V.combo/3));V.goneL.push(V.sl);V.goneR.push(V.sr);V.sl=V.sr=null;if(V.goneL.length===4)deal()}
+  else{V.combo=0;V.end-=3000;V.bad=[V.sl,V.sr];V.sl=V.sr=null}}
+ render()}
+const GK=Object.keys(GROUPS);
+function sortNext(){const g=GK[Math.floor(Math.random()*GK.length)],it=GROUPS[g][Math.floor(Math.random()*GROUPS[g].length)];
+ V.cur={g,it,opts:shuffle([g,...shuffle(GK.filter(x=>x!==g)).slice(0,3)])};V.fb=null;V.dur=Math.max(4000,9000-V.n*250);V.end=Date.now()+V.dur;render()}
+function startSort(){go({name:'sort',lives:3,score:0,streak:0,n:0,cur:{g:'',it:'',opts:[]},fb:null,end:null,dur:1});sortNext();timer=setInterval(gameTick,150)}
+function vSort(){const c=V.cur,f=V.fb;
+ app.innerHTML=gameHead('Modellrush',`<span class="big">${V.score}</span> poeng · <span class="lives" aria-label="${V.lives} liv igjen">${'♥'.repeat(V.lives)}</span>`)+
+ `<section class="card"><span class="eyebrow">Hvilken modell hører dette til?</span><div class="item">${esc(c.it)}</div>
+ <div class="opts">${c.opts.map((o,i)=>`<button class="opt ${f?(o===c.g?'right':i===f.i?'wrong':''):''}" data-act="spick" data-i="${i}" ${f?'disabled':''}><span>${esc(o)}</span></button>`).join('')}</div>
+ ${f?`<div class="fb no"><b class="no">${f.i==null?'Tiden gikk ut.':'Feil.'}</b> «${esc(c.it)}» hører til ${esc(c.g)}, sammen med ${esc(GROUPS[c.g].filter(x=>x!==c.it).join(', '))}.</div>
+ <div class="row"><button class="btn" data-act="snext" id="nextbtn">${V.lives>0?'Fortsett':'Se resultat'}</button></div>`:''}</section>`;
+ if(f)$('nextbtn').focus();gameTick()}
+function sortPick(i){if(V.fb)return;const c=V.cur;
+ if(i!=null&&c.opts[i]===c.g){V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
+ else{V.lives--;V.streak=0;V.end=null;V.fb={i};render()}}
+function gameTick(){const b=$('gbar');if(!b)return;
+ if(!V.end){b.style.width='0%';return}
+ const rem=V.end-Date.now();b.style.width=Math.max(0,rem/V.dur*100)+'%';const s=$('gsec');if(s)s.textContent=Math.max(0,Math.ceil(rem/1000));
+ if(rem<=0){if(V.name==='match')gameEnd();else sortPick(null)}}
+function gameEnd(){const g=V.name,score=V.score,old=S.hi[g]||0,xp=Math.round(score/4);if(score>old){S.hi[g]=score;save()}addXp(xp);
+ go({name:'gameend',g,score,old,xp,info:g==='match'?V.pairs+' riktige koblinger':V.n+' riktige svar'})}
+function vGameEnd(){const rec=V.score>V.old;
+ app.innerHTML=`<section class="card"><span class="eyebrow">${V.g==='match'?'Nøkkelrush':'Modellrush'}</span><div class="row"><span class="grade">${V.score}</span><div><h1>${rec?'Ny rekord':'Runden er over'}</h1><p class="small">${V.info} · ${rec?'forrige rekord '+V.old:'rekord '+V.old} · +${V.xp} XP</p></div></div>
+ <div class="row"><button class="btn" data-act="${V.g}">Spill igjen</button><button class="btn ghost" data-act="gamehub">Bytt spill</button><button class="btn ghost" data-act="home">Til forsiden</button></div></section>`}
+
 /* ---------- Hendelser ---------- */
 const A={
  home:()=>go({name:'home'}),quizhub:()=>go({name:'quizhub'}),casehub:()=>go({name:'casehub'}),
  quiz:d=>startQuiz(d.id),pick:d=>pick(+d.i),next:nextQ,
+ hint:()=>{const q=V.round[V.i];V.hint=shuffle(q.opts.map((_,i)=>i).filter(i=>i!==q.c)).slice(0,2);render()},
+ learn:d=>startLearn(d.id),lnext:()=>{V.p++;render();window.scrollTo(0,0)},lprev:()=>{V.p--;render();window.scrollTo(0,0)},
+ ldone:()=>{addXp(10);startQuiz(V.m.id)},
+ gamehub:()=>go({name:'gamehub'}),match:startMatch,sort:startSort,
+ ml:d=>matchSel('sl',+d.i),mr:d=>matchSel('sr',+d.i),spick:d=>sortPick(+d.i),
+ snext:()=>{if(V.lives>0)sortNext();else gameEnd()},
  flash:d=>startFlash(d.id),fopen:()=>{V.open=true;render()},
  fknow:()=>{V.queue.shift();V.known++;V.open=false;addXp(2);render()},
  fagain:()=>{V.queue.push(V.queue.shift());V.open=false;render()},
@@ -946,7 +1070,7 @@ const A={
  bosssubmit:()=>{const empty=V.chosen.filter(id=>!(V.ans[id]||'').trim()).length;
   if(empty&&!V.sure){V.sure=true;$('confirm').innerHTML=`<div class="fb no"><b class="no">${empty} av 3 oppgaver er tomme.</b> Trykk «Lever alle tre» én gang til for å levere likevel.</div>`;return}bossSubmit()},
  bossquit:()=>go({name:'boss',stage:'intro'}),
- reset:()=>{if(!V.sureReset){V.sureReset=true;toast('Trykk én gang til for å slette all fremgang');return}S={xp:0,quiz:{},cases:{},boss:null,drafts:{}};save();renderTop();go({name:'home'});toast('Fremgangen er nullstilt')}
+ reset:()=>{if(!V.sureReset){V.sureReset=true;toast('Trykk én gang til for å slette all fremgang');return}S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};save();renderTop();go({name:'home'});toast('Fremgangen er nullstilt')}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&A[b.dataset.act])A[b.dataset.act](b.dataset)});
 document.addEventListener('keydown',e=>{if(V.name!=='quiz'||e.target.tagName==='TEXTAREA')return;
