@@ -159,7 +159,71 @@ th{background:var(--surface2);font-weight:700}
 input[type=search]{width:100%;font:inherit;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:11px 14px}
 details.mod{background:var(--surface)}
 details.mod>summary{font-family:var(--display);font-size:1.1rem}
-.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
+body.feedmode{overflow:hidden}
+.feedcta{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--primary);color:var(--on-primary);border-color:transparent}
+.feedcta .eyebrow{color:var(--brass-soft)}
+.feedcta p{color:inherit;opacity:.9;max-width:56ch}
+.feedcta .btn{background:var(--on-primary);color:var(--primary)}
+.feedcta .btn.ghost{background:transparent;color:var(--on-primary);border-color:var(--on-primary)}
+.feedcta select{font:inherit;min-height:44px;border-radius:10px;border:1.5px solid var(--on-primary);background:transparent;color:inherit;padding:8px 12px;max-width:100%}
+.feedcta select option{color:#11282a;background:#fff}
+.feedcta .ctl{display:flex;flex-direction:column;gap:10px;min-width:0}
+@media (max-width:640px){.feedcta{grid-template-columns:1fr}}
+.feed{position:fixed;inset:0;z-index:30;background:#071315;color:#eef5f3;color-scheme:dark;--fa:#e0b458;--fok:#63d198;--fbad:#f28474;--fline:rgba(255,255,255,.18);--fsurf:rgba(255,255,255,.08)}
+.fscroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none}
+.fscroll::-webkit-scrollbar{display:none}
+.fcard{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;overflow:hidden;
+ padding:calc(env(safe-area-inset-top,0px) + 66px) calc(max(18px,env(safe-area-inset-right,0px)) + 62px) calc(env(safe-area-inset-bottom,0px) + 44px) max(18px,env(safe-area-inset-left,0px))}
+.f-quiz{background:#0b2427}.f-term{background:#0f4a4f}.f-rule{background:#4a3511;color:#fdf1d6}.f-model{background:#19283b}.f-case{background:#3a1d24}.f-book{background:#16291f}.f-end{background:#0f4a4f}
+.finner{width:100%;max-width:580px;max-height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin}
+.fmeta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;opacity:.85}
+.fpill{background:var(--fa);color:#2b1d02;padding:3px 10px;border-radius:99px;opacity:1}
+.fkicker{font-weight:700;opacity:.8;margin:0}
+.fbig{font-family:var(--display);font-size:clamp(2rem,9vw,3.4rem);line-height:1.04;font-weight:800;margin:0;overflow-wrap:anywhere;hyphens:auto}
+.fbig.fmodel{font-size:clamp(1.7rem,7vw,2.6rem)}
+.fmid{font-family:var(--display);font-size:clamp(1.4rem,5.5vw,2rem);margin:0}
+.fq{font-family:var(--display);font-size:clamp(1.25rem,5vw,1.8rem);line-height:1.2;margin:0}
+.fquote{margin:0;opacity:.85;border-left:3px solid var(--fa);padding-left:12px}
+.fdef{font-size:clamp(1.05rem,4.2vw,1.3rem);line-height:1.5;margin:0}
+.frule{font-family:var(--display);font-size:clamp(1.45rem,6vw,2.3rem);font-weight:700;line-height:1.22;margin:0;text-wrap:balance}
+.fopts{display:grid;gap:10px}
+.fopt{text-align:left;background:var(--fsurf);border:1.5px solid var(--fline);color:inherit;border-radius:14px;padding:13px 16px;font:inherit;min-height:52px;cursor:pointer}
+.fopt:hover:not(:disabled){border-color:rgba(255,255,255,.55)}
+.fopt:disabled{cursor:default}
+.fopt.right{border-color:var(--fok);background:rgba(99,209,152,.18)}
+.fopt.wrong{border-color:var(--fbad);background:rgba(242,132,116,.18)}
+.ffb{margin:0;line-height:1.5}.ffb.ok b{color:var(--fok)}.ffb.no b{color:var(--fbad)}
+.fghost{align-self:flex-start;background:none;border:1.5px solid rgba(255,255,255,.6);color:inherit;border-radius:99px;padding:10px 20px;font:inherit;font-weight:700;min-height:44px;cursor:pointer}
+.fchips{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.fchips li{background:var(--fsurf);border:1px solid var(--fline);border-radius:12px;padding:8px 13px;font-weight:600}
+.fbook{line-height:1.55}.fbook p{margin:0 0 8px}.fbook ul{margin:0;padding-left:20px}.fbook li{margin:4px 0}
+.ftop{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;align-items:center;gap:12px;pointer-events:none;
+ padding:calc(env(safe-area-inset-top,0px) + 10px) max(14px,env(safe-area-inset-right,0px)) 18px max(14px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(0,0,0,.5),transparent)}
+.ftop>*{pointer-events:auto}
+.ftitle{font-weight:700;font-size:.9rem;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.fintro{font-size:.92rem}
+.fkeys{font-size:.78rem;opacity:.65;margin-left:auto;white-space:nowrap}
+@media (hover:none),(max-width:900px){.fkeys{display:none}}
+.fkeys+.fcount{margin-left:16px}
+.fcount{margin-left:auto;font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;opacity:.85;white-space:nowrap}
+.fx{background:rgba(255,255,255,.14);border:0;color:#fff;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;min-height:40px;cursor:pointer;white-space:nowrap}
+.fx.dark{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.frail{position:absolute;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 70px);display:flex;flex-direction:column;gap:14px;z-index:1}
+.fbtn{background:none;border:0;color:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:.7rem;font-weight:700;min-width:52px;min-height:52px;cursor:pointer}
+.fbtn svg{width:30px;height:30px;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.fbtn.on svg{fill:#ff5a6e;stroke:#ff5a6e}
+.fswipe{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);left:0;right:0;text-align:center;font-size:.85rem;font-weight:700;opacity:.8;animation:fbob 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes fbob{50%{transform:translateY(-6px)}}
+.fburst{position:absolute;left:50%;top:45%;width:120px;height:120px;margin:-60px;pointer-events:none;color:#ff5a6e;animation:fpop .8s ease-out forwards}
+.fburst svg{width:100%;height:100%;fill:#ff5a6e;stroke:#ff5a6e;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4))}
+@keyframes fpop{0%{transform:scale(.3);opacity:0}30%{transform:scale(1.1);opacity:1}100%{transform:scale(1);opacity:0}}
+.fsheet{position:absolute;inset:0;z-index:3;background:rgba(0,0,0,.55);display:flex;align-items:flex-end}
+.fsheet-in{background:var(--surface);color:var(--ink);width:100%;max-height:80%;overflow-y:auto;border-radius:20px 20px 0 0;
+ padding:16px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.fsheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+@media (min-width:760px){.fsheet{align-items:center;justify-content:center}.fsheet-in{max-width:660px;border-radius:20px;max-height:82%}.frail{right:calc(50% - 360px)}}
+@media (prefers-reduced-motion:reduce){.fswipe,.fburst{animation:none}.fscroll{scroll-behavior:auto}}
+.toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:40;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .note{font-size:.86rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;max-width:70ch}
 @media (max-width:520px){.rank b{display:none}.xpbar{width:56px}.brand{font-size:.98rem}.wrap{padding-block:16px 48px;gap:18px}.card{padding:16px}h1{font-size:1.75rem}}
@@ -1882,7 +1946,7 @@ Object.assign(CMODS,{c19:['m11','m3'],c20:['m1','m8','m12'],c21:['m10','m13'],c2
 
 /* ================================ MOTOR ================================ */
 const LS='bds110-omdomme-v1';
-let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};
+let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{},saved:[]};
 try{const r=JSON.parse(localStorage.getItem(LS));if(r)S=Object.assign(S,r)}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
 const RANKS=[[0,'Resepsjonsvikar'],[150,'Kommunikasjonsmedarbeider'],[400,'Kommunikasjonsrådgiver'],[800,'Seniorrådgiver'],[1400,'Kommunikasjonssjef'],[2200,'Kommunikasjonsdirektør'],[3200,'Omdømmelegende']];
@@ -1895,8 +1959,8 @@ function renderTop(){const r=rank();$('rank').innerHTML='<b>'+r.name+'</b><div c
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
 function addXp(n){if(n<=0)return;const b=rank().i;S.xp+=n;save();renderTop();if(rank().i>b)toast('Forfremmet til '+rank().name)}
 let V={name:'home'},timer=null;
-function go(v){if(timer){clearInterval(timer);timer=null}V=v;render();window.scrollTo(0,0)}
-function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,book:vBook,gamehub:vGameHub,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
+function go(v){if(timer){clearInterval(timer);timer=null}if(V&&V.io)V.io.disconnect();V=v;document.body.classList.toggle('feedmode',v.name==='feed');render();window.scrollTo(0,0)}
+function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,book:vBook,gamehub:vGameHub,feed:vFeed,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
 
 function showFb(){const fb=document.querySelector('.fb');if(fb&&innerWidth<700)fb.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 /* ---------- Hjem ---------- */
@@ -1905,6 +1969,9 @@ function vHome(){const t=totals();
  app.innerHTML=`<section class="hero"><span class="eyebrow">BDS110 · Digital kommunikasjon i serviceorganisasjoner</span>
  <h1>Redd omdømmet. Bestå eksamen.</h1>
  <p class="lead">Du er ny kommunikasjonsansvarlig i servicebransjen. Les fagboka, test deg med flervalg, løs caser fra hotell, restaurant, butikk og transport, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
+ <section class="card feedcta"><div><span class="eyebrow">Lær mens du scroller</span><h2>Scroll og lær</h2><p>Sveip deg gjennom korte kort med quiz, begreper, modeller, huskeregler og mini-caser. Dobbelttrykk eller trykk på hjertet for å lagre et kort til senere.</p></div>
+  <div class="ctl"><label class="small" for="fmod" style="color:inherit">Tema</label><select id="fmod"><option value="all">Hele faget</option>${M.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select>
+  <div class="row"><button class="btn" data-act="feedstart">Start feeden</button>${(S.saved||[]).length?`<button class="btn ghost" data-act="feedsaved">Lagrede kort (${S.saved.length})</button>`:''}</div></div></section>
  <section class="grid g2">
   <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Lær og quiz</h2><small>Les korte leksjoner med huskeregler, og test deg med flervalg og begrepskort fra ${M.length} moduler.</small><span class="go">Åpne nøkkeltavlen →</span></button>
   <button class="card mode" data-act="casehub"><span class="eyebrow">Modus 2</span><h2>Case-simulator</h2><small>Endring, issue, krise og storm i sosiale medier. Valgene dine flytter gjestescoren.</small><span class="go">Velg case →</span></button>
@@ -2161,6 +2228,127 @@ function vGameEnd(){const rec=V.score>V.old;
  app.innerHTML=`<section class="card"><span class="eyebrow">${V.g==='match'?'Begrepspar':'Modellsortering'}</span><div class="row"><span class="grade">${V.score}</span><div><h1>${rec?'Ny rekord':'Runden er over'}</h1><p class="small">${V.info} · ${rec?'forrige rekord '+V.old:'rekord '+V.old} · +${V.xp} XP</p></div></div>
  <div class="row"><button class="btn" data-act="${V.g}">Spill igjen</button><button class="btn ghost" data-act="gamehub">Bytt spill</button><button class="btn ghost" data-act="home">Til forsiden</button></div></section>`}
 
+/* ---------- Scroll og lær (feed) ---------- */
+const FMODELS=[
+ ['Stakeholder Salience','m6',['Definitive: makt + legitimitet + hast','Dominant: makt + legitimitet','Dangerous: makt + hast','Dependent: legitimitet + hast','Dormant: bare makt','Discretionary: bare legitimitet','Demanding: bare hast']],
+ ['Makt-interesse-matrisen','m6',['Key players: høy makt, høy interesse','Keep satisfied: høy makt, lav interesse','Keep informed: lav makt, høy interesse','Minimal effort: lav makt, lav interesse']],
+ ['Tre strategier overfor interessenter','m6',['Informasjon (enveis)','Overtalelse (asymmetrisk)','Dialog (symmetrisk)']],
+ ['Issue Life-Cycle','m10',['1 Emergence','2 Debate','3 Codification','4 Enforcement']],
+ ['Responsstrategier for issues','m10',['Buffer: ligg lavt','Brobygging: dialog og tilpasning','Påvirkning: kampanjer og lobby','Tankelederskap: gå foran']],
+ ['Position-Importance Matrix','m10',['Antagonistic: motstander, viktig','Problematic: motstander, mindre viktig','Supporter: støtter, viktig','Low priority: støtter, mindre viktig']],
+ ['DESTEP','m10',['Demographic','Economic','Social','Technological','Ecological','Political']],
+ ['Krisetypologi','m11',['Faux pas: ekstern, utilsiktet','Aggresjon: ekstern, tilsiktet','Uhell: intern, utilsiktet','Overtredelser: intern, tilsiktet']],
+ ['Responsstrategier i krise','m11',['Benekte','Distansere','Styrke posisjon','Offer','Aksept']],
+ ['Krisens tre faser','m11',['Før: forberedelse og kriseplan','Under: rask handling, empati, fakta','Etter: evaluering, læring, gjenoppbygging']],
+ ['Cornelissens budskapsstrategier','m12',['Spray & Pray: lav','Tell & Sell: moderat','Underscore & Explore: høyest','Identify & Reply: moderat','Withhold & Uphold: lav']],
+ ['Matrisen for effektivitet og enighet','m12',['Need to know: rask, lite enighet','Quid pro quo: rask, mye enighet','Equal dissemination: lik info til alle','Equal participation: bred involvering']],
+ ['Lewins endringsmodell','m12',['Oppvarming (unfreezing)','Endring (changing)','Nedfrysing (refreezing)']],
+ ['Kotters åtte steg','m12',['1–2: nødvendighet og koalisjon','3–4: visjon og kommunikasjon','5–6: handling og kortsiktige gevinster','7–8: videreføre og forankre']],
+ ['Clampitts Iceberg-modell','m12',['Under: kontekstanalyse','Under: publikumsanalyse','Under: strategi','Over: talspersoner, budskap, kanaler, tidspunkt, sikkerhetsventiler']],
+ ['Typer endring','m12',['Omfang: additive eller substitutive','Drivkrefter: intern eller ekstern','Initiativ: toppstyrt eller medarbeiderdrevet','Kategori: teknisk, strukturell, kulturell, kompetanse']],
+ ['CI-mix','m7',['Atferd','Kommunikasjon','Symbolisme']],
+ ['VCI-modellen','m7',['Vision: ledelsen','Culture: de ansatte','Image: de eksterne']],
+ ['Identitetsstrukturer','m7',['Monolittisk: ett navn','Støttet: eget navn + morselskap','Merkevarebasert: ingen synlig kobling']],
+ ['Retoriske appellformer','m9',['Etos: troverdighet','Patos: følelser','Logos: fakta og logikk']],
+ ['Mediene og saken','m9',['Agenda-setting: HVA vi snakker om','Framing: HVORDAN vi forstår det']],
+ ['Trippel bunnlinje','m13',['Profits','People','Planet']],
+ ['CSR-kommunikasjon','m13',['Informasjon: enveis','Respons: toveis, men dere bestemmer','Involvering: dere bestemmer sammen']],
+ ['Tilnærminger til CSR','m13',['Defensiv','Veldedig','Promoterende','Strategisk','Transformerende']],
+ ['PARC','m3',['Participatory','Authentic','Resourceful','Credible']],
+ ['Teorier om sosiale medier','m3',['Medierikhetsteori','Usikkerhetsreduksjon (URT)','Social Information Processing','Uses and Gratifications']],
+ ['TAM','m1',['Opplevd nytte','Opplevd brukervennlighet']],
+ ['Digitisering, digitalisering, transformasjon','m1',['Digitisering: formatet endres','Digitalisering: prosessen endres','Digital transformasjon: forretningsmodellen endres']],
+ ['Stakeholder engagement','m2',['Advocacy','Interactivity','Transparency','Authenticity']],
+ ['van Riels tre områder','m2',['Ledelseskommunikasjon','Organisasjonskommunikasjon','Markedskommunikasjon']],
+ ['Eide, betalte og fortjente medier','m2',['Eide: egne kanaler','Betalte: kjøpt synlighet','Fortjente: omtale andre gir deg']],
+ ['De sju stegene','m5',['1 Strategisk intensjon','2 Kommunikasjonsmål','3 Målgrupper','4 Tematiske budskap','5 Budskapsstil','6 Mediestrategi','7 Budsjett og evaluering']],
+ ['Budskapsstiler','m5',['Funksjonelle','Symbolske','Bransjeorienterte']],
+ ['Strategiprosesser','m5',['Rasjonell','Visjonær','Inkrementell']],
+ ['Funksjoner for internkommunikasjon','m8',['Sosial','Ekspressiv','Informasjon','Kontroll']],
+ ['Eksamensdrøfting i tre ledd','m0',['Situasjon og fase','Teoretisk begrunnet valg','Vurdering: betingelser, alternativer, risiko']]];
+const FLABEL={quiz:'Quiz',term:'Begrep',rule:'Huskeregel',model:'Modell',case:'Hva gjør du?',book:'Fra fagboka',end:'Ferdig'};
+const FWEIGHT={quiz:30,term:22,rule:12,model:12,case:12,book:12};
+const ICON={heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.9 1.4-1.8 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>',
+ book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5c3-1.3 6-1.3 9 .5v15c-3-1.8-6-1.8-9-.5zM21 5c-3-1.3-6-1.3-9 .5v15c3-1.8 6-1.8 9-.5z"/></svg>'};
+const modName=id=>(M.find(m=>m.id===id)||{}).name||'';
+function feedSrc(mods){const ids=mods.map(m=>m.id);return{
+ quiz:buildPool(mods),
+ term:mods.flatMap(m=>m.terms.map(t=>({k:'term',m:m.id,t:t[0],d:t[1]}))),
+ rule:mods.flatMap(m=>HUSK[m.id].map(r=>({k:'rule',m:m.id,r}))),
+ model:FMODELS.filter(x=>ids.includes(x[1])).map(x=>({k:'model',g:x[0],m:x[1]})),
+ case:CASES.filter(c=>ids.includes(CMODS[c.id][0])||(ids.length===1&&CMODS[c.id].includes(ids[0]))).flatMap(c=>c.steps.map((s,i)=>({k:'case',c:c.id,i}))),
+ book:mods.flatMap(m=>BOOK[m.id].filter(s=>!s[1].includes('<table')&&s[1].replace(/<[^>]+>/g,'').length<650).map(s=>({k:'book',m:m.id,ti:s[0]})))}}
+function fmake(it){if(it.k)return{...it,ord:it.k==='case'?shuffle(CASES.find(c=>c.id===it.c).steps[it.i].o.map((_,j)=>j)):undefined};
+ return{k:'quiz',m:it.mod.id,q:it.q,quote:it.quote||'',opts:it.opts,c:it.c,why:it.why}}
+function feedNext(v){const ks=Object.keys(FWEIGHT).filter(k=>v.src[k].length&&k!==v.lastK);let r=Math.random()*ks.reduce((s,k)=>s+FWEIGHT[k],0),k=ks[0];
+ for(const x of ks){r-=FWEIGHT[x];if(r<=0){k=x;break}}
+ if(!v.decks[k]||!v.decks[k].length)v.decks[k]=shuffle(v.src[k]);v.lastK=k;v.cards.push(fmake(v.decks[k].pop()))}
+const fkey=c=>c.k+'|'+(c.q||c.t||c.r||c.g||c.ti||(c.c+':'+c.i));
+const isSaved=c=>(S.saved||[]).some(x=>fkey(x)===fkey(c));
+function startFeed(id){const mods=id==='all'?M:[M.find(m=>m.id===id)],v={name:'feed',id,title:id==='all'?'Hele faget':modName(id),src:feedSrc(mods),decks:{},cards:[],cur:0,seen:1,right:0,answered:0,streak:0};
+ for(let i=0;i<8;i++)feedNext(v);go(v)}
+function startSavedFeed(){const cards=(S.saved||[]).slice().reverse().map(c=>{if(c.k!=='quiz')return fmake(c);const right=c.opts[c.c],opts=shuffle(c.opts);return{...c,opts,c:opts.indexOf(right)}});
+ cards.push({k:'end'});go({name:'feed',id:'saved',title:'Lagrede kort',saved:true,src:null,decks:{},cards,cur:0,seen:1,right:0,answered:0,streak:0})}
+function fbody(i){const c=V.cards[i],done=c.ans!=null;
+ if(c.k==='quiz')return`<h2 class="fq">${esc(c.q)}</h2>${c.quote?`<p class="fquote">${esc(c.quote)}</p>`:''}
+  <div class="fopts">${c.opts.map((o,j)=>`<button class="fopt ${done?(j===c.c?'right':j===c.ans?'wrong':''):''}" data-act="fans" data-i="${i}" data-j="${j}" ${done?'disabled':''}>${esc(o)}</button>`).join('')}</div>
+  ${done?`<p class="ffb ${c.ans===c.c?'ok':'no'}"><b>${c.ans===c.c?'Riktig.':'Ikke helt.'}</b> ${esc(c.why)}</p>`:''}`;
+ if(c.k==='term')return`<p class="fkicker">Kan du forklare begrepet?</p><h2 class="fbig">${esc(c.t)}</h2>
+  ${c.open?`<p class="fdef">${esc(c.d)}</p>`:`<button class="fghost" data-act="freveal" data-i="${i}">Vis forklaringen</button>`}`;
+ if(c.k==='rule')return`<p class="fkicker">Huskeregel</p><p class="frule">${esc(c.r)}</p>`;
+ if(c.k==='model'){const g=FMODELS.find(x=>x[0]===c.g);return`<p class="fkicker">${c.open?'Modellen er':'Hvilken modell er dette?'}</p>
+  ${c.open?`<h2 class="fbig fmodel">${esc(g[0])}</h2>`:''}<ul class="fchips">${g[2].map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>
+  ${c.open?'':`<button class="fghost" data-act="freveal" data-i="${i}">Vis modellen</button>`}`}
+ if(c.k==='case'){const cs=CASES.find(x=>x.id===c.c),st=cs.steps[c.i],best=st.o.reduce((b,o,j)=>o[1]>st.o[b][1]?j:b,0);
+  return`<p class="fkicker">Case: ${esc(cs.title)}</p><p class="fquote fintro">${esc(cs.intro)}</p><h2 class="fq">${esc(st.t)}</h2>
+  <div class="fopts">${c.ord.map(j=>`<button class="fopt ${done?(j===best?'right':j===c.ans?'wrong':''):''}" data-act="fans" data-i="${i}" data-j="${j}" ${done?'disabled':''}>${esc(st.o[j][0])}</button>`).join('')}</div>
+  ${done?`<p class="ffb ${c.ans===best?'ok':'no'}"><b>${c.ans===best?'Sterkt valg.':'Det finnes et bedre valg.'}</b> ${esc(st.o[c.ans][2])}${c.ans!==best?' <b>Beste valg:</b> '+esc(st.o[best][2]):''}</p>`:''}`}
+ if(c.k==='book'){const s=BOOK[c.m].find(x=>x[0]===c.ti);return`<p class="fkicker">Fra fagboka</p><h2 class="fmid">${s[0]}</h2><div class="fbook">${s[1]}</div>`}
+ return`<h2 class="fbig">Det var alle de lagrede kortene</h2><p class="fdef">Trykk på hjertet på et kort, eller dobbelttrykk på kortet, for å lagre det.</p>
+  <div class="row"><button class="fghost" data-act="feed" data-id="all">Fortsett med hele faget</button><button class="fghost" data-act="fclose">Til forsiden</button></div>`}
+function fcard(i){const c=V.cards[i],saved=c.k!=='end'&&isSaved(c),topic=c.k==='case'?CASES.find(x=>x.id===c.c).tema:modName(c.m);
+ return`<article class="fcard f-${c.k}" id="fc${i}" data-i="${i}" aria-label="Kort ${i+1}: ${FLABEL[c.k]}"><div class="finner">
+ <div class="fmeta"><span class="fpill">${FLABEL[c.k]}</span><span>${esc(topic)}</span></div>${fbody(i)}</div>
+ ${c.k==='end'?'':`<div class="frail"><button class="fbtn ${saved?'on':''}" data-act="fsave" data-i="${i}" aria-pressed="${saved}">${ICON.heart}<span>${saved?'Lagret':'Lagre'}</span></button>
+ <button class="fbtn" data-act="fexp" data-i="${i}">${ICON.book}<span>Forklar</span></button></div>`}
+ ${i===0?'<div class="fswipe" aria-hidden="true">Sveip opp for neste ↑</div>':''}</article>`}
+function fcount(){const el=$('fcount');if(el)el.textContent=`${V.seen} kort · ${V.right} av ${V.answered} riktige${V.streak>=3?' · '+V.streak+' på rad':''}`}
+function fobserve(el){V.io.observe(el)}
+function frefresh(i){const el=$('fc'+i);if(!el)return;el.outerHTML=fcard(i);fobserve($('fc'+i));fcount()}
+function vFeed(){
+ app.innerHTML=`<div class="feed" id="feed"><header class="ftop"><button class="fx" data-act="fclose">✕ Lukk</button><span class="ftitle">${esc(V.title)}</span><span class="fkeys">↑ ↓ blar · 1–4 svarer · mellomrom viser svar</span><span class="fcount" id="fcount"></span></header>
+ <div class="fscroll" id="fscroll" role="feed" aria-label="Scroll og lær">${V.cards.map((_,i)=>fcard(i)).join('')}</div><div id="fsheet"></div></div>`;
+ const sc=$('fscroll');
+ V.io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const i=+e.target.dataset.i;V.cur=i;V.seen=Math.max(V.seen,i+1);fcount();
+  if(!V.saved&&i>=V.cards.length-4){const n=V.cards.length;for(let k=0;k<8;k++)feedNext(V);sc.insertAdjacentHTML('beforeend',V.cards.slice(n).map((_,k)=>fcard(n+k)).join(''));for(let k=n;k<V.cards.length;k++)fobserve($('fc'+k))}}),{root:sc,threshold:.6});
+ sc.querySelectorAll('.fcard').forEach(fobserve);fcount();
+ $('fsheet').addEventListener('click',e=>{if(e.target.classList.contains('fsheet'))$('fsheet').innerHTML=''});
+ sc.addEventListener('click',e=>{if(e.target.closest('button,a,summary'))return;const card=e.target.closest('.fcard');if(!card)return;const i=+card.dataset.i,now=Date.now();
+  if(V.tap&&V.tap.i===i&&now-V.tap.t<350){V.tap=null;const c=V.cards[i];if(c.k==='end')return;if(!isSaved(c))fsave(i);
+   card.insertAdjacentHTML('beforeend',`<span class="fburst" aria-hidden="true">${ICON.heart}</span>`);setTimeout(()=>{const b=card.querySelector('.fburst');if(b)b.remove()},800)}
+  else V.tap={i,t:now}})}
+function fsave(i){const c=V.cards[i],{ans,open,ord,...rest}=c;S.saved=S.saved||[];
+ if(isSaved(c)){S.saved=S.saved.filter(x=>fkey(x)!==fkey(c));toast('Fjernet fra lagrede kort')}else{S.saved.push(rest);if(S.saved.length>300)S.saved.shift();toast('Lagret. Finn kortet under «Lagrede kort».')}
+ save();const el=$('fc'+i);if(el){const b=el.querySelector('[data-act=fsave]');b.classList.toggle('on',isSaved(c));b.setAttribute('aria-pressed',isSaved(c));b.querySelector('span').textContent=isSaved(c)?'Lagret':'Lagre'}}
+function fans(i,j){const c=V.cards[i];if(c.ans!=null)return;c.ans=j;V.answered++;
+ const ok=c.k==='quiz'?j===c.c:(()=>{const st=CASES.find(x=>x.id===c.c).steps[c.i];return st.o[j][1]===Math.max(...st.o.map(o=>o[1]))})();
+ if(ok){V.right++;V.streak++;addXp(V.streak>=3?7:5)}else V.streak=0;frefresh(i)}
+function fexp(i){const c=V.cards[i];let ids=[c.m],text='';
+ if(c.k==='quiz')text=c.q+' '+c.opts[c.c]+' '+c.why+' '+c.quote;
+ if(c.k==='term')text=c.t+' '+c.d;if(c.k==='rule')text=c.r;
+ if(c.k==='model'){const g=FMODELS.find(x=>x[0]===c.g);text=g[0]+' '+g[2].join(' ')}
+ if(c.k==='case'){ids=CMODS[c.c];const st=CASES.find(x=>x.id===c.c).steps[c.i];text=st.t+' '+st.o.map(o=>o[2]).join(' ')}
+ if(c.k==='book'){$('fsheet').innerHTML=fsheet(`<p>Dette kortet er hentet fra fagboka, modul «${esc(modName(c.m))}». Åpne fagboka fra forsiden for å lese hele modulen.</p>`);return}
+ $('fsheet').innerHTML=fsheet(relSecs(ids,text,2));$('fsheet').querySelector('.fx').focus()}
+const fsheet=h=>`<div class="fsheet"><div class="fsheet-in" role="dialog" aria-modal="true" aria-label="Forklaring"><div class="fsheet-head"><h3>Forklaring</h3><button class="fx dark" data-act="fsheetclose">Lukk</button></div><div class="book">${h}</div></div></div>`;
+function fstep(d){const sc=$('fscroll');if(sc)sc.scrollBy({top:d*sc.clientHeight,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+document.addEventListener('keydown',e=>{if(V.name!=='feed'||e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+ if(e.key==='Escape'){if($('fsheet').innerHTML){$('fsheet').innerHTML=''}else go({name:'home'});return}
+ if(['ArrowDown','PageDown','j'].includes(e.key)){e.preventDefault();fstep(1)}
+ else if(['ArrowUp','PageUp','k'].includes(e.key)){e.preventDefault();fstep(-1)}
+ else if(/^[1-4]$/.test(e.key)){const c=V.cards[V.cur];if(c&&(c.k==='quiz'||c.k==='case')&&c.ans==null){const j=c.k==='case'?c.ord[+e.key-1]:+e.key-1;if(j!=null&&j<(c.k==='quiz'?c.opts.length:c.ord.length))fans(V.cur,j)}}
+ else if(e.key===' '){const c=V.cards[V.cur];if(c&&(c.k==='term'||c.k==='model')&&!c.open){e.preventDefault();c.open=true;frefresh(V.cur)}}});
+
 /* ---------- Hendelser ---------- */
 const A={
  home:()=>go({name:'home'}),quizhub:()=>go({name:'quizhub'}),casehub:()=>go({name:'casehub'}),
@@ -2169,7 +2357,10 @@ const A={
  learn:d=>startLearn(d.id),lnext:()=>{V.p++;render();window.scrollTo(0,0)},lprev:()=>{V.p--;render();window.scrollTo(0,0)},
  ldone:()=>{addXp(10);startQuiz(V.m.id)},
  cfilter:d=>{V.f=d.t;render()},
- gamehub:()=>go({name:'gamehub'}),book:()=>go({name:'book'}),match:startMatch,sort:startSort,
+ gamehub:()=>go({name:'gamehub'}),
+ feedstart:()=>startFeed($('fmod').value),feed:d=>startFeed(d.id||'all'),feedsaved:startSavedFeed,fclose:()=>go({name:'home'}),
+ fans:d=>fans(+d.i,+d.j),freveal:d=>{V.cards[+d.i].open=true;frefresh(+d.i)},fsave:d=>fsave(+d.i),fexp:d=>fexp(+d.i),
+ fsheetclose:()=>{$('fsheet').innerHTML=''},book:()=>go({name:'book'}),match:startMatch,sort:startSort,
  ml:d=>matchSel('sl',+d.i),mr:d=>matchSel('sr',+d.i),spick:d=>sortPick(+d.i),
  snext:()=>{if(V.lives>0)sortNext();else gameEnd()},
  flash:d=>startFlash(d.id),fopen:()=>{V.open=true;render()},
@@ -2183,7 +2374,7 @@ const A={
  bosssubmit:()=>{const empty=V.chosen.filter(id=>!(V.ans[id]||'').trim()).length;
   if(empty&&!V.sure){V.sure=true;$('confirm').innerHTML=`<div class="fb no"><b class="no">${empty} av 3 oppgaver er tomme.</b> Trykk «Lever alle tre» én gang til for å levere likevel.</div>`;return}bossSubmit()},
  bossquit:()=>go({name:'boss',stage:'intro'}),
- reset:()=>{if(!V.sureReset){V.sureReset=true;toast('Trykk én gang til for å slette all fremgang');return}S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};save();renderTop();go({name:'home'});toast('Fremgangen er nullstilt')}
+ reset:()=>{if(!V.sureReset){V.sureReset=true;toast('Trykk én gang til for å slette all fremgang');return}S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{},saved:[]};save();renderTop();go({name:'home'});toast('Fremgangen er nullstilt')}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&A[b.dataset.act])A[b.dataset.act](b.dataset)});
 document.addEventListener('keydown',e=>{if(V.name!=='quiz'||e.target.tagName==='TEXTAREA')return;
