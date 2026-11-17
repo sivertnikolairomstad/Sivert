@@ -174,7 +174,7 @@ body.feedmode{overflow:hidden}
 .fscroll::-webkit-scrollbar{display:none}
 .fcard{position:relative;height:100%;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;justify-content:center;overflow:hidden;
  padding:calc(env(safe-area-inset-top,0px) + 66px) calc(max(18px,env(safe-area-inset-right,0px)) + 62px) calc(env(safe-area-inset-bottom,0px) + 44px) max(18px,env(safe-area-inset-left,0px))}
-.f-quiz{background:#0b2427}.f-term{background:#0f4a4f}.f-rule{background:#4a3511;color:#fdf1d6}.f-model{background:#19283b}.f-case{background:#3a1d24}.f-book{background:#16291f}.f-end{background:#0f4a4f}
+.f-quiz,.f-fact{background:#0b2427}.f-lesson{background:#3a1d24}.f-term{background:#0f4a4f}.f-rule{background:#4a3511;color:#fdf1d6}.f-model{background:#19283b}.f-case{background:#3a1d24}.f-book{background:#16291f}.f-end{background:#0f4a4f}
 .finner{width:100%;max-width:580px;max-height:100%;overflow-y:auto;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin}
 .fmeta{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.74rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;opacity:.85}
 .fpill{background:var(--fa);color:#2b1d02;padding:3px 10px;border-radius:99px;opacity:1}
@@ -198,6 +198,12 @@ body.feedmode{overflow:hidden}
 .fghost{align-self:flex-start;background:none;border:1.5px solid rgba(255,255,255,.6);color:inherit;border-radius:99px;padding:10px 20px;font:inherit;font-weight:700;min-height:44px;cursor:pointer}
 .fchips{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
 .fchips li{background:var(--fsurf);border:1px solid var(--fline);border-radius:12px;padding:8px 13px;font-weight:600}
+.fanswer{font-family:var(--display);font-size:clamp(1.2rem,4.8vw,1.65rem);font-weight:700;color:var(--fok);margin:0}
+.fwhy{opacity:.88}
+.flesson{display:grid;gap:6px}.flesson p{margin:0;line-height:1.5}
+.ftag{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:6px;margin-right:8px;vertical-align:2px}
+.ftag.ok{background:rgba(99,209,152,.2);color:var(--fok)}.ftag.no{background:rgba(242,132,116,.2);color:var(--fbad)}
+.fbook th,.fbook td{border-color:var(--fline)}.fbook th{background:var(--fsurf);color:inherit}.fbook table{font-size:.86rem}
 .fbook{line-height:1.55}.fbook p{margin:0 0 8px}.fbook ul{margin:0;padding-left:20px}.fbook li{margin:4px 0}
 .ftop{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;align-items:center;gap:12px;pointer-events:none;
  padding:calc(env(safe-area-inset-top,0px) + 10px) max(14px,env(safe-area-inset-right,0px)) 18px max(14px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(0,0,0,.5),transparent)}
@@ -1971,9 +1977,9 @@ function vHome(){const t=totals();
  app.innerHTML=`<section class="hero"><span class="eyebrow">BDS110 · Digital kommunikasjon i serviceorganisasjoner</span>
  <h1>Redd omdømmet. Bestå eksamen.</h1>
  <p class="lead">Du er ny kommunikasjonsansvarlig i servicebransjen. Les fagboka, test deg med flervalg, løs caser fra hotell, restaurant, butikk og transport, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
- <section class="card feedcta"><div><span class="eyebrow">Lær mens du scroller</span><h2>Scroll og lær</h2><p>Sveip deg gjennom korte kort med quiz, begreper, modeller, huskeregler og mini-caser. Dobbelttrykk eller trykk på hjertet for å lagre et kort til senere.</p></div>
+ <section class="card feedcta"><div><span class="eyebrow">Lær mens du scroller</span><h2>Scroll og lær</h2><p>Sveip deg gjennom korte kort du bare leser: begreper, modeller, huskeregler, eksempler fra praksis og hele fagboka i små biter. Velger du én modul, leser du den fra start til slutt. Trykk på hjertet eller dobbelttrykk for å lagre et kort.</p></div>
   <div class="ctl"><label class="small" for="fmod" style="color:inherit">Tema</label><select id="fmod"><option value="all">Hele faget</option>${M.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}</select>
-  <div class="row"><button class="btn" data-act="feedstart">Start feeden</button>${(S.saved||[]).length?`<button class="btn ghost" data-act="feedsaved">Lagrede kort (${S.saved.length})</button>`:''}</div>
+  <div class="row"><button class="btn" data-act="feedread">Les og lær</button><button class="btn ghost" data-act="feedstart">Test deg</button>${(S.saved||[]).length?`<button class="btn ghost" data-act="feedsaved">Lagrede kort (${S.saved.length})</button>`:''}</div>
   ${(()=>{const ms=memStats();return ms.any?`<p class="small" style="color:inherit;margin:0">Du kan ${ms.known} kort godt. ${ms.weak} kort venter på repetisjon.</p>${ms.weak?`<div class="row"><button class="btn ghost" data-act="feedweak">Øv på det du bommet på (${ms.weak})</button></div>`:''}`:''})()}</div></section>
  <section class="grid g2">
   <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Lær og quiz</h2><small>Les korte leksjoner med huskeregler, og test deg med flervalg og begrepskort fra ${M.length} moduler.</small><span class="go">Åpne nøkkeltavlen →</span></button>
@@ -2270,8 +2276,15 @@ const FMODELS=[
  ['Strategiprosesser','m5',['Rasjonell','Visjonær','Inkrementell']],
  ['Funksjoner for internkommunikasjon','m8',['Sosial','Ekspressiv','Informasjon','Kontroll']],
  ['Eksamensdrøfting i tre ledd','m0',['Situasjon og fase','Teoretisk begrunnet valg','Vurdering: betingelser, alternativer, risiko']]];
-const FLABEL={quiz:'Quiz',term:'Begrep',rule:'Huskeregel',model:'Modell',case:'Hva gjør du?',book:'Fra fagboka',end:'Ferdig'};
+const FLABEL={fact:'Visste du?',lesson:'Fra praksis',quiz:'Quiz',term:'Begrep',rule:'Huskeregel',model:'Modell',case:'Hva gjør du?',book:'Fra fagboka',end:'Ferdig'};
 const FWEIGHT={quiz:30,term:22,rule:12,model:12,case:12,book:12};
+const RWEIGHT={fact:26,term:18,rbook:20,lesson:14,model:12,rule:10};
+const BCH={};
+function bookChunks(m,ti){const k=m+'|'+ti;if(BCH[k])return BCH[k];const s=BOOK[m].find(x=>x[0]===ti),t=document.createElement('template');t.innerHTML=s[1];
+ const out=[];let cur='',len=0;const flush=()=>{if(cur){out.push(cur);cur='';len=0}},add=(h,l)=>{if(len&&len+l>400)flush();cur+=h;len+=l};
+ [...t.content.children].forEach(el=>{const l=el.textContent.length;
+  if(el.tagName==='UL'&&l>400){let g=[],gl=0;const fl=()=>{if(g.length){add('<ul>'+g.join('')+'</ul>',gl);g=[];gl=0}};[...el.children].forEach(li=>{const ll=li.textContent.length;if(gl&&gl+ll>400)fl();g.push(li.outerHTML);gl+=ll});fl()}
+  else add(el.outerHTML,l)});flush();return BCH[k]=out.length?out:[s[1]]}
 const ICON={heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 7.9 3.6 4.5 7 4.5c2 0 3.6 1.1 5 2.9 1.4-1.8 3-2.9 5-2.9 3.4 0 5.6 3.4 4.3 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/></svg>',
  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5c3-1.3 6-1.3 9 .5v15c-3-1.8-6-1.8-9-.5zM21 5c-3-1.3-6-1.3-9 .5v15c3-1.8 6-1.8 9-.5z"/></svg>'};
 const modName=id=>(M.find(m=>m.id===id)||{}).name||'';
@@ -2281,7 +2294,10 @@ function feedSrc(mods){const ids=mods.map(m=>m.id);return{
  rule:mods.flatMap(m=>HUSK[m.id].map(r=>({k:'rule',m:m.id,r}))),
  model:FMODELS.filter(x=>ids.includes(x[1])).map(x=>({k:'model',g:x[0],m:x[1]})),
  case:CASES.filter(c=>ids.includes(CMODS[c.id][0])||(ids.length===1&&CMODS[c.id].includes(ids[0]))).flatMap(c=>c.steps.map((s,i)=>({k:'case',c:c.id,i}))),
- book:mods.flatMap(m=>BOOK[m.id].filter(s=>!s[1].includes('<table')&&s[1].replace(/<[^>]+>/g,'').length<650).map(s=>({k:'book',m:m.id,ti:s[0]})))}}
+ book:mods.flatMap(m=>BOOK[m.id].filter(s=>!s[1].includes('<table')&&s[1].replace(/<[^>]+>/g,'').length<650).map(s=>({k:'book',m:m.id,ti:s[0]}))),
+ fact:mods.flatMap(m=>m.qs.map(q=>({k:'fact',m:m.id,q:q[0],a:q[1],why:q[5]}))),
+ lesson:CASES.filter(c=>ids.includes(CMODS[c.id][0])||(ids.length===1&&CMODS[c.id].includes(ids[0]))).flatMap(c=>c.steps.map((s,i)=>({k:'lesson',c:c.id,i}))),
+ rbook:mods.flatMap(m=>BOOK[m.id].flatMap(s=>{const ch=bookChunks(m.id,s[0]);return ch.map((_,part)=>({k:'book',m:m.id,ti:s[0],part,n:ch.length}))}))}}
 function fmake(it){if(it.k)return{...it,ord:it.k==='case'?shuffle(CASES.find(c=>c.id===it.c).steps[it.i].o.map((_,j)=>j)):undefined};
  return{k:'quiz',m:it.mod.id,q:it.q,quote:it.quote||'',opts:it.opts,c:it.c,why:it.why}}
 const fstrip=c=>{const{ans,open,ord,retry,weak,rated,rc,...d}=c;return d};
@@ -2293,25 +2309,29 @@ function memHit(c,ok){S.mem=S.mem||{};const k=fkey(c),e=S.mem[k]||{b:0,w:0};
  e.t=Date.now();S.mem[k]=e;save()}
 const memStats=()=>{const v=Object.values(S.mem||{});return{weak:v.filter(e=>e.d).length,known:v.filter(e=>e.b>=3).length,any:v.length}};
 function weakCards(ids){return Object.values(S.mem||{}).filter(e=>e.d).map(e=>e.d).filter(d=>!ids||ids.includes(d.k==='case'?CMODS[d.c][0]:d.m)||(d.k==='case'&&CMODS[d.c].includes(ids[0])))}
-function fpush(v,c){v.recent[fkey(c)]=v.cards.length;v.cards.push(c)}
+function fpush(v,c){if(v.read&&(c.k==='term'||c.k==='model')){c.read=true;c.open=true}v.recent[fkey(c)]=v.cards.length;v.cards.push(c)}
 const fRecent=(v,c)=>{const r=v.recent[fkey(c)];return r!=null&&v.cards.length-r<40};
 function feedNext(v){if(v.done)return;const n=v.cards.length,ri=v.retry.findIndex(r=>r.at<=n);
  if(ri>=0){const r=v.retry.splice(ri,1)[0];fpush(v,{...ffresh(r.c),retry:true,rc:r.rc});return}
  if(v.queue){if(v.queue.length){fpush(v,{...ffresh(v.queue.shift()),weak:v.mode==='weak'});return}
   if(v.retry.length){const r=v.retry.shift();fpush(v,{...ffresh(r.c),retry:true,rc:r.rc});return}
   v.cards.push({k:'end',mode:v.mode});v.done=true;return}
- if(Math.random()<.2){const w=shuffle(weakCards(v.ids)).find(d=>!fRecent(v,d));if(w){fpush(v,{...ffresh(w),weak:true});return}}
+ if(!v.read&&Math.random()<.2){const w=shuffle(weakCards(v.ids)).find(d=>!fRecent(v,d));if(w){fpush(v,{...ffresh(w),weak:true});return}}
  let c;
- for(let t=0;t<8;t++){const ks=Object.keys(FWEIGHT).filter(k=>v.src[k].length&&k!==v.lastK);let r=Math.random()*ks.reduce((s,k)=>s+FWEIGHT[k],0),k=ks[0];
-  for(const x of ks){r-=FWEIGHT[x];if(r<=0){k=x;break}}
+ for(let t=0;t<8;t++){const W=v.w||FWEIGHT,ks=Object.keys(W).filter(k=>v.src[k].length&&k!==v.lastK);let r=Math.random()*ks.reduce((s,k)=>s+W[k],0),k=ks[0];
+  for(const x of ks){r-=W[x];if(r<=0){k=x;break}}
   if(!v.decks[k]||!v.decks[k].length)v.decks[k]=shuffle(v.src[k]);v.lastK=k;c=fmake(v.decks[k].pop());
-  const e=(S.mem||{})[fkey(c)];if(!fRecent(v,c)&&!(e&&Math.random()<MEMW[e.b||0]))break}
+  const e=!v.read&&(S.mem||{})[fkey(c)];if(!fRecent(v,c)&&!(e&&Math.random()<MEMW[e.b||0]))break}
  fpush(v,c)}
-const fkey=c=>c.k==='quiz'?'quiz|'+c.q+'|'+(c.quote||'')+'|'+c.opts[c.c]:c.k+'|'+(c.t||c.r||c.g||c.ti||(c.c+':'+c.i));
+const fkey=c=>c.k==='quiz'?'quiz|'+c.q+'|'+(c.quote||'')+'|'+c.opts[c.c]:c.k==='fact'?'fact|'+c.q:c.k==='book'?'book|'+c.ti+'|'+(c.part||0):c.k+'|'+(c.t||c.r||c.g||(c.c+':'+c.i));
 const isSaved=c=>(S.saved||[]).some(x=>fkey(x)===fkey(c));
 const feedState=o=>({name:'feed',decks:{},cards:[],retry:[],recent:{},cur:0,seen:1,right:0,answered:0,streak:0,...o});
 function startFeed(id){const mods=id==='all'?M:[M.find(m=>m.id===id)],v=feedState({id,mode:'all',ids:id==='all'?null:[id],title:id==='all'?'Hele faget':modName(id),src:feedSrc(mods)});
  for(let i=0;i<8;i++)feedNext(v);go(v)}
+function startRead(id){const mods=id==='all'?M:[M.find(m=>m.id===id)],src=feedSrc(mods);
+ if(id==='all'){const v=feedState({id,mode:'read',read:true,w:RWEIGHT,ids:null,title:'Les · hele faget',src});for(let i=0;i<8;i++)feedNext(v);go(v);return}
+ const q=[...src.rbook,...src.model,...src.term,...src.rule,...src.fact,...src.lesson];
+ const v=feedState({id,mode:'readmod',read:true,ids:[id],title:'Les · '+modName(id),queue:q,total:q.length});for(let i=0;i<8;i++)feedNext(v);go(v)}
 function startSavedFeed(){const v=feedState({id:'saved',mode:'saved',title:'Lagrede kort',queue:(S.saved||[]).slice().reverse()});for(let i=0;i<8;i++)feedNext(v);go(v)}
 function startWeakFeed(){const v=feedState({id:'weak',mode:'weak',title:'Repetisjon',queue:shuffle(weakCards(null))});for(let i=0;i<8;i++)feedNext(v);go(v)}
 function frate(i){const c=V.cards[i];return c.rated==null?`<div class="frate"><span>Kunne du det?</span><div class="row"><button class="fghost" data-act="frate" data-i="${i}" data-ok="1">Ja, kunne det</button><button class="fghost" data-act="frate" data-i="${i}" data-ok="0">Øv mer</button></div></div>`
@@ -2320,31 +2340,38 @@ function fbody(i){const c=V.cards[i],done=c.ans!=null;
  if(c.k==='quiz')return`<h2 class="fq">${esc(c.q)}</h2>${c.quote?`<p class="fquote">${esc(c.quote)}</p>`:''}
   <div class="fopts">${c.opts.map((o,j)=>`<button class="fopt ${done?(j===c.c?'right':j===c.ans?'wrong':''):''}" data-act="fans" data-i="${i}" data-j="${j}" ${done?'disabled':''}>${esc(o)}</button>`).join('')}</div>
   ${done?`<p class="ffb ${c.ans===c.c?'ok':'no'}"><b>${c.ans===c.c?'Riktig.':'Ikke helt.'}</b> ${esc(c.why)}</p>`:''}`;
- if(c.k==='term')return`<p class="fkicker">Kan du forklare begrepet?</p><h2 class="fbig">${esc(c.t)}</h2>
-  ${c.open?`<p class="fdef">${esc(c.d)}</p>${frate(i)}`:`<button class="fghost" data-act="freveal" data-i="${i}">Vis forklaringen</button>`}`;
+ if(c.k==='term')return`${c.read?'':'<p class="fkicker">Kan du forklare begrepet?</p>'}<h2 class="fbig">${esc(c.t)}</h2>
+  ${c.open?`<p class="fdef">${esc(c.d)}</p>${c.read?'':frate(i)}`:`<button class="fghost" data-act="freveal" data-i="${i}">Vis forklaringen</button>`}`;
  if(c.k==='rule')return`<p class="fkicker">Huskeregel</p><p class="frule">${esc(c.r)}</p>`;
- if(c.k==='model'){const g=FMODELS.find(x=>x[0]===c.g);return`<p class="fkicker">${c.open?'Modellen er':'Hvilken modell er dette?'}</p>
+ if(c.k==='model'){const g=FMODELS.find(x=>x[0]===c.g);return`${c.read?'':`<p class="fkicker">${c.open?'Modellen er':'Hvilken modell er dette?'}</p>`}
   ${c.open?`<h2 class="fbig fmodel">${esc(g[0])}</h2>`:''}<ul class="fchips">${g[2].map(x=>'<li>'+esc(x)+'</li>').join('')}</ul>
-  ${c.open?frate(i):`<button class="fghost" data-act="freveal" data-i="${i}">Vis modellen</button>`}`}
+  ${c.open?(c.read?'':frate(i)):`<button class="fghost" data-act="freveal" data-i="${i}">Vis modellen</button>`}`}
+ if(c.k==='fact')return`<h2 class="fq">${esc(c.q)}</h2><p class="fanswer">${esc(c.a)}</p><p class="fdef fwhy">${esc(c.why)}</p>`;
+ if(c.k==='lesson'){const cs=CASES.find(x=>x.id===c.c),st=cs.steps[c.i],best=st.o.reduce((b,o,j)=>o[1]>st.o[b][1]?j:b,0),worst=st.o.reduce((b,o,j)=>o[1]<st.o[b][1]?j:b,0);
+  return`<p class="fkicker">${esc(cs.title)}${c.i?` · situasjon ${c.i+1} av ${cs.steps.length}`:''}</p>${c.i===0?`<p class="fquote fintro">${esc(cs.intro)}</p>`:''}<h2 class="fq">${esc(st.t)}</h2>
+  <div class="flesson"><p><span class="ftag ok">Lurt</span>${esc(st.o[best][0])}</p><p class="fwhy">${esc(st.o[best][2])}</p>
+  <p><span class="ftag no">Unngå</span>${esc(st.o[worst][0])}</p><p class="fwhy">${esc(st.o[worst][2])}</p></div>`}
  if(c.k==='case'){const cs=CASES.find(x=>x.id===c.c),st=cs.steps[c.i],best=st.o.reduce((b,o,j)=>o[1]>st.o[b][1]?j:b,0);
   return`<p class="fkicker">Case: ${esc(cs.title)}</p><p class="fquote fintro">${esc(cs.intro)}</p><h2 class="fq">${esc(st.t)}</h2>
   <div class="fopts">${c.ord.map(j=>`<button class="fopt ${done?(j===best?'right':j===c.ans?'wrong':''):''}" data-act="fans" data-i="${i}" data-j="${j}" ${done?'disabled':''}>${esc(st.o[j][0])}</button>`).join('')}</div>
   ${done?`<p class="ffb ${c.ans===best?'ok':'no'}"><b>${c.ans===best?'Sterkt valg.':'Det finnes et bedre valg.'}</b> ${esc(st.o[c.ans][2])}${c.ans!==best?' <b>Beste valg:</b> '+esc(st.o[best][2]):''}</p>`:''}`}
- if(c.k==='book'){const s=BOOK[c.m].find(x=>x[0]===c.ti);return`<p class="fkicker">Fra fagboka</p><h2 class="fmid">${s[0]}</h2><div class="fbook">${s[1]}</div>`}
+ if(c.k==='book'){const s=BOOK[c.m].find(x=>x[0]===c.ti);return`${c.n>1?`<p class="fkicker">Del ${c.part+1} av ${c.n}</p>`:''}<h2 class="fmid">${s[0]}</h2><div class="fbook">${c.n?bookChunks(c.m,c.ti)[c.part]:s[1]}</div>`}
+ if(c.mode==='readmod'){const nx=M[M.findIndex(m=>m.id===V.id)+1];return`<h2 class="fbig">Ferdig med modulen</h2><p class="fdef">Du har lest alt om ${esc(modName(V.id))}. Test deg selv for å se hva som sitter.</p>
+  <div class="row"><button class="fghost" data-act="feedquiz" data-id="${V.id}">Test deg i modulen</button>${nx?`<button class="fghost" data-act="feedreadid" data-id="${nx.id}">Les neste: ${esc(nx.name)}</button>`:''}<button class="fghost" data-act="fclose">Til forsiden</button></div>`}
  return c.mode==='weak'?`<h2 class="fbig">Ferdig med repetisjonen</h2><p class="fdef">Kort du svarer riktig på to ganger på rad, forsvinner fra repetisjonen. Resten venter til neste gang.</p>`
  :`<h2 class="fbig">Det var alle de lagrede kortene</h2><p class="fdef">Trykk på hjertet på et kort, eller dobbelttrykk på kortet, for å lagre det.</p>
   <div class="row"><button class="fghost" data-act="feed" data-id="all">Fortsett med hele faget</button><button class="fghost" data-act="fclose">Til forsiden</button></div>`}
-function fcard(i){const c=V.cards[i],saved=c.k!=='end'&&isSaved(c),topic=c.k==='case'?CASES.find(x=>x.id===c.c).tema:modName(c.m);
+function fcard(i){const c=V.cards[i],saved=c.k!=='end'&&isSaved(c),topic=c.k==='case'||c.k==='lesson'?CASES.find(x=>x.id===c.c).tema:c.k==='end'?'':modName(c.m);
  return`<article class="fcard f-${c.k}" id="fc${i}" data-i="${i}" aria-label="Kort ${i+1}: ${FLABEL[c.k]}"><div class="finner">
  <div class="fmeta"><span class="fpill">${FLABEL[c.k]}</span>${c.retry?'<span class="fpill alt">Repetisjon</span>':c.weak?'<span class="fpill alt">Du bommet sist</span>':''}<span>${esc(topic)}</span></div>${fbody(i)}</div>
  ${c.k==='end'?'':`<div class="frail"><button class="fbtn ${saved?'on':''}" data-act="fsave" data-i="${i}" aria-pressed="${saved}">${ICON.heart}<span>${saved?'Lagret':'Lagre'}</span></button>
  <button class="fbtn" data-act="fexp" data-i="${i}">${ICON.book}<span>Forklar</span></button></div>`}
  ${i===0?'<div class="fswipe" aria-hidden="true">Sveip opp for neste ↑</div>':''}</article>`}
-function fcount(){const el=$('fcount');if(el)el.textContent=`${V.seen} kort · ${V.right} av ${V.answered} riktige${V.streak>=3?' · '+V.streak+' på rad':''}`}
+function fcount(){const el=$('fcount');if(el)el.textContent=V.read?(V.total?`${Math.min(V.seen,V.total)} av ${V.total} kort`:`${V.seen} kort lest`):`${V.seen} kort · ${V.right} av ${V.answered} riktige${V.streak>=3?' · '+V.streak+' på rad':''}`}
 function fobserve(el){V.io.observe(el)}
 function frefresh(i){const el=$('fc'+i);if(!el)return;el.outerHTML=fcard(i);fobserve($('fc'+i));fcount()}
 function vFeed(){
- app.innerHTML=`<div class="feed" id="feed"><header class="ftop"><button class="fx" data-act="fclose">✕ Lukk</button><span class="ftitle">${esc(V.title)}</span><span class="fkeys">↑ ↓ blar · 1–4 svarer · mellomrom viser svar</span><span class="fcount" id="fcount"></span></header>
+ app.innerHTML=`<div class="feed" id="feed"><header class="ftop"><button class="fx" data-act="fclose">✕ Lukk</button><span class="ftitle">${esc(V.title)}</span><span class="fkeys">${V.read?'↑ ↓ eller j k for å bla':'↑ ↓ blar · 1–4 svarer · mellomrom viser svar'}</span><span class="fcount" id="fcount"></span></header>
  <div class="fscroll" id="fscroll" role="feed" aria-label="Scroll og lær">${V.cards.map((_,i)=>fcard(i)).join('')}</div><div id="fsheet"></div></div>`;
  const sc=$('fscroll');
  V.io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;const i=+e.target.dataset.i;V.cur=i;V.seen=Math.max(V.seen,i+1);fcount();
@@ -2364,7 +2391,8 @@ function fans(i,j){const c=V.cards[i];if(c.ans!=null)return;c.ans=j;V.answered++
  if(ok){V.right++;V.streak++;addXp(V.streak>=3?7:5)}else V.streak=0;frefresh(i)}
 function fexp(i){const c=V.cards[i];let ids=[c.m],text='';
  if(c.k==='quiz')text=c.q+' '+c.opts[c.c]+' '+c.why+' '+c.quote;
- if(c.k==='term')text=c.t+' '+c.d;if(c.k==='rule')text=c.r;
+ if(c.k==='term')text=c.t+' '+c.d;if(c.k==='rule')text=c.r;if(c.k==='fact')text=c.q+' '+c.a+' '+c.why;
+ if(c.k==='lesson'){ids=CMODS[c.c];const st=CASES.find(x=>x.id===c.c).steps[c.i];text=st.t+' '+st.o.map(o=>o[2]).join(' ')}
  if(c.k==='model'){const g=FMODELS.find(x=>x[0]===c.g);text=g[0]+' '+g[2].join(' ')}
  if(c.k==='case'){ids=CMODS[c.c];const st=CASES.find(x=>x.id===c.c).steps[c.i];text=st.t+' '+st.o.map(o=>o[2]).join(' ')}
  if(c.k==='book'){$('fsheet').innerHTML=fsheet(`<p>Dette kortet er hentet fra fagboka, modul «${esc(modName(c.m))}». Åpne fagboka fra forsiden for å lese hele modulen.</p>`);return}
@@ -2387,7 +2415,7 @@ const A={
  ldone:()=>{addXp(10);startQuiz(V.m.id)},
  cfilter:d=>{V.f=d.t;render()},
  gamehub:()=>go({name:'gamehub'}),
- feedstart:()=>startFeed($('fmod').value),feed:d=>startFeed(d.id||'all'),feedsaved:startSavedFeed,feedweak:startWeakFeed,frate:d=>{const i=+d.i,c=V.cards[i],ok=d.ok==='1';if(c.rated!=null)return;c.rated=ok;memHit(c,ok);if(!ok)fretry(V,c,i);else addXp(2);frefresh(i)},fclose:()=>go({name:'home'}),
+ feedstart:()=>startFeed($('fmod').value),feedread:()=>startRead($('fmod').value),feedreadid:d=>startRead(d.id),feedquiz:d=>startFeed(d.id),feed:d=>startFeed(d.id||'all'),feedsaved:startSavedFeed,feedweak:startWeakFeed,frate:d=>{const i=+d.i,c=V.cards[i],ok=d.ok==='1';if(c.rated!=null)return;c.rated=ok;memHit(c,ok);if(!ok)fretry(V,c,i);else addXp(2);frefresh(i)},fclose:()=>go({name:'home'}),
  fans:d=>fans(+d.i,+d.j),freveal:d=>{V.cards[+d.i].open=true;frefresh(+d.i)},fsave:d=>fsave(+d.i),fexp:d=>fexp(+d.i),
  fsheetclose:()=>{$('fsheet').innerHTML=''},book:()=>go({name:'book'}),match:startMatch,sort:startSort,
  ml:d=>matchSel('sl',+d.i),mr:d=>matchSel('sr',+d.i),spick:d=>sortPick(+d.i),
