@@ -3,9 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5257">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Digital komm.">
+<meta name="description" content="Eksamenstrening i BDS110 Digital kommunikasjon i serviceorganisasjoner">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <!--CUT-->
 <meta name="claude:viewport-fit-sides" content="cover">
-<title>BDS110 Omdømmeredderen</title>
+<title>Digital kommunikasjon</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: hotellresepsjon. Smal toppbar med rang/XP, én sentrert arbeidskolonne (max 920px),
@@ -39,8 +48,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--brass);outline-offset:2px}
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
 .top-in,.wrap{max-width:920px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.top-in{display:flex;align-items:center;gap:14px;padding-block:10px;flex-wrap:wrap}
-.brand{font-family:var(--display);font-weight:800;font-size:1.05rem;background:none;border:0;padding:4px 0;display:flex;align-items:center;gap:8px}
+.top-in{display:flex;align-items:center;gap:14px;padding-block:8px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.05rem;background:none;border:0;padding:8px 0;min-height:44px;display:flex;align-items:center;gap:8px;white-space:nowrap}
 .brand i{width:22px;height:22px;border-radius:50%;background:var(--brass);display:inline-block;position:relative}
 .brand i::after{content:"";position:absolute;left:8px;top:5px;width:6px;height:6px;border-radius:50%;background:var(--surface)}
 .rank{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:0;font-size:.86rem}
@@ -66,7 +75,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn.ghost{background:transparent;color:var(--primary);border:1.5px solid var(--primary)}
 .btn.sm{padding:7px 12px;font-size:.88rem}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.back{background:none;border:0;color:var(--muted);font-weight:600;padding:4px 0;align-self:flex-start}
+.back{background:none;border:0;color:var(--muted);font-weight:600;padding:10px 0;min-height:44px;align-self:flex-start}
 .back:hover{color:var(--ink)}
 .stats{display:flex;gap:24px;flex-wrap:wrap}
 .stat b{font-family:var(--display);font-size:1.5rem;display:block;font-variant-numeric:tabular-nums}
@@ -90,7 +99,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .opt.right{border-color:var(--good);background:var(--good-soft)}
 .opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
 .opt:disabled{cursor:default;color:inherit}
-.fb{border-radius:12px;padding:14px 16px;background:var(--surface2);border:1px solid var(--line)}
+.fb{scroll-margin-bottom:96px;border-radius:12px;padding:14px 16px;background:var(--surface2);border:1px solid var(--line)}
 .fb.ok{border-color:var(--good)} .fb.no{border-color:var(--bad)}
 .fb b.ok{color:var(--good)} .fb b.no{color:var(--bad)}
 .flash{min-height:210px;justify-content:center;align-items:center;text-align:center;gap:14px}
@@ -132,10 +141,12 @@ summary{font-weight:700;cursor:pointer}
 .mcol{display:grid;gap:10px}
 .mcol .opt{min-height:64px;align-items:center}
 .mterms .opt{font-weight:700;justify-content:center;text-align:center}
+.mcol .opt{min-width:0;overflow-wrap:anywhere;hyphens:auto}
+.mcol .opt span{min-width:0}
 .item{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,6vw,2.6rem);text-align:center;padding:18px 0}
 .lives{color:var(--bad);letter-spacing:4px;font-size:1.25rem}
 .big{font-family:var(--display);font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
-@media (max-width:640px){.mboard{grid-template-columns:1fr}.mterms{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.mboard{grid-template-columns:minmax(0,1fr)}.mterms{grid-template-columns:repeat(2,minmax(0,1fr))}.mcol .opt{min-height:56px;padding:11px 12px;font-size:.95rem}}
 .book h4{font-family:var(--display);font-size:1rem;margin:14px 0 4px}
 .book h4:first-child{margin-top:0}
 .book p{margin:6px 0;max-width:72ch}
@@ -151,13 +162,23 @@ details.mod>summary{font-family:var(--display);font-size:1.1rem}
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:20;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .note{font-size:.86rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;max-width:70ch}
-@media (max-width:520px){.xpbar{width:64px}.rank b{max-width:42vw;overflow:hidden;text-overflow:ellipsis}}
+@media (max-width:520px){.rank b{display:none}.xpbar{width:56px}.brand{font-size:.98rem}.wrap{padding-block:16px 48px;gap:18px}.card{padding:16px}h1{font-size:1.75rem}}
+html{-webkit-text-size-adjust:100%}
+button,summary,input,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+summary{min-height:44px;display:flex;align-items:center;gap:6px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+.btn{min-height:44px}
+.actbar{position:sticky;bottom:0;z-index:5;background:var(--surface);margin-inline:-20px;padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+@media (max-width:520px){.actbar{margin-inline:-16px;padding-inline:16px}.actbar .btn{flex:1}}
+@media (hover:none){.opt kbd,.kbdhint{display:none}.mode:hover{transform:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <button class="brand" data-act="home" id="brand"><i></i>Omdømmeredderen</button>
+  <button class="brand" data-act="home" id="brand"><i></i>Digital kommunikasjon</button>
   <div class="rank" id="rank"></div>
 </div></header>
 <main class="wrap" id="app" lang="nb"></main>
@@ -1877,12 +1898,13 @@ let V={name:'home'},timer=null;
 function go(v){if(timer){clearInterval(timer);timer=null}V=v;render();window.scrollTo(0,0)}
 function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,book:vBook,gamehub:vGameHub,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
 
+function showFb(){const fb=document.querySelector('.fb');if(fb&&innerWidth<700)fb.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 /* ---------- Hjem ---------- */
 function totals(){const st=M.reduce((s,m)=>s+((S.quiz[m.id]||{}).stars||0),0);const cs=CASES.filter(c=>S.cases[c.id]!=null).length;return{st,cs}}
 function vHome(){const t=totals();
  app.innerHTML=`<section class="hero"><span class="eyebrow">BDS110 · Digital kommunikasjon i serviceorganisasjoner</span>
  <h1>Redd omdømmet. Bestå eksamen.</h1>
- <p class="lead">Du er ny kommunikasjonsansvarlig i hotellbransjen. Les fagboka, test deg med flervalg, løs caser fra hotellbransjen, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
+ <p class="lead">Du er ny kommunikasjonsansvarlig i servicebransjen. Les fagboka, test deg med flervalg, løs caser fra hotell, restaurant, butikk og transport, og møt sensor i en eksamensrunde med 3 av 6 oppgaver.</p></section>
  <section class="grid g2">
   <button class="card mode" data-act="quizhub"><span class="eyebrow">Modus 1</span><h2>Lær og quiz</h2><small>Les korte leksjoner med huskeregler, og test deg med flervalg og begrepskort fra ${M.length} moduler.</small><span class="go">Åpne nøkkeltavlen →</span></button>
   <button class="card mode" data-act="casehub"><span class="eyebrow">Modus 2</span><h2>Case-simulator</h2><small>Endring, issue, krise og storm i sosiale medier. Valgene dine flytter gjestescoren.</small><span class="go">Velg case →</span></button>
@@ -1940,8 +1962,8 @@ function vQuiz(){const q=V.round[V.i],done=V.picked!=null;
  <div class="opts">${q.opts.map((o,i)=>!done&&V.hint&&V.hint.includes(i)?'':`<button class="opt ${done?(i===q.c?'right':i===V.picked?'wrong':''):''}" data-act="pick" data-i="${i}" ${done?'disabled':''}><kbd>${i+1}</kbd><span>${esc(o)}</span></button>`).join('')}</div>
  ${done?`<div class="fb ${V.picked===q.c?'ok':'no'}"><b class="${V.picked===q.c?'ok':'no'}">${V.picked===q.c?'Riktig.':'Ikke helt.'}</b> ${esc(q.why)}</div>
  ${expBox([q.mod.id],q.q+' '+q.opts[q.c]+' '+q.why+' '+(q.quote||''))}
- <div class="row"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small">Enter går videre</span></div>`:`<div class="row">${V.hint?'':'<button class="btn ghost sm" data-act="hint">Hint: fjern to svar</button>'}<span class="small">Tastene 1–4 velger svar</span></div>`}</section>`;
- if(done)$('nextbtn').focus()}
+ <div class="row actbar"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small kbdhint">Enter går videre</span></div>`:`<div class="row">${V.hint?'':'<button class="btn ghost sm" data-act="hint">Hint: fjern to svar</button>'}<span class="small kbdhint">Tastene 1–4 velger svar</span></div>`}</section>`;
+ if(done)$('nextbtn').focus({preventScroll:true});showFb()}
 function pick(i){if(V.name!=='quiz'||V.picked!=null||(V.hint&&V.hint.includes(i)))return;const q=V.round[V.i];V.picked=i;
  if(i===q.c){if(!q.retry)V.right++;V.streak++;const g=q.retry?4:V.hint?5:10+(V.streak>=3?5:0);V.xp+=g;addXp(g)}
  else{V.streak=0;if(!q.retry)V.missed.push(q);const opts=shuffle(q.opts);V.round.push({...q,opts,c:opts.indexOf(q.opts[q.c]),retry:true})}render()}
@@ -1987,8 +2009,8 @@ function vCase(){const st=V.c.steps[V.i],ord=V.order[V.i],done=V.picked!=null,ch
  <div class="opts">${ord.map((oi,k)=>{const o=st.o[oi];return`<button class="opt ${done?(oi===bestI?'right':oi===V.picked?'wrong':''):''}" data-act="cpick" data-i="${oi}" ${done?'disabled':''}><kbd>${'ABCD'[k]}</kbd><span>${esc(o[0])}</span></button>`}).join('')}</div>
  ${done?`<div class="fb ${ch[1]>0?'ok':'no'}"><b class="${ch[1]>0?'ok':'no'}">${V.picked===bestI?'Sterkt valg.':ch[1]>0?'Greit, men det finnes et bedre valg.':'Dette kostet omdømme.'}</b> ${esc(ch[2])}${V.picked!==bestI?`<br><br><b>Beste valg:</b> ${esc(st.o[bestI][2])}`:''}</div>
  ${expBox(CMODS[V.c.id],st.o[bestI][2]+' '+st.o[bestI][0])}
- <div class="row"><button class="btn" data-act="cnext" id="nextbtn">${V.i+1<V.c.steps.length?'Neste situasjon':'Se utfallet'}</button></div>`:''}</section>`;
- if(done)$('nextbtn').focus()}
+ <div class="row actbar"><button class="btn" data-act="cnext" id="nextbtn">${V.i+1<V.c.steps.length?'Neste situasjon':'Se utfallet'}</button></div>`:''}</section>`;
+ if(done)$('nextbtn').focus({preventScroll:true});showFb()}
 function cpick(i){if(V.picked!=null)return;const o=V.c.steps[V.i].o[i];V.picked=i;V.rep=Math.max(0,Math.min(100,V.rep+o[1]));
  const g=Math.max(0,o[1])*3;V.xp+=g;addXp(g);render()}
 function cnext(){if(V.i+1<V.c.steps.length){V.i++;V.picked=null;render();window.scrollTo(0,0)}else{
@@ -2128,8 +2150,8 @@ function vSort(){const c=V.cur,f=V.fb;
  <div class="opts">${c.opts.map((o,i)=>`<button class="opt ${f?(o===c.g?'right':i===f.i?'wrong':''):''}" data-act="spick" data-i="${i}" ${f?'disabled':''}><span>${esc(o)}</span></button>`).join('')}</div>
  ${f?`<div class="fb no"><b class="no">Feil.</b> «${esc(c.it)}» hører til ${esc(c.g)}, sammen med ${esc(GROUPS[c.g].filter(x=>x!==c.it).join(', '))}.</div>
  ${expBox([GMOD[c.g]],c.g+' '+c.it)}
- <div class="row"><button class="btn" data-act="snext" id="nextbtn">${V.lives>0?'Fortsett':'Se resultat'}</button></div>`:''}</section>`;
- if(f)$('nextbtn').focus()}
+ <div class="row actbar"><button class="btn" data-act="snext" id="nextbtn">${V.lives>0?'Fortsett':'Se resultat'}</button></div>`:''}</section>`;
+ if(f)$('nextbtn').focus({preventScroll:true});showFb()}
 function sortPick(i){if(V.fb)return;const c=V.cur;
  if(c.opts[i]===c.g){V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
  else{V.lives--;V.streak=0;V.fb={i};render()}}
