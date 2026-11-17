@@ -110,6 +110,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hpbar span{display:block;height:100%;background:var(--bad);transition:width .4s}
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tab{background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 14px;font-weight:600}
+.tabs .tab{padding:6px 12px;font-size:.88rem}
 .tab[aria-selected="true"]{border-color:var(--primary);background:var(--primary);color:var(--on-primary)}
 textarea{width:100%;min-height:340px;font:inherit;line-height:1.6;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:14px;resize:vertical}
 .pick{text-align:left;position:relative}
@@ -1646,6 +1647,218 @@ CASES.push(
  ]});
 Object.assign(CMODS,{c14:['m11','m6'],c15:['m3','m7'],c16:['m6','m3'],c17:['m12','m1'],c18:['m7','m5']});
 
+/* ============================== FJERDE RUNDE SPØRSMÅL ============================== */
+const XQ4={
+m0:[
+ ['Oppgaven ber deg «gjøre rede for». Hva forventes?','Å forklare begreper og modeller presist og strukturert','Å ta stilling for og imot','Å bare gi eksempler','Å skrive en konklusjon uten teori','Redegjøre er å forklare. Drøfte er å vurdere fra flere sider.'],
+ ['Oppgaven ber deg «drøfte». Hva forventes?','Å vurdere fra flere sider, med betingelser, fordeler, ulemper og alternativer','Å liste opp definisjoner','Å gjengi pensum ordrett','Å gi én anbefaling uten begrunnelse','Drøfting krever nyansering.'],
+ ['Hvorfor bør eksemplene hentes fra serviceorganisasjoner?','Fordi emnet handler om digital kommunikasjon i serviceorganisasjoner, og eksemplene viser at du kan bruke teorien','Fordi andre eksempler er forbudt','Fordi sensor ikke kjenner andre bransjer','Fordi det gir flere ord','Teori knyttet til relevante eksempler.'],
+ ['Du kombinerer Iceberg-modellen med medierikhetsteorien i en endringsoppgave. Hva viser du da?','Integrering av stoff fra ulike deler av pensum','Synsing','At du har misforstått oppgaven','At du mangler struktur','Å knytte modeller sammen gir selvstendighet.'],
+ ['Hva bør en god avslutning inneholde?','En kort oppsummering av hovedfunnene og en begrunnet konklusjon','Nye teorier som ikke er brukt før','En liste over pensum','Ingenting nytt eller oppsummerende','Avslutningen samler trådene.']],
+m1:[
+ ['Et flyselskap lar en KI-assistent svare kundene, men lar ansatte ta alle klager. Hva viser det?','At teknologi brukes som kanal, mens menneskelig skjønn beholdes der det trengs','At KI ikke virker','At klager bør ignoreres','At alt bør automatiseres','KI som kanal og aktør krever avveining.'],
+ ['En kantine skanner papirkvitteringer for regnskapet. Hva er dette?','Digitisering','Digitalisering','Digital transformasjon','Synkron CMC','Formatet endres, ikke prosessen.'],
+ ['Hvorfor er TAM nyttig når en servicevirksomhet innfører ny teknologi?','Den forklarer hva som avgjør om ansatte og kunder faktisk tar teknologien i bruk','Den forteller hva teknologien koster','Den velger leverandør','Den måler omdømme','Opplevd nytte og brukervennlighet.'],
+ ['Hva er en svakhet ved asynkron kommunikasjon i en krise?','Svarene kommer forsinket når situasjonen krever raske avklaringer','Den er for dyr','Den kan ikke lagres','Den når ingen','Asynkron er tidsforskjøvet.'],
+ ['Hva er en styrke ved asynkron kommunikasjon for skiftarbeidere?','Den kan leses når det passer, uansett vakt','Den gir umiddelbar tilbakemelding','Den har flest sosiale signaler','Den erstatter møter helt','Tidsforskjøvet passer skiftarbeid.']],
+m2:[
+ ['En gjest skriver positivt om hotellet, og hotellet deler innlegget på sin egen side. Hvordan henger medietypene sammen her?','Fortjent omtale forsterkes gjennom eide kanaler','Det blir betalte medier','Det er broadcasting','Det svekker troverdigheten','Samspillet i POEM.'],
+ ['Hvilket begrep beskriver at gjester blir talsmenn for et hotell?','Advocacy','Broadcasting','Positioning','Publicity','Talsmannskap.'],
+ ['Hva er en risiko ved crowd-casting for en servicevirksomhet?','At negative opplevelser spres raskt uten at virksomheten kontrollerer budskapet','At ingen deler noe','At terskelen for å publisere blir høyere','At virksomheten får mer kontroll','Mange-til-mange og lav terskel.'],
+ ['Hvordan bør en virksomhet tilpasse seg nye medieomgivelser?','Gå fra kontroll til engasjement, lytting og dialog','Øke reklamebudsjettet','Stenge kommentarfelt','Bruke færre kanaler','Fra posisjonering til engasjement.'],
+ ['Hva er ledelseskommunikasjon i van Riels modell?','Kommunikasjon fra ledelsen til interne og eksterne interessenter for å skape støtte for strategien','Annonsering','Kundeservice','Pressemeldinger fra markedsavdelingen','Ett av de tre områdene.']],
+m3:[
+ ['En restaurant bruker review mining og finner at mange klager på ventetid. Hva bør den gjøre?','Forbedre tjenesten og fortelle gjestene hva som er endret','Slette anmeldelsene','Kjøpe flere positive anmeldelser','Ignorere funnene','Lytting skal gi forbedring.'],
+ ['Hvorfor er medierikhetsteorien relevant i sosiale medier?','Fordi kanalvalg i sosiale medier også må passe budskapets tvetydighet','Fordi sosiale medier alltid er rike','Fordi teorien handler om algoritmer','Fordi den måler følgere','Video og direkte svar er rikere enn statiske innlegg.'],
+ ['Hvordan kan selektiv eksponering påvirke en kampanje?','Folk som allerede er skeptiske, ser og deler mest det som bekrefter skepsisen','Alle ser kampanjen likt','Kampanjen når flere','Folk søker motstridende informasjon','Ekkokamre.'],
+ ['Hva er en fordel ved sosiale medier for rekruttering i servicebransjen?','Virksomheten kan vise ekte arbeidshverdag og kultur til mulige søkere','De erstatter intervjuer','De gir alltid flere søkere','De fjerner behovet for stillingsannonser','Servicevirksomheters bruk av SoMe.'],
+ ['Hva betyr «Credible» i PARC?','Troverdig','Deltakende','Ressursfull','Autentisk','Den fjerde bokstaven.'],
+ ['Hvilken teori legger vekt på at brukere velger medier for å dekke behov som underholdning og selvrealisering?','Uses and Gratifications','Medierikhetsteori','Social Information Processing','Agenda-setting','Brukere er aktive.']],
+m4:[
+ ['Hva kan et ukonvensjonelt digitalt verktøy gjøre for et team som aldri møtes fysisk?','Skape følelse av nærhet og fellesskap','Fjerne alle konflikter','Erstatte ledelsen','Gjøre kommunikasjonen anonym','Nærhet og emosjonell kommunikasjon.']],
+m5:[
+ ['En hotellkjede vil fylle rommene i lavsesongen. Hva er et godt kommunikasjonsmål?','Øke bookinger fra lokale bedrifter med 20 prosent i november','Bli mer synlig','Lage flere innlegg','Få et bedre omdømme','Mål bør være konkrete og målbare.'],
+ ['Hvorfor bør budskapsstil velges etter målgruppe?','Fordi ulike målgrupper reagerer på ulike typer budskap','Fordi stilen alltid er den samme','Fordi stilen bestemmer budsjettet','Fordi målgruppen velges etter stilen','Funksjonell for bedriftskunder, symbolsk for ferierende.'],
+ ['En bedriftskunde skal booke konferanse. Hvilken budskapsstil passer best?','Funksjonell: kapasitet, utstyr, pris og beliggenhet','Symbolsk: ro og velvære','Bransjeorientert alene','Ingen budskapsstil','Bedriftskunder vurderer nytte.'],
+ ['Hvordan henger visjon og omdømme sammen i strategiarbeidet?','Strategien skal lukke gapet mellom det virksomheten vil være, og hvordan den oppfattes','De har ingen sammenheng','Omdømmet bestemmer visjonen','Visjonen er det samme som omdømmet','Det strategiske problemet.']],
+m6:[
+ ['Hvorfor kan en interessent bevege seg i Salience-modellen?','Fordi makt, legitimitet og hast kan endre seg over tid','Fordi modellen er tilfeldig','Fordi interessenter alltid er like','Fordi bare eiere teller','En dormant interessent kan bli definitive når et krav haster.'],
+ ['En sovende interessent får et presserende krav. Hva skjer i Salience-modellen?','Den kan bli dangerous eller definitive, avhengig av legitimitet','Den blir non-stakeholder','Ingenting endres','Den mister makt','Makt pluss hast gir dangerous.'],
+ ['Hvorfor kombineres gjerne Salience-modellen med makt-interesse-matrisen?','Salience prioriterer hvem som krever oppmerksomhet nå, matrisen viser hvordan hver gruppe bør følges opp','De er det samme','Matrisen erstatter Salience','De brukes bare i krise','De utfyller hverandre.'],
+ ['Hvilken strategi passer overfor key players?','Dialog og tett involvering','Minimal innsats','Bare informasjon','Overtalelse uten dialog','Høy makt og høy interesse.']],
+m7:[
+ ['En hotellkjede har sterkt omdømme. Hvordan påvirker det rekrutteringen?','Det gjør det lettere å tiltrekke og beholde ansatte','Det har ingen betydning','Det gir lavere lønn','Det gjør rekruttering vanskeligere','Omdømme påvirker HRM.'],
+ ['Hvorfor er monolittisk identitet risikabel ved en krise på ett hotell?','Krisen smitter lett over på hele kjeden fordi alt har samme navn','Fordi den gjør krisen mindre','Fordi gjestene ikke kjenner navnet','Fordi den er dyr','Ett navn, felles omdømme.'],
+ ['Hva er en fordel ved merkevarebasert identitet?','En krise i ett merke rammer i mindre grad de andre','Alle merker deler omdømme','Det er billigst','Det gir sterkest felles kultur','Frittstående merkevarer.'],
+ ['Hvilket element i VCI-modellen endres med intern opplæring og involvering?','Culture','Image','Vision','Ingen','Kulturen er de ansatte.']],
+m8:[
+ ['Hvorfor bør ansatte få viktig informasjon før mediene?','Fordi de ellers mister tillit, og ryktebørsen overtar','Fordi mediene ikke er viktige','Fordi det er lovpålagt i alle saker','Fordi ansatte ikke leser aviser','Ansatte er primære interessenter.'],
+ ['Hva er en fordel med uformell kommunikasjon?','Den kan bygge relasjoner og fange opp stemninger raskt','Den er alltid korrekt','Den erstatter ledelse','Den kan styres fullt ut','Formell og uformell utfyller hverandre.'],
+ ['Hvilken spenning i IK berøres når ledere bruker tid på samtaler i stedet for bare intranett?','Ledelseskommunikasjon mot CICS','Oppover mot nedover','Formell mot uformell','Stemme mot taushet','Personlig kommunikasjon mot systemer.'],
+ ['Hva bør en leder gjøre når en ansatt sier fra om en feil?','Takke, ta det på alvor og vise hva som blir gjort','Be personen holde det for seg selv','Finne en skyldig','Vente til flere klager','Slik bygges psykologisk trygghet.']],
+m9:[
+ ['Hvorfor bør tall og fakta (logos) kombineres med følelser (patos) i krisekommunikasjon?','Fakta gir informasjon, mens empati viser at virksomheten forstår de rammede','Fordi tall alltid er nok','Fordi følelser alltid er nok','Fordi det gir lengre tekst','Appellformene virker sammen.'],
+ ['En talsperson med lav troverdighet sier de riktige tingene. Hva er problemet?','Etos mangler, så budskapet blir ikke trodd','Logos mangler','Patos er for sterk','Det er ikke noe problem','Avsenderen betyr noe.'],
+ ['Hvordan har sosiale medier endret agenda-setting?','Også publikum og virksomheter kan sette dagsorden, ikke bare redaksjonene','Mediene setter all dagsorden alene','Agenda-setting finnes ikke lenger','Bare myndighetene setter dagsorden','Maktbalansen er endret.'],
+ ['Hva kan storytelling gjøre for en restaurant?','Skape emosjonell tilknytning og vise identitet gjennom ekte fortellinger','Erstatte god mat','Skjule dårlige anmeldelser','Gjøre prisene lavere','Storytelling og identitetskonstruksjon.']],
+m10:[
+ ['Hvorfor er det best å gå inn i en sak i Emergence-fasen?','Da er handlingsrommet størst og virksomheten kan påvirke utviklingen','Fordi ingen bryr seg da','Fordi loven allerede er vedtatt','Fordi det er billigst å vente','Jo tidligere, jo mer innflytelse.'],
+ ['Hvordan kan en issue bli en krise?','Hvis forventningsgapet ikke håndteres og saken eskalerer til en akutt situasjon','Den kan ikke det','Bare hvis loven endres','Bare hvis mediene skriver om den','Latent, aktiv, intens, krise.'],
+ ['Hvilken analyse viser hvem som er mot og hvem som er for virksomheten i en sak?','Position-Importance Matrix','DESTEP','SWOT','Issue Life-Cycle','Holdning og viktighet.'],
+ ['Hvilken analyse fanger opp trender i omgivelsene?','DESTEP','Position-Importance Matrix','Salience-modellen','CI-mix','Omgivelsesanalyse.'],
+ ['Hvorfor er påvirkning (advocacy) risikabelt hvis egen praksis er svak?','Fordi kampanjer for egne interesser virker utroverdige når praksis ikke henger med','Fordi lobbyvirksomhet er forbudt','Fordi det alltid er dyrt','Fordi ingen leser kampanjer','Troverdigheten krever samsvar.']],
+m11:[
+ ['Hvorfor bør en virksomhet si når neste oppdatering kommer?','Det gir forutsigbarhet og reduserer spekulasjoner','Det er lovpålagt','Det gjør krisen kortere','Det erstatter fakta','God krisekommunikasjon gir struktur.'],
+ ['Hva er risikoen ved å velge benekting?','Hvis sannheten kommer frem, forsterkes krisen og tilliten forsvinner','Ingen risiko','At krisen blir mindre','At mediene mister interessen','Benekting bør bare brukes når påstanden er feil.'],
+ ['Når kan benekting være riktig strategi?','Når påstanden faktisk er feil og virksomheten kan dokumentere det','Alltid','Når virksomheten har skyld','Når det haster','Benekting må være sann.'],
+ ['Hvorfor er det viktig å skille mellom informasjon og mening i en krise?','Fordi folk trenger praktiske beskjeder, men også en forståelse av hva som skjedde og hvem som har ansvar','Fordi det er to ord for det samme','Fordi mening er unødvendig','Fordi informasjon er unødvendig','Begge må håndteres.']],
+m12:[
+ ['Hvorfor er timing viktig i endringskommunikasjon?','Fordi informasjon som kommer for sent eller for tidlig skaper usikkerhet og rykter','Fordi ansatte bare leser e-post på mandager','Fordi det er lovpålagt','Fordi timing ikke betyr noe','Ett av de gjennomgående hensynene.'],
+ ['Hvorfor bør budskapene være konsistente gjennom en endring?','Motstridende budskap skaper forvirring og mistillit','Fordi de er lettere å skrive','Fordi ledere ikke kan endre mening','Fordi det sparer tid','Konsistens er et gjennomgående hensyn.'],
+ ['Hvordan kan Lewin og Kotter kobles?','Kotters steg 1–4 tilsvarer oppvarming, 5–6 endring og 7–8 nedfrysing','De handler om ulike ting','Kotter er bare for kriser','Lewin har åtte steg','Modellene utfyller hverandre.'],
+ ['Hvorfor bør Iceberg-modellen brukes før valg av budskapsstrategi?','Fordi analysen under vannlinjen viser hvilken strategi og taktikk som passer','Fordi Iceberg er en budskapsstrategi','Fordi den bestemmer budsjettet','Fordi den erstatter Kotter','Analyse styrer valg.'],
+ ['Hva er endringstretthet?','At ansatte blir slitne av for mange eller for lange endringsprosesser','At endringen går for fort','At ledelsen blir lei','At kundene ikke merker endringen','En risiko ved mye involvering.']],
+m13:[
+ ['Hvorfor er grønnvasking en omdømmerisiko?','Når avstanden mellom ord og handling avsløres, svekkes troverdigheten kraftig','Fordi miljø ikke er viktig','Fordi det er dyrt','Fordi gjestene ikke bryr seg','Ord må samsvare med handling.'],
+ ['Hvordan henger CSR og CI-mix sammen?','Samfunnsansvar må vises i atferd, ikke bare i kommunikasjon og symboler','De har ingen sammenheng','CSR er bare symbolisme','CI-mix gjelder bare logo','Samsvar mellom ord og handling.'],
+ ['Hva er forskjellen på en veldedig og en strategisk tilnærming til CSR?','Veldedig gir støtte uten kobling til kjernevirksomheten, strategisk knytter ansvaret til forretningen','Det er ingen forskjell','Veldedig er alltid bedre','Strategisk handler bare om markedsføring','To av fem tilnærminger.'],
+ ['Hva kjennetegner en promoterende tilnærming til CSR?','Samfunnsansvar brukes først og fremst i markedsføringen','Virksomheten gjør minst mulig','Virksomheten endrer bransjen','Virksomheten involverer lokalsamfunnet','Risiko for grønnvasking.']]
+};
+M.forEach(m=>m.qs.push(...(XQ4[m.id]||[])));
+
+/* ============================== FJERDE RUNDE CASER ============================== */
+CASES.push(
+{id:'c19',tema:'Krisekommunikasjon og transport',title:'Forsinkelsen på flyplassen',
+ intro:'Flyselskapet Nordvinge har innstilt 30 avganger på grunn av en IT-feil. 4 000 reisende står på Gardermoen, og appen viser feil informasjon. Klokken er 07.00 en fredag før høstferien.',
+ models:'Krisetypologi, medierikhet, informasjon og mening, PARC',
+ steps:[
+ {t:'Hva er første prioritet?',o:[
+  ['Riktig informasjon i appen, på skjermene og fra personalet om hva de reisende skal gjøre',10,'Håndtere informasjon først: hva har skjedd, og hva skal folk gjøre. Én tydelig kilde.'],
+  ['En pressemelding om at selskapet har høy punktlighet',-8,'Å styrke posisjonen hjelper ikke reisende som står fast.'],
+  ['Vente til feilen er rettet',-10,'Taushet fylles av rykter og frustrasjon.']]},
+ {t:'Hva slags krise er dette?',o:[
+  ['Uhell: intern og utilsiktet teknisk svikt',8,'Teknisk svikt er uhell, men selskapet har ansvar for følgene.'],
+  ['Aggresjon',-4,'Ingenting tyder på angrep utenfra.'],
+  ['Faux pas',-4,'Faux pas er uttalelser, ikke tekniske feil.']]},
+ {t:'Hvordan bruker dere sosiale medier?',o:[
+  ['Faste oppdateringer, rask og personlig hjelp i kommentarene, og lenke til ombooking og rettigheter',10,'PARC og rask kundeservice. Ressursfull og troverdig.'],
+  ['Én post og så ingen svar',-6,'Ubesvarte henvendelser svekker tilliten.'],
+  ['Stenger kommentarfeltet',-8,'Frustrasjonen flytter seg til andre arenaer.']]},
+ {t:'Familier med barn trenger hotell. Hva gjør dere?',o:[
+  ['Ansatte går rundt i terminalen og hjelper direkte, og dere dekker hotell etter regelverket',8,'Rik kanal der usikkerheten er størst, og handling som viser ansvar.'],
+  ['Henviser til nettsiden',-4,'For mager kanal for folk i en presset situasjon.'],
+  ['Sier at det ikke er selskapets ansvar',-10,'Både feil og skadelig for omdømmet.']]},
+ {t:'Hvem uttaler seg til mediene?',o:[
+  ['Kommunikasjonsdirektøren, med beklagelse, fakta og hva de reisende har krav på',8,'Etos, patos og logos. En tydelig talsperson gir konsistente budskap.'],
+  ['IT-sjefen med tekniske detaljer',-3,'Fakta, men uten svar på det de reisende lurer på.'],
+  ['Ingen',-8,'Andre setter rammen for saken.']]},
+ {t:'Feilen er rettet. Hva gjør dere?',o:[
+  ['Sender en personlig beklagelse til alle berørte med informasjon om kompensasjon og hva som er endret',8,'Etter krisen: gjenoppbygging og læring.'],
+  ['Ingenting mer',-5,'De rammede sitter igjen uten svar.'],
+  ['Rabattkampanje til alle kunder',-2,'Treffer ikke de som faktisk ble rammet.']]}
+ ]},
+{id:'c20',tema:'Internkommunikasjon og endring',title:'Nytt turnussystem på sykehjemmet',
+ intro:'Kommunen innfører en digital turnusapp på fire sykehjem. Mange ansatte er over 55 år og har lite erfaring med apper. Tillitsvalgte frykter at appen blir brukt til overvåkning.',
+ models:'TAM, medarbeiderstemme, budskapsstrategier, Iceberg',
+ steps:[
+ {t:'Hva undersøker du først?',o:[
+  ['Hva de ansatte trenger for å oppleve appen som nyttig og lett, og hva de frykter',10,'Publikumsanalyse og TAM: opplevd nytte og brukervennlighet.'],
+  ['Hvor fort appen kan innføres',-4,'Fart uten forståelse gir motstand.'],
+  ['Hvilken farge appen skal ha',-6,'Symbolsk detalj som ikke løser problemet.']]},
+ {t:'Tillitsvalgte frykter overvåkning. Hva gjør du?',o:[
+  ['Viser åpent hvilke data appen samler, og lager regler for bruken sammen med dem',10,'Transparens og involvering. Personvern er et legitimt hensyn.'],
+  ['Sier at det ikke er noe å bekymre seg for',-6,'Uten dokumentasjon blir det ikke trodd.'],
+  ['Innfører appen uten å svare',-10,'Withhold & Uphold gir rykter og motstand.']]},
+ {t:'Hvordan sørger dere for opplæring?',o:[
+  ['Små grupper med en kollega som «superbruker» på hvert sykehjem',10,'Rik kanal, nærhet og hjelp fra noen de stoler på.'],
+  ['En video på intranettet',-3,'Mager kanal for folk som er usikre.'],
+  ['En PDF-manual',-5,'Lite egnet for dem med minst erfaring.']]},
+ {t:'En ansatt sier i et møte at appen er tungvint ved vaktbytter.',o:[
+  ['Takker, noterer det og gir tilbakemelding til leverandøren',8,'Medarbeiderstemme og sikkerhetsventil gir bedre løsning.'],
+  ['Sier at alle må venne seg til det',-6,'Taushet erstatter tilbakemelding.'],
+  ['Ignorerer det',-5,'Problemet forblir.']]},
+ {t:'Etter tre måneder bruker de fleste appen. Hva nå?',o:[
+  ['Deler erfaringer på tvers av sykehjemmene og oppdaterer rutinene',8,'Forankring og læring.'],
+  ['Fjerner papirlistene uten varsel',-5,'De siste som henger etter, blir stående uten hjelp.'],
+  ['Ingenting',-3,'Ingen forankring.']]}
+ ]},
+{id:'c21',tema:'Issues management og sosiale medier',title:'Tipskulturen',
+ intro:'En TikTok-video om at restaurantkjeden Smak beholder deler av tipsen til de ansatte går viralt. Fagforeningen tar opp saken, og et politisk parti vil lovregulere tips.',
+ models:'Issue Life-Cycle, Position-Importance, responsstrategier, CSR',
+ steps:[
+ {t:'Hvor er saken i livssyklusen?',o:[
+  ['Debate, på vei mot Codification',8,'Offentlig debatt og politisk interesse for regulering.'],
+  ['Emergence',-5,'Saken er langt forbi den latente fasen.'],
+  ['Enforcement',-4,'Ingen regler er vedtatt.']]},
+ {t:'Hva sjekker du først internt?',o:[
+  ['Hvordan tipsen faktisk fordeles, og om praksis er rimelig og åpen',10,'Før kommunikasjon: finn ut om det er gap mellom påstand og praksis.'],
+  ['Hvem som laget videoen',-6,'Å jakte på avsenderen forsterker saken.'],
+  ['Hvor mange visninger videoen har',-2,'Nyttig, men ikke det viktigste.']]},
+ {t:'Praksisen er uklar og ulik mellom restaurantene. Hvilken strategi?',o:[
+  ['Brobygging: dialog med ansatte og fagforeningen og en ny, åpen ordning',10,'Saken er intens. Reell dialog og endret praksis beskytter omdømmet.'],
+  ['Påvirkning: lobby mot regulering',-6,'Svak praksis gjør påvirkning utroverdig.'],
+  ['Buffer',-10,'Taushet i en intens sak gjør det verre.']]},
+ {t:'Hvordan svarer dere i sosiale medier?',o:[
+  ['Erkjenner at ordningen har vært uklar, forteller hva som endres, og når',8,'Autentisk og troverdig.'],
+  ['Forklarer at tips er frivillig',-4,'Svarer ikke på kritikken.'],
+  ['Svarer ikke',-8,'Crescendo-effekten fortsetter.']]},
+ {t:'Hvordan kan kjeden ta en lederposisjon nå?',o:[
+  ['Publiserer den nye ordningen åpent og inviterer bransjen til å bruke den',8,'Tankelederskap etter at eget hus er i orden.'],
+  ['Kampanje om at Smak er bransjens beste arbeidsgiver',-6,'Påstand uten dekning.'],
+  ['Ingenting mer',0,'Saken lukkes, men muligheten går tapt.']]}
+ ]},
+{id:'c22',tema:'CSR og grønnvasking',title:'Den «klimanøytrale» festivalen',
+ intro:'Musikkfestivalen Fjordrock markedsfører seg som «klimanøytral». En journalist avslører at det bare gjelder strømmen på scenen, ikke reiser, mat eller avfall.',
+ models:'Grønnvasking, trippel bunnlinje, CSR-strategier, responsstrategier',
+ steps:[
+ {t:'Hva er det journalisten har avdekket?',o:[
+  ['Grønnvasking: kommunikasjonen er grønnere enn praksis',10,'Avstand mellom ord og handling.'],
+  ['Et uhell',-4,'Påstanden var bevisst formulert.'],
+  ['En misforståelse fra journalisten',-6,'Påstanden dekket ikke virkeligheten.']]},
+ {t:'Hvilken responsstrategi velger dere?',o:[
+  ['Aksept: erkjenner at påstanden var misvisende og fjerner den',10,'Ansvaret er tydelig.'],
+  ['Distansere: peker på at alle festivaler gjør det samme',-6,'Svekker troverdigheten.'],
+  ['Benekte',-10,'Påstanden er dokumentert feil.']]},
+ {t:'Hvilken dokumentasjon trengs fremover?',o:[
+  ['Hele klimaregnskapet, med reiser, mat og avfall, verifisert av tredjepart',10,'Uavhengig og etterprøvbar dokumentasjon.'],
+  ['Bilder fra festivalen',-6,'Glansbilder dokumenterer ingenting.'],
+  ['Et nytt slagord',-8,'Ny grønnvasking.']]},
+ {t:'Hvordan kan publikum bli en del av løsningen?',o:[
+  ['Involvering: publikum og leverandører lager tiltak sammen med festivalen, for eksempel felles transport og pant',8,'Reell medvirkning.'],
+  ['Informasjon: en side på nettet om miljø',2,'Greit, men enveis.'],
+  ['Ingenting',-5,'Muligheten går tapt.']]},
+ {t:'Hvordan omtaler dere klimaarbeidet neste år?',o:[
+  ['Ærlig om hva som er kuttet, hva som gjenstår, og hva det koster',8,'Nyansert kommunikasjon om avveiningene gir troverdighet.'],
+  ['«Grønnere enn noen gang»',-4,'Vag påstand uten tall.'],
+  ['Unngår temaet helt',-2,'Trygt, men gir ingen tillit.']]}
+ ]},
+{id:'c23',tema:'Digital strategi og sosiale medier',title:'Treningssenteret som mister medlemmer',
+ intro:'Treningskjeden Puls har mistet 15 prosent av medlemmene på et år. Anmeldelser nevner fulle saler og at ingen svarer på henvendelser. Ledelsen vil kjøre en stor reklamekampanje.',
+ models:'De sju stegene, review mining, POEM, PARC',
+ steps:[
+ {t:'Hva gjør du før kampanjen?',o:[
+  ['Analyserer anmeldelser og henvendelser for å finne årsaken',10,'Lytting og review mining viser hvor problemet ligger.'],
+  ['Lager kampanjen med en gang',-6,'Kampanjen løser ikke årsaken.'],
+  ['Senker prisen',-2,'Kan hjelpe kort, men løser ikke service-problemet.']]},
+ {t:'Analysen viser at problemet er service, ikke synlighet. Hva betyr det?',o:[
+  ['At tjenesten og kundeservicen må forbedres før mer kommunikasjon',10,'Kommunikasjon kan ikke lukke et gap som skyldes praksis.'],
+  ['At reklamen må bli større',-8,'Mer synlighet forsterker misnøyen.'],
+  ['At anmeldelsene ikke er viktige',-6,'De viser hva medlemmene opplever.']]},
+ {t:'Hvordan svarer dere på henvendelser fremover?',o:[
+  ['Faste svartider og personlige svar i alle kanaler',10,'Rask kundeservice og PARC.'],
+  ['En chatbot som svarer på alt',-3,'Fungerer for enkle spørsmål, ikke klager.'],
+  ['Bare på e-post',-4,'Medlemmene bruker andre kanaler.']]},
+ {t:'Hvordan bygger dere medlemsfellesskapet?',o:[
+  ['Lar medlemmene dele treningsmål og fremgang, og lar instruktørene svare og delta',8,'Virtuelle fellesskap og toveisdialog.'],
+  ['Bare kampanjer med rabatt',-4,'Broadcasting bygger ikke relasjon.'],
+  ['Ingen sosiale medier',-6,'Samtalen skjer uansett.']]},
+ {t:'Hvordan måler dere effekten?',o:[
+  ['Følger medlemstall, svartider og stemningen i anmeldelsene mot målene',8,'Steg 7: evaluering mot mål.'],
+  ['Teller likes',-4,'Sier lite om lojalitet.'],
+  ['Ingen måling',-6,'Dere vet ikke hva som virket.']]}
+ ]});
+Object.assign(CMODS,{c19:['m11','m3'],c20:['m1','m8','m12'],c21:['m10','m13'],c22:['m13','m11'],c23:['m5','m3']});
+
 /* ================================ MOTOR ================================ */
 const LS='bds110-omdomme-v1';
 let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{}};
@@ -1757,10 +1970,12 @@ function vFlash(){const c=V.queue[0];
 const repColor=r=>r>=70?'var(--good)':r>=45?'var(--brass)':'var(--bad)';
 const repNum=r=>(r/10).toFixed(1).replace('.',',');
 const caseStars=r=>r>=85?3:r>=70?2:r>=55?1:0;
+const cTopic=c=>M.find(m=>m.id===CMODS[c.id][0]).name;
 function vCaseHub(){
  app.innerHTML=`<button class="back" data-act="home">← Til forsiden</button>
- <section class="hero"><span class="eyebrow">Modus 2</span><h1>Case-simulator</h1><p class="lead">Du starter med gjestescore 5,0. Hvert valg flytter scoren, og du får en faglig begrunnelse etterpå. 8,5 eller høyere gir tre stjerner.</p></section>
- <section class="grid g2">${CASES.map(c=>{const b=S.cases[c.id];return`<article class="card"><span class="pill">${esc(c.tema)}</span><h2>${esc(c.title)}</h2><p class="small">${esc(c.intro)}</p><p class="small"><b>Modeller:</b> ${esc(c.models)}</p>
+ <section class="hero"><span class="eyebrow">Modus 2</span><h1>Case-simulator</h1><p class="lead">Du starter med gjestescore 5,0. Hvert valg flytter scoren, og du får en faglig begrunnelse etterpå. 8,5 eller høyere gir tre stjerner.</p>
+ <div class="tabs" role="group" aria-label="Filtrer på tema">${['Alle',...M.filter(m=>CASES.some(c=>cTopic(c)===m.name)).map(m=>m.name)].map(t=>`<button class="tab" data-act="cfilter" data-t="${esc(t)}" aria-selected="${(V.f||'Alle')===t}">${esc(t)}</button>`).join('')}</div></section>
+ <section class="grid g2">${CASES.filter(c=>!V.f||V.f==='Alle'||cTopic(c)===V.f).map(c=>{const b=S.cases[c.id];return`<article class="card"><span class="pill">${esc(c.tema)}</span><h2>${esc(c.title)}</h2><p class="small">${esc(c.intro)}</p><p class="small"><b>Modeller:</b> ${esc(c.models)}</p>
  <div class="row">${starStr(b!=null?caseStars(b):0)}<span class="small">${b!=null?'Beste gjestescore: '+repNum(b):'Ikke spilt'}</span></div>
  <div class="row"><button class="btn" data-act="case" data-id="${c.id}">${b!=null?'Spill igjen':'Start caset'}</button></div></article>`}).join('')}</section>`}
 function startCase(id){const c=CASES.find(x=>x.id===id);go({name:'case',c,i:0,rep:50,picked:null,order:c.steps.map(s=>shuffle(s.o.map((_,i)=>i))),xp:0,best:0})}
@@ -1931,6 +2146,7 @@ const A={
  hint:()=>{const q=V.round[V.i];V.hint=shuffle(q.opts.map((_,i)=>i).filter(i=>i!==q.c)).slice(0,2);render()},
  learn:d=>startLearn(d.id),lnext:()=>{V.p++;render();window.scrollTo(0,0)},lprev:()=>{V.p--;render();window.scrollTo(0,0)},
  ldone:()=>{addXp(10);startQuiz(V.m.id)},
+ cfilter:d=>{V.f=d.t;render()},
  gamehub:()=>go({name:'gamehub'}),book:()=>go({name:'book'}),match:startMatch,sort:startSort,
  ml:d=>matchSel('sl',+d.i),mr:d=>matchSel('sr',+d.i),spick:d=>sortPick(+d.i),
  snext:()=>{if(V.lives>0)sortNext();else gameEnd()},
