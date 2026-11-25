@@ -231,6 +231,29 @@ body.feedmode{overflow:hidden}
 .fsheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
 @media (min-width:760px){.fsheet{align-items:center;justify-content:center}.fsheet-in{max-width:660px;border-radius:20px;max-height:82%}.frail{right:calc(50% - 360px)}}
 @media (prefers-reduced-motion:reduce){.fswipe,.fburst{animation:none}.fscroll{scroll-behavior:auto}}
+.badge{flex:none;display:block}
+.badge.ssl{filter:drop-shadow(0 0 4px rgba(160,140,255,.8))}
+.rankcard{display:flex;align-items:center;gap:16px;padding:6px 0 4px}
+.rankcard>div{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.rankname{font-family:var(--display);font-size:1.35rem}
+.xpbar.wide{width:100%;max-width:320px}
+.ranklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px}
+.rankrow{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:10px;border:1px solid var(--line)}
+.rankrow .small{margin-left:auto;font-variant-numeric:tabular-nums}
+.rankrow.me{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
+.poop{position:fixed;z-index:60;pointer-events:none;font-size:28px;line-height:1;transform:translate(-50%,-50%);animation:poop .9s cubic-bezier(.2,.7,.3,1) both}
+@keyframes poop{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}18%{opacity:1;transform:translate(-50%,-70%) scale(1.15)}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% - 95px)) scale(.85) rotate(var(--rot));opacity:0}}
+.rot{position:fixed;top:24%;z-index:58;pointer-events:none;transform:translateX(-50%) rotate(var(--r));font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,6vw,2.4rem);white-space:nowrap;
+ padding:6px 16px;border-radius:12px;border:3px solid #111;box-shadow:4px 4px 0 #111;animation:rotpop 1.6s cubic-bezier(.2,.9,.3,1.2) both}
+.rot.ok{background:#b7ff4a;color:#111}.rot.no{background:#ff5a5a;color:#fff}
+@keyframes rotpop{0%{transform:translateX(-50%) rotate(var(--r)) scale(.2);opacity:0}15%{transform:translateX(-50%) rotate(var(--r)) scale(1.15);opacity:1}25%{transform:translateX(-50%) rotate(var(--r)) scale(1)}80%{opacity:1}100%{transform:translateX(-50%) translateY(-30px) rotate(var(--r)) scale(1);opacity:0}}
+.scare{position:fixed;inset:0;z-index:80;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;animation:scareshake .4s linear}
+.scare svg{width:min(80vw,520px);height:auto;animation:scarezoom .18s cubic-bezier(.2,1.4,.4,1) both}
+.scare p{font-family:var(--display);font-weight:800;font-size:clamp(2rem,10vw,4.5rem);margin:0;color:#ff2a2a;text-align:center;letter-spacing:.02em}
+.scare .small{color:#aaa}
+@keyframes scarezoom{from{transform:scale(.15)}to{transform:scale(1)}}
+@keyframes scareshake{0%,100%{transform:none}20%{transform:translate(-10px,6px)}40%{transform:translate(9px,-7px)}60%{transform:translate(-7px,-5px)}80%{transform:translate(6px,8px)}}
+@media (prefers-reduced-motion:reduce){.rot{animation:none;display:none}}
 .toast{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:40;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .note{font-size:.86rem;color:var(--muted);border-left:3px solid var(--line);padding-left:12px;max-width:70ch}
@@ -1957,15 +1980,20 @@ const LS='bds110-omdomme-v1';
 let S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{},saved:[],mem:{}};
 try{const r=JSON.parse(localStorage.getItem(LS));if(r)S=Object.assign(S,r)}catch(e){}
 const save=()=>{try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}};
-const RANKS=[[0,'Resepsjonsvikar'],[150,'Kommunikasjonsmedarbeider'],[400,'Kommunikasjonsrådgiver'],[800,'Seniorrådgiver'],[1400,'Kommunikasjonssjef'],[2200,'Kommunikasjonsdirektør'],[3200,'Omdømmelegende']];
+const TIERS=[['Bronze','#b9773f','#6e3f18'],['Silver','#c3ccd3','#6b7781'],['Gold','#e5b63c','#8a6410'],['Platinum','#5cd0d6','#1e7378'],['Diamond','#5585f2','#1f3f94'],['Champion','#a064ea','#55279a'],['Grand Champion','#e5484e','#871b20'],['Supersonic Legend','#ffffff','#7a5cff']];
+const RANKS=[];[[0,50,100],[160,230,310],[400,500,610],[730,860,1000],[1150,1310,1480],[1660,1850,2050],[2260,2480,2710]].forEach((xs,t)=>xs.forEach((x,d)=>RANKS.push([x,TIERS[t][0]+' '+['I','II','III'][d],t,d+1])));RANKS.push([3000,'Supersonic Legend',7,0]);
+function badge(i,sz){const r=RANKS[i],t=TIERS[r[2]],d=r[3];sz=sz||28;
+ if(r[2]===7)return`<svg class="badge ssl" width="${sz}" height="${sz*28/24}" viewBox="0 0 24 28" aria-hidden="true"><defs><linearGradient id="sslg${sz}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ff3ff"/><stop offset=".5" stop-color="#ffffff"/><stop offset="1" stop-color="#c3a6ff"/></linearGradient></defs><path d="M12 1l3.2 7.6 8.1.7-6.2 5.3 1.9 8L12 18.3 5 22.6l1.9-8L.7 9.3l8.1-.7z" fill="url(#sslg${sz})" stroke="${t[2]}" stroke-width="1.2" stroke-linejoin="round"/><circle cx="12" cy="12.5" r="2.4" fill="${t[2]}"/></svg>`;
+ const pips=Array.from({length:d},(_,k)=>`<rect x="${12-(d*5-1)/2+k*5}" y="17.5" width="4" height="3" rx="1" fill="#fff" opacity=".95"/>`).join('');
+ return`<svg class="badge" width="${sz}" height="${sz*28/24}" viewBox="0 0 24 28" aria-hidden="true"><path d="M12 1.2 21.8 5v8.6c0 6-4.3 10.4-9.8 13.2C6.5 24 2.2 19.6 2.2 13.6V5z" fill="${t[1]}" stroke="${t[2]}" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 8.5 12 12.5l5-4" fill="none" stroke="${t[2]}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>${pips}</svg>`}
 const $=id=>document.getElementById(id), app=$('app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const starStr=n=>'<span class="stars" aria-label="'+n+' av 3 stjerner">'+'★'.repeat(n)+'<span class="off">'+'★'.repeat(3-n)+'</span></span>';
 function rank(){let i=0;RANKS.forEach((r,j)=>{if(S.xp>=r[0])i=j});const nx=RANKS[i+1];return{i,name:RANKS[i][1],nx,pct:nx?(S.xp-RANKS[i][0])/(nx[0]-RANKS[i][0])*100:100}}
-function renderTop(){const r=rank();$('rank').innerHTML='<b>'+r.name+'</b><div class="xpbar" title="'+(r.nx?'Neste rang: '+r.nx[1]+' ved '+r.nx[0]+' XP':'Høyeste rang')+'"><span style="width:'+r.pct+'%"></span></div><span class="xpnum">'+S.xp+' XP</span>'}
+function renderTop(){const r=rank();$('rank').innerHTML=badge(r.i,22)+'<b>'+r.name+'</b><div class="xpbar" title="'+(r.nx?'Neste rang: '+r.nx[1]+' ved '+r.nx[0]+' XP':'Høyeste rang')+'"><span style="width:'+r.pct+'%"></span></div><span class="xpnum">'+S.xp+' XP</span>'}
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
-function addXp(n){if(n<=0)return;const b=rank().i;S.xp+=n;save();renderTop();if(rank().i>b)toast('Forfremmet til '+rank().name)}
+function addXp(n){if(n<=0)return;const b=rank().i;S.xp+=n;save();renderTop();if(rank().i>b)toast('Rank up! Du er nå '+rank().name)}
 let V={name:'home'},timer=null;
 function go(v){if(timer){clearInterval(timer);timer=null}if(V&&V.io)V.io.disconnect();V=v;document.body.classList.toggle('feedmode',v.name==='feed');render();window.scrollTo(0,0)}
 function render(){({home:vHome,quizhub:vQuizHub,quiz:vQuiz,quizend:vQuizEnd,flash:vFlash,casehub:vCaseHub,case:vCase,caseend:vCaseEnd,boss:vBoss,learn:vLearn,book:vBook,gamehub:vGameHub,feed:vFeed,match:vMatch,sort:vSort,gameend:vGameEnd})[V.name]()}
@@ -1988,14 +2016,15 @@ function vHome(){const t=totals();
   <button class="card mode" data-act="gamehub"><span class="eyebrow">Modus 4</span><h2>Minispill</h2><small>Begrepspar og Modellsortering: to rolige spill uten tidspress som pugger begreper og modeller for deg.</small><span class="go">Spill →</span></button>
  </section>
  <section class="card"><h2>Fagboka</h2><p class="small">Hele pensum samlet: alle modulene, begrepene og modellene forklart, med tabeller og huskeregler. Du kan søke i den.</p><div class="row"><button class="btn" data-act="book">Åpne fagboka</button></div></section>
- <section class="card"><h3>Din fremgang</h3><div class="stats">
+ <section class="card"><h3>Din fremgang</h3>${(()=>{const r=rank();return`<div class="rankcard">${badge(r.i,56)}<div><b class="rankname">${r.name}</b><span class="small">${r.nx?`${r.nx[0]-S.xp} XP til ${r.nx[1]}`:'Du har nådd toppen. Ingen kan slå deg nå.'}</span><div class="xpbar wide"><span style="width:${r.pct}%"></span></div></div></div>`})()}<div class="stats">
   <div class="stat"><b>${t.st} / ${M.length*3}</b><span>stjerner i quiz</span></div>
   <div class="stat"><b>${t.cs} / ${CASES.length}</b><span>caser løst</span></div>
   <div class="stat"><b>${S.boss?S.boss.grade:'–'}</b><span>beste karakter mot sensor</span></div>
   <div class="stat"><b>${(S.hi.match||0)+(S.hi.sort||0)}</b><span>rekordpoeng i minispill</span></div>
   <div class="stat"><b>${S.xp}</b><span>XP</span></div></div>
   <p class="small">Fremgangen lagres i denne nettleseren. Eksamen er 30. november 2026, kl. 09.00–13.00.</p>
-  <div class="row"><button class="btn ghost sm" data-act="reset">Nullstill fremgang</button></div></section>`}
+  <div class="row"><button class="btn ghost sm" data-act="poop" aria-pressed="${S.poop!==false}">Bæsj-animasjoner: ${S.poop!==false?'på':'av'}</button><button class="btn ghost sm" data-act="brainrot" aria-pressed="${S.rot!==false}">Brainrot: ${S.rot!==false?'på':'av'}</button><button class="btn ghost sm" data-act="scares" aria-pressed="${S.scare!==false}">Jumpscares: ${S.scare!==false?'på':'av'}</button><button class="btn ghost sm" data-act="scarenow">Test en jumpscare</button><button class="btn ghost sm" data-act="ranks">Se alle ranker</button><button class="btn ghost sm" data-act="reset">Nullstill fremgang</button></div>
+  ${V.showRanks?`<div class="ranklist">${RANKS.map((r,i)=>`<div class="rankrow ${i===rank().i?'me':''}">${badge(i,26)}<span>${r[1]}</span><span class="small">${r[0]} XP</span></div>`).join('')}</div>`:''}</section>`}
 
 /* ---------- Quiz ---------- */
 const allTerms=()=>M.flatMap(m=>m.terms.map(t=>({t:t[0],d:t[1],m:m.id})));
@@ -2040,7 +2069,7 @@ function vQuiz(){const q=V.round[V.i],done=V.picked!=null;
  ${expBox([q.mod.id],q.q+' '+q.opts[q.c]+' '+q.why+' '+(q.quote||''))}
  <div class="row actbar"><button class="btn" data-act="next" id="nextbtn">${V.i+1<V.round.length?'Neste spørsmål':'Se resultat'}</button><span class="small kbdhint">Enter går videre</span></div>`:`<div class="row">${V.hint?'':'<button class="btn ghost sm" data-act="hint">Hint: fjern to svar</button>'}<span class="small kbdhint">Tastene 1–4 velger svar</span></div>`}</section>`;
  if(done)$('nextbtn').focus({preventScroll:true});showFb()}
-function pick(i){if(V.name!=='quiz'||V.picked!=null||(V.hint&&V.hint.includes(i)))return;const q=V.round[V.i];V.picked=i;
+function pick(i){if(V.name!=='quiz'||V.picked!=null||(V.hint&&V.hint.includes(i)))return;const q=V.round[V.i];V.picked=i;rot(i===q.c);
  if(!q.retry)memHit({k:'quiz',m:q.mod.id,q:q.q,quote:q.quote||'',opts:q.opts,c:q.c,why:q.why},i===q.c);
  if(i===q.c){if(!q.retry)V.right++;V.streak++;const g=q.retry?4:V.hint?5:10+(V.streak>=3?5:0);V.xp+=g;addXp(g)}
  else{V.streak=0;if(!q.retry)V.missed.push(q);const opts=shuffle(q.opts);V.round.push({...q,opts,c:opts.indexOf(q.opts[q.c]),retry:true})}render()}
@@ -2088,7 +2117,7 @@ function vCase(){const st=V.c.steps[V.i],ord=V.order[V.i],done=V.picked!=null,ch
  ${expBox(CMODS[V.c.id],st.o[bestI][2]+' '+st.o[bestI][0])}
  <div class="row actbar"><button class="btn" data-act="cnext" id="nextbtn">${V.i+1<V.c.steps.length?'Neste situasjon':'Se utfallet'}</button></div>`:''}</section>`;
  if(done)$('nextbtn').focus({preventScroll:true});showFb()}
-function cpick(i){if(V.picked!=null)return;const o=V.c.steps[V.i].o[i];V.picked=i;V.rep=Math.max(0,Math.min(100,V.rep+o[1]));
+function cpick(i){if(V.picked!=null)return;const o=V.c.steps[V.i].o[i];V.picked=i;rot(o[1]>0);V.rep=Math.max(0,Math.min(100,V.rep+o[1]));
  const g=Math.max(0,o[1])*3;V.xp+=g;addXp(g);render()}
 function cnext(){if(V.i+1<V.c.steps.length){V.i++;V.picked=null;render();window.scrollTo(0,0)}else{
  const st=caseStars(V.rep),bonus=st*20;addXp(bonus);S.cases[V.c.id]=Math.max(S.cases[V.c.id]||0,V.rep);save();
@@ -2214,9 +2243,9 @@ function vMatch(){
  <div class="mcol">${V.R.map((x,i)=>`<button class="opt ${V.goneR.includes(i)?'gone':''} ${V.sr===i?'sel':''} ${V.bad&&V.bad[1]===i?'wrong':''}" data-act="mr" data-i="${i}"><span>${esc(x.d)}</span></button>`).join('')}</div></section>
  <p class="small">Trykk på et begrep og deretter på forklaringen som hører til.</p>`}
 function matchSel(side,i){V.bad=null;V[side]=V[side]===i?null:i;
- if(V.sl!=null&&V.sr!=null){if(V.L[V.sl].t===V.R[V.sr].t){V.combo++;V.pairs++;V.score+=10*(1+Math.floor(V.combo/3));V.goneL.push(V.sl);V.goneR.push(V.sr);V.sl=V.sr=null;
+ if(V.sl!=null&&V.sr!=null){if(V.L[V.sl].t===V.R[V.sr].t){rot(true);V.combo++;V.pairs++;V.score+=10*(1+Math.floor(V.combo/3));V.goneL.push(V.sl);V.goneR.push(V.sr);V.sl=V.sr=null;
    if(V.pairs>=12){gameEnd();return}if(V.goneL.length===4)deal()}
-  else{V.combo=0;V.score=Math.max(0,V.score-5);V.bad=[V.sl,V.sr];V.sl=V.sr=null}}
+  else{rot(false);V.combo=0;V.score=Math.max(0,V.score-5);V.bad=[V.sl,V.sr];V.sl=V.sr=null}}
  render()}
 function sortNext(){const GK=Object.keys(GROUPS),g=GK[Math.floor(Math.random()*GK.length)],it=GROUPS[g][Math.floor(Math.random()*GROUPS[g].length)];
  V.cur={g,it,opts:shuffle([g,...shuffle(GK.filter(x=>x!==g)).slice(0,3)])};V.fb=null;render()}
@@ -2230,8 +2259,8 @@ function vSort(){const c=V.cur,f=V.fb;
  <div class="row actbar"><button class="btn" data-act="snext" id="nextbtn">${V.lives>0?'Fortsett':'Se resultat'}</button></div>`:''}</section>`;
  if(f)$('nextbtn').focus({preventScroll:true});showFb()}
 function sortPick(i){if(V.fb)return;const c=V.cur;
- if(c.opts[i]===c.g){V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
- else{V.lives--;V.streak=0;V.fb={i};render()}}
+ if(c.opts[i]===c.g){rot(true);V.streak++;V.n++;V.score+=10+Math.min(V.streak,10)*2;sortNext()}
+ else{rot(false);V.lives--;V.streak=0;V.fb={i};render()}}
 function gameEnd(){const g=V.name,score=V.score,old=S.hi[g]||0,xp=Math.round(score/4);if(score>old){S.hi[g]=score;save()}addXp(xp);
  go({name:'gameend',g,score,old,xp,info:g==='match'?V.pairs+' riktige koblinger':V.n+' riktige svar'})}
 function vGameEnd(){const rec=V.score>V.old;
@@ -2387,7 +2416,7 @@ function fsave(i){const c=V.cards[i],rest=fstrip(c);S.saved=S.saved||[];
  save();const el=$('fc'+i);if(el){const b=el.querySelector('[data-act=fsave]');b.classList.toggle('on',isSaved(c));b.setAttribute('aria-pressed',isSaved(c));b.querySelector('span').textContent=isSaved(c)?'Lagret':'Lagre'}}
 function fans(i,j){const c=V.cards[i];if(c.ans!=null)return;c.ans=j;V.answered++;
  const ok=c.k==='quiz'?j===c.c:(()=>{const st=CASES.find(x=>x.id===c.c).steps[c.i];return st.o[j][1]===Math.max(...st.o.map(o=>o[1]))})();
- memHit(c,ok);if(!ok)fretry(V,c,i);
+ rot(ok);memHit(c,ok);if(!ok)fretry(V,c,i);
  if(ok){V.right++;V.streak++;addXp(V.streak>=3?7:5)}else V.streak=0;frefresh(i)}
 function fexp(i){const c=V.cards[i];let ids=[c.m],text='';
  if(c.k==='quiz')text=c.q+' '+c.opts[c.c]+' '+c.why+' '+c.quote;
@@ -2431,11 +2460,43 @@ const A={
  bosssubmit:()=>{const empty=V.chosen.filter(id=>!(V.ans[id]||'').trim()).length;
   if(empty&&!V.sure){V.sure=true;$('confirm').innerHTML=`<div class="fb no"><b class="no">${empty} av 3 oppgaver er tomme.</b> Trykk «Lever alle tre» én gang til for å levere likevel.</div>`;return}bossSubmit()},
  bossquit:()=>go({name:'boss',stage:'intro'}),
+ brainrot:()=>{S.rot=S.rot===false;save();render();toast(S.rot?'Brainrot er på. +1000 aura':'Brainrot er av')},
+ scares:()=>{S.scare=S.scare===false;save();render();toast(S.scare?'Jumpscares er på. Lykke til.':'Jumpscares er av')},
+ scarenow:()=>setTimeout(jumpscare,400),
+ poop:()=>{S.poop=S.poop===false;save();render();toast(S.poop?'💩 Bæsj-animasjoner er på':'Bæsj-animasjoner er av')},
+ ranks:()=>{V.showRanks=!V.showRanks;render()},
  reset:()=>{if(!V.sureReset){V.sureReset=true;toast('Trykk én gang til for å slette all fremgang');return}S={xp:0,quiz:{},cases:{},boss:null,drafts:{},hi:{},saved:[],mem:{}};save();renderTop();go({name:'home'});toast('Fremgangen er nullstilt')}
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&A[b.dataset.act])A[b.dataset.act](b.dataset)});
 document.addEventListener('keydown',e=>{if(V.name!=='quiz'||e.target.tagName==='TEXTAREA')return;
  if(V.picked==null&&/^[1-4]$/.test(e.key))pick(+e.key-1)});
+/* ---------- Brainrot og jumpscares ---------- */
+const ROT_OK=['+1000 aura','Sigma-svar 🗿','W 🔥','Rizzler i kommunikasjon','Main character energy','Ate. Ingen smuler igjen.','Slay 💅','No cap, det var riktig','Kotter er stolt av deg','Gigachad-oppførsel 🗿','Aura farming 📈','Cornelissen nikker anerkjennende','Det der var lowkey genialt','Sensor er shook','Huske-hjernen din er cracked','Absolutt kino 🎬','Big brain time 🧠','Ekte omdømmeredder-moves'];
+const ROT_NO=['−500 aura 💀','L + ratio','Bro trodde 💀','Hæ? 🤨','Ohio-svar','Mewing hjalp ikke','Det var ikke det, chief','Ingen rizz i det svaret','NPC-oppførsel','Hjernen tok fri 🧠💨','Skill issue','Den var cooked 🍳','Krisekommunikasjon trengs, for deg','Sensor så det der 👀','Not very sigma of you'];
+let rotLast=0;
+function rot(ok){if(S.rot===false)return;const now=Date.now();if(now-rotLast<500)return;rotLast=now;
+ const el=document.createElement('div');el.className='rot '+(ok?'ok':'no');el.setAttribute('aria-hidden','true');
+ const l=ok?ROT_OK:ROT_NO;el.textContent=l[Math.floor(Math.random()*l.length)];el.style.setProperty('--r',(Math.random()*14-7).toFixed(1)+'deg');
+ el.style.left=(20+Math.random()*60)+'%';document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());setTimeout(()=>el.remove(),2500)}
+const SCARE_TXT=['BØ!','DU GLEMTE KOTTER','SENSOR SER DEG','EKSAMEN ER SNART','HVA ER STEG 4?','REPETER!'];
+let scareClicks=0,scareNext=45+Math.floor(Math.random()*60),scareLast=Date.now();
+function scareSound(){try{const A=window.AudioContext||window.webkitAudioContext;if(!A)return;const a=new A(),t=a.currentTime,g=a.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.5,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+.9);g.connect(a.destination);
+ const o=a.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(900,t);o.frequency.exponentialRampToValueAtTime(120,t+.85);o.connect(g);o.start(t);o.stop(t+.9);
+ const n=a.createBufferSource(),buf=a.createBuffer(1,a.sampleRate*.6,a.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);n.buffer=buf;const ng=a.createGain();ng.gain.value=.25;n.connect(ng);ng.connect(a.destination);n.start(t);setTimeout(()=>a.close(),1500)}catch(e){}}
+function jumpscare(){if(document.querySelector('.scare'))return;scareLast=Date.now();const el=document.createElement('div');el.className='scare';el.setAttribute('role','alert');
+ el.innerHTML=`<svg viewBox="0 0 200 220" aria-hidden="true"><ellipse cx="100" cy="115" rx="88" ry="100" fill="#e9e3d6"/><ellipse cx="100" cy="115" rx="88" ry="100" fill="url(#sg)"/>
+ <defs><radialGradient id="sg" cx=".5" cy=".4" r=".7"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient></defs>
+ <path d="M38 82q24-22 48 2q-24 30-48-2z" fill="#0b0b0b"/><path d="M114 84q24-24 48-2q-24 32-48 2z" fill="#0b0b0b"/><circle cx="62" cy="86" r="7" fill="#ff2a2a"/><circle cx="138" cy="86" r="7" fill="#ff2a2a"/>
+ <path d="M48 150q52 70 104 0q-10 6-14-6l-10 14-10-16-12 18-12-18-10 16-10-14q-4 12-14 6z" fill="#0b0b0b"/><path d="M60 156l8 14 8-12 10 16 10-16 10 16 10-16 8 12 8-14" fill="none" stroke="#f4f1e8" stroke-width="5" stroke-linejoin="round"/></svg>
+ <p>${SCARE_TXT[Math.floor(Math.random()*SCARE_TXT.length)]}</p><span class="small">Trykk for å fortsette</span>`;
+ document.body.appendChild(el);scareSound();const close=()=>el.remove();el.addEventListener('click',close);setTimeout(close,2200)}
+document.addEventListener('pointerdown',e=>{if(S.scare===false||matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(e.target.closest('.scare,textarea'))return;
+ scareClicks++;if(scareClicks>=scareNext&&Date.now()-scareLast>120000){scareClicks=0;scareNext=45+Math.floor(Math.random()*60);setTimeout(jumpscare,250+Math.random()*900)}},{passive:true});
+document.addEventListener('pointerdown',e=>{if(S.poop===false||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const n=e.target.closest('button,summary,select,a')?3:1;
+ for(let k=0;k<n;k++){const el=document.createElement('span');el.className='poop';el.textContent='💩';el.setAttribute('aria-hidden','true');
+  el.style.left=e.clientX+'px';el.style.top=e.clientY+'px';el.style.setProperty('--dx',(Math.random()*90-45).toFixed(0)+'px');el.style.setProperty('--rot',(Math.random()*80-40).toFixed(0)+'deg');
+  el.style.animationDelay=(k*45)+'ms';document.body.appendChild(el);el.addEventListener('animationend',()=>el.remove());setTimeout(()=>el.remove(),1600)}},{passive:true});
 renderTop();render();
 </script>
 </body>
